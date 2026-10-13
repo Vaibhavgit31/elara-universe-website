@@ -24,7 +24,7 @@ test('tapping the cover opens it at once', async ({ page }, { project }) => {
   await open(page, '/')
   // With reduced motion the pad re-mounts as a stacked layout right after hydration.
   if (project.name === 'reduced-motion')
-    await expect(page.getByRole('region', { name: 'Page 1 of 7' })).toHaveCSS(
+    await expect(page.getByRole('region', { name: 'Page 1 of 8' })).toHaveCSS(
       'position',
       'relative',
     )
@@ -35,7 +35,7 @@ test('tapping the cover opens it at once', async ({ page }, { project }) => {
 
 test('home is a flip-pad of seven pages with the agreed content', async ({ page }) => {
   await open(page, '/')
-  await expect(page.getByRole('region', { name: /Page \d of 7/ })).toHaveCount(7)
+  await expect(page.getByRole('region', { name: /Page \d of 8/ })).toHaveCount(8)
   for (const text of [
     'Basic Hindi Reader',
     'TechNova',
@@ -54,7 +54,7 @@ test('home is a flip-pad of seven pages with the agreed content', async ({ page 
     page.getByRole('link', { name: 'Basic Hindi Reader: see the books' }),
   ).toHaveAttribute('href', '/catalog/?subject=hindi')
   await expect(page.getByText('Sample', { exact: true })).toHaveCount(2)
-  const backCover = page.getByRole('region', { name: 'Page 7 of 7' })
+  const backCover = page.getByRole('region', { name: 'Page 8 of 8' })
   await expect(backCover.getByRole('link', { name: 'Chat on WhatsApp' })).toHaveAttribute(
     'href',
     /wa\.me\/919625741192/,
@@ -67,7 +67,7 @@ test('the peek-inside flipbook turns pages (reduced motion layout)', async ({ pa
   test.skip(project.name !== 'reduced-motion', 'pages are in normal flow only with reduced motion')
   await open(page, '/')
   // Wait for the reduced-motion layout (pages in normal flow) before touching the flipbook.
-  await expect(page.getByRole('region', { name: 'Page 5 of 7' })).toHaveCSS('position', 'relative')
+  await expect(page.getByRole('region', { name: 'Page 5 of 8' })).toHaveCSS('position', 'relative')
   const flipbook = page.getByTestId('flipbook')
   await flipbook.scrollIntoViewIfNeeded()
   await expect(flipbook).toHaveAttribute('data-ready', 'true')

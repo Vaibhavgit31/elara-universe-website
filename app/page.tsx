@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Flipbook } from '@/components/book/flipbook'
+import { PlayCorner } from '@/components/extras/play-corner'
 import { UpcomingEvents } from '@/components/events/upcoming-events'
 import { FlipPad } from '@/components/flip/flip-pad'
 import { FlipPage } from '@/components/flip/flip-page'
@@ -13,6 +14,7 @@ import { Button, buttonClass } from '@/components/ui/button'
 import { StickyNote } from '@/components/ui/sticky-note'
 import { TurnLink } from '@/components/ui/turn-link'
 import { site, whatsappLink } from '@/content/site'
+import { siteConfig } from '@/content/site-config'
 import { isoToday } from '@/lib/events'
 
 export const metadata: Metadata = {
@@ -141,7 +143,17 @@ export default function Home() {
           </p>
         </FlipPage>
 
-        {/* 7. Back cover */}
+        {/* 7. Play corner (optional extra, content/site-config.ts) */}
+        {siteConfig.playCorner && (
+          <FlipPage className="bg-mist">
+            <p className="eyebrow">Play corner</p>
+            <h2>Three little games</h2>
+            <p className="mt-3 max-w-xl">About thirty seconds each. One for every subject.</p>
+            <PlayCorner />
+          </FlipPage>
+        )}
+
+        {/* 8. Back cover */}
         <FlipPage className="bg-forest text-cream">
           <div className="flex min-h-[60svh] flex-col items-center justify-center text-center">
             <p className="eyebrow text-brass">The back cover</p>

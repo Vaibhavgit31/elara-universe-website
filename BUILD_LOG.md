@@ -626,3 +626,44 @@ assembled with ImageMagick; Playwright's ffmpeg has no GIF encoder). The contact
 needs a build with a form key, so it is covered by the keyed test run rather than a GIF.
 
 **Placeholders added:** none.
+
+---
+
+## Phase 12b — Fun extras for children
+
+**Built** (every extra has a switch in `content/site-config.ts`; none blocks reading or
+navigation; all work by touch at 360 px):
+
+- **Sticker book** (`lib/stickers.ts`, `components/extras/sticker-book.tsx`): visiting each of
+  the six pages earns a sticker (leaf, book, star, ticket, pencil, QR door). A header button
+  shows the count ("1/6") and opens a native dialog with the stickers; all six earn the
+  "Bookworm" badge with Elu cheering. A small note pops up when a sticker is found. Progress is
+  saved only in the visitor's browser (`localStorage` with try/catch; if storage is blocked the
+  site still works and stickers simply last for the visit).
+- **Play corner** on Home (new page 7 of 8, `components/extras/play-corner.tsx`): three
+  activities, each loaded only when its "Play" button is pressed (`next/dynamic`, so the home
+  page does not grow): trace अ with a finger or mouse on a canvas with crayon colours
+  (`trace-letter.tsx`), type your name and see it as 0s and 1s (`binary-name.tsx`), colour Elu
+  with five crayons (`colour-elu.tsx`).
+- **Time-of-day desk** (`desk-mood.tsx`): from 18:00 to 06:00 local time the desk behind the
+  pages warms up and a small desk lamp appears at the edge of the binding.
+- **Festival touches** (`festival-touches.tsx`): on the dates in `siteConfig.festivalDates`,
+  diyas (Diwali) or kites (Makar Sankranti) hang from the header. Dates are `[PLACEHOLDER]` to
+  confirm each year.
+- **Page-turn sound** (`lib/flip-sound.ts`, `components/ui/sound-toggle.tsx`): one shared
+  speaker toggle for the flip pad and every flipbook, off by default, choice remembered.
+
+**Requirements:** ✅ sticker book with localStorage try/catch · ✅ three lazy-loaded play
+activities · ✅ evening desk + lamp and festival dates · ✅ remembered sound toggle ·
+✅ switches in `content/site-config.ts` · ✅ nothing blocks reading, touch at 360 px
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **174 passed /
+30 skipped** ✅ (`tests/extras.spec.ts`: stickers earned and shown, blocked storage, the three
+activities, sound toggle remembered, evening lamp + Diwali diyas via a faked clock). Home page JS
+after this phase is printed above the report in the build log run (unchanged by the lazy
+activities).
+
+**Screenshots:** `docs/screenshots/phase-12b/` (play corner at 1440/360, sticker book at
+1440/360, evening desk with Diwali diyas).
+
+**Placeholders added:** festival dates in `content/site-config.ts`.

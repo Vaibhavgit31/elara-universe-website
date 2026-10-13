@@ -1,23 +1,15 @@
 'use client'
 
-import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { cn } from '@/lib/cn'
-import { playFlipSound } from '@/lib/flip-sound'
+import { SoundToggle } from '@/components/ui/sound-toggle'
+import { playFlipSound, useFlipSound } from '@/lib/flip-sound'
 
 // react-pageflip draws on the DOM, so it is loaded in the browser only.
 const HTMLFlipBook = dynamic(() => import('react-pageflip'), { ssr: false })
-
-const SOUND_KEY = 'elara:flip-sound'
-const readSoundPreference = () => {
-  try {
-    return localStorage.getItem(SOUND_KEY) === 'on'
-  } catch {
-    return false
-  }
-}
 
 type Props = {
   pages: string[]
@@ -35,7 +27,7 @@ type Props = {
 export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) {
   const book = useRef<{ pageFlip: () => { flipNext: () => void; flipPrev: () => void } }>(null)
   const [page, setPage] = useState(0)
-  const [sound, setSound] = useState(false)
+  const sound = useFlipSound()
   const [ready, setReady] = useState(false)
   const width = 360
   const height = Math.round(width / ratio)
@@ -44,14 +36,6 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowRight') flip('next')
     if (e.key === 'ArrowLeft') flip('prev')
-  }
-  const toggleSound = () => {
-    const next = !sound
-    setSound(next)
-    try {
-      localStorage.setItem(SOUND_KEY, next ? 'on' : 'off')
-    } catch {}
-    if (next) playFlipSound()
   }
   const control =
     'flex size-11 items-center justify-center rounded-full bg-forest text-cream hover:bg-evergreen'
@@ -93,10 +77,7 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
           swipeDistance={30}
           showPageCorners
           disableFlipByClick={false}
-          onInit={() => {
-            setReady(true)
-            setSound(readSoundPreference())
-          }}
+          onInit={() => setReady(true)}
           onFlip={(e: { data: number }) => setPage(e.data)}
           onChangeState={(e: { data: string }) => {
             if (e.data === 'flipping' && sound) playFlipSound()
@@ -135,16 +116,7 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
         >
           <ChevronRight aria-hidden />
         </button>
-        <button
-          type="button"
-          onClick={toggleSound}
-          aria-pressed={sound}
-          aria-label="Page-turn sound"
-          title={sound ? 'Page-turn sound on' : 'Page-turn sound off'}
-          className={cn(control, 'ml-2', !sound && 'bg-sage-100 text-forest hover:bg-sage')}
-        >
-          {sound ? <Volume2 aria-hidden /> : <VolumeX aria-hidden />}
-        </button>
+        <SoundToggle className="ml-2" />
       </div>
     </div>
   )

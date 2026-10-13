@@ -3,6 +3,7 @@ import { Caveat, Cormorant_Garamond, Lora, Noto_Sans_Devanagari, Nunito } from '
 import { BottomBar } from '@/components/frame/bottom-bar'
 import { Footer } from '@/components/frame/footer'
 import { Header } from '@/components/frame/header'
+import { StickerCollector } from '@/components/extras/sticker-book'
 import { HydrationMarker } from '@/components/frame/hydration-marker'
 import { PageTurn, PageTurnProvider } from '@/components/frame/page-turn'
 import { SmoothScroll } from '@/components/frame/smooth-scroll'
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <WhatsAppButton />
               <BottomBar />
               <HydrationMarker />
+              <StickerCollector />
             </PageTurnProvider>
           </SmoothScroll>
         </MotionProvider>

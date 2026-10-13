@@ -1,7 +1,10 @@
 import Image from 'next/image'
+import { FestivalTouches } from '@/components/extras/festival-touches'
+import { StickerBookButton } from '@/components/extras/sticker-book'
 import { RibbonNav } from '@/components/frame/ribbon-nav'
 import { TurnLink } from '@/components/ui/turn-link'
 import { site } from '@/content/site'
+import { isoToday } from '@/lib/events'
 
 export function Header() {
   return (
@@ -25,8 +28,12 @@ export function Header() {
             className="hidden h-9 w-auto md:block lg:hidden"
           />
         </TurnLink>
+        <div className="my-2 mr-3 ml-auto md:mr-6">
+          <StickerBookButton />
+        </div>
         <RibbonNav />
       </div>
+      <FestivalTouches buildDate={isoToday()} />
     </header>
   )
 }

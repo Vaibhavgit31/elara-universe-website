@@ -67,7 +67,7 @@ test('without a form key, a valid letter is handed to email and WhatsApp', async
   test.skip((await mode(page)) !== 'fallback', 'built with a Web3Forms key')
   await fill(page)
   await page.getByRole('button', { name: 'Send the letter' }).click()
-  const panel = page.getByRole('status')
+  const panel = page.getByRole('status').filter({ hasText: 'Your letter is written' })
   await expect(panel).toBeVisible()
   await expect(panel.getByRole('link', { name: 'Send by email' })).toHaveAttribute(
     'href',

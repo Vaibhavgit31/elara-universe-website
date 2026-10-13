@@ -18,7 +18,11 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
+import { DeskMood } from '@/components/extras/desk-mood'
+import { SoundToggle } from '@/components/ui/sound-toggle'
+import { siteConfig } from '@/content/site-config'
 import { cn } from '@/lib/cn'
+import { playFlipSound, useFlipSound } from '@/lib/flip-sound'
 
 import type { FlipPageElementProps, FlipPageProps } from '@/components/flip/flip-page'
 import { useReducedMotion } from '@/lib/use-reduced-motion'
@@ -56,12 +60,15 @@ const Binding = () => (
 )
 
 const PageNumber = ({ current, count }: { current: number; count: number }) => (
-  <p
-    aria-live="polite"
-    className="absolute top-1 right-2 z-[60] rounded-full bg-paper px-3 py-0.5 font-hand text-base text-forest shadow-page md:top-auto md:right-auto md:bottom-5 md:left-5 md:bg-paper/85 md:py-1 md:text-lg md:shadow-none"
-  >
-    Page {current + 1} of {count}
-  </p>
+  <div className="absolute top-0.5 right-2 z-[60] flex items-center gap-2 md:top-auto md:right-auto md:bottom-4 md:left-5">
+    <p
+      aria-live="polite"
+      className="rounded-full bg-paper px-3 py-0.5 font-hand text-base text-forest shadow-page md:bg-paper/85 md:py-1 md:text-lg md:shadow-none"
+    >
+      Page {current + 1} of {count}
+    </p>
+    {siteConfig.pageTurnSound && <SoundToggle className="size-8 md:size-9" />}
+  </div>
 )
 
 /** Page-stack progress: thin page edges on the right that thin out as pages are read. */
@@ -190,6 +197,10 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
     const index = indexAt(y - layout.top)
     if (index !== current) setCurrent(index)
   })
+  const sound = useFlipSound()
+  useEffect(() => {
+    if (sound && current > 0) playFlipSound()
+  }, [current, sound])
 
   return (
     <div
@@ -223,6 +234,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
             {page.props.children}
           </Sheet>
         ))}
+        <DeskMood />
         <Binding />
         <Stack current={current} count={count} />
         <PageNumber current={current} count={count} />
