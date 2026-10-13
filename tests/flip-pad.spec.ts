@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { expectNoHorizontalScroll } from './helpers'
+import { expectNoHorizontalScroll, open } from './helpers'
 
 const scrollTo = (page: Page, y: number) => page.evaluate((v) => window.scrollTo(0, v), y)
 /** Waits until the pad has measured its pages (it grows beyond one screen), then returns its top. */
@@ -15,7 +15,7 @@ async function padTop(page: Page) {
 }
 
 test('demo pad shows five pages and a page counter', async ({ page }) => {
-  await page.goto('/demo-flip/')
+  await open(page, '/demo-flip/')
   await expect(page.getByRole('heading', { level: 1, name: 'The flip-pad scroll' })).toBeVisible()
   await expect(page.getByText('Page 1 of 5').first()).toBeVisible()
   await expect(page.getByRole('region', { name: /Page \d of 5/ })).toHaveCount(5)
@@ -26,7 +26,7 @@ test('scrolling lifts the first page in 3D and advances the counter', async ({ p
   project,
 }) => {
   test.skip(project.name === 'reduced-motion', 'no 3D with reduced motion')
-  await page.goto('/demo-flip/')
+  await open(page, '/demo-flip/')
   const first = page.getByRole('region', { name: 'Page 1 of 5' })
   await expect(first).toHaveCSS('transform', 'none')
   const top = await padTop(page)
@@ -45,7 +45,7 @@ test('scrolling lifts the first page in 3D and advances the counter', async ({ p
 
 test('the long page scrolls inside before it flips', async ({ page }, { project }) => {
   test.skip(project.name === 'reduced-motion', 'no 3D with reduced motion')
-  await page.goto('/demo-flip/')
+  await open(page, '/demo-flip/')
   const second = page.getByRole('region', { name: 'Page 2 of 5' })
   const top = await padTop(page)
   const height = page.viewportSize()!.height
@@ -68,7 +68,7 @@ test('the long page scrolls inside before it flips', async ({ page }, { project 
 
 test('reduced motion stacks the pages without 3D', async ({ page }, { project }) => {
   test.skip(project.name !== 'reduced-motion', 'reduced motion only')
-  await page.goto('/demo-flip/')
+  await open(page, '/demo-flip/')
   for (const region of await page.getByRole('region', { name: /Page \d of 5/ }).all())
     await expect(region).toHaveCSS('transform', 'none')
   const stacked = await page.evaluate(

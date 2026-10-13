@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
-import { expectNoHorizontalScroll } from './helpers'
+import { expectNoHorizontalScroll, open } from './helpers'
 
 test('the cover opens by itself and shows the hero', async ({ page }) => {
-  await page.goto('/')
+  await open(page, '/')
   const cover = page.getByRole('button', { name: 'Open the book' })
   await expect(cover).toBeVisible()
   await expect(cover).toBeHidden({ timeout: 4000 })
@@ -21,7 +21,7 @@ test('the cover opens by itself and shows the hero', async ({ page }) => {
 })
 
 test('tapping the cover opens it at once', async ({ page }, { project }) => {
-  await page.goto('/')
+  await open(page, '/')
   // With reduced motion the pad re-mounts as a stacked layout right after hydration.
   if (project.name === 'reduced-motion')
     await expect(page.getByRole('region', { name: 'Page 1 of 7' })).toHaveCSS(
@@ -34,7 +34,7 @@ test('tapping the cover opens it at once', async ({ page }, { project }) => {
 })
 
 test('home is a flip-pad of seven pages with the agreed content', async ({ page }) => {
-  await page.goto('/')
+  await open(page, '/')
   await expect(page.getByRole('region', { name: /Page \d of 7/ })).toHaveCount(7)
   for (const text of [
     'Basic Hindi Reader',
@@ -65,11 +65,12 @@ test('the peek-inside flipbook turns pages (reduced motion layout)', async ({ pa
   project,
 }) => {
   test.skip(project.name !== 'reduced-motion', 'pages are in normal flow only with reduced motion')
-  await page.goto('/')
+  await open(page, '/')
   // Wait for the reduced-motion layout (pages in normal flow) before touching the flipbook.
   await expect(page.getByRole('region', { name: 'Page 5 of 7' })).toHaveCSS('position', 'relative')
   const flipbook = page.getByTestId('flipbook')
   await flipbook.scrollIntoViewIfNeeded()
+  await expect(flipbook).toHaveAttribute('data-ready', 'true')
   await expect(flipbook.getByText('1 / 8')).toBeVisible()
   await flipbook.getByRole('button', { name: 'Next page' }).click()
   await expect(flipbook.getByText(/^[23] \/ 8$/)).toBeVisible()

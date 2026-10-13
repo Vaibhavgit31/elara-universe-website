@@ -331,3 +331,49 @@ server page became a client reference — moved to a shared module.
 
 **Placeholders added:** Hindi Classes 2, 4–8 covers ("cover coming soon"), Art Journey 1–8
 (placeholder covers), every `null` field above.
+
+---
+
+## Phase 7 — Book detail and flipbook
+
+**Built:** `app/catalog/[slug]/page.tsx` for all 24 books (static params), with:
+
+- `components/book/tilt-cover.tsx`: the cover tilts in 3D towards the mouse with a light shine
+  that follows it (Motion springs on `rotateX/rotateY` and a translated radial highlight —
+  transform only). On phones it follows device tilt where the browser allows it without a
+  permission prompt (Android); on iOS, which needs a prompt, it stays still. Nothing moves with
+  reduced motion.
+- `components/book/flipbook.tsx` (react-pageflip, browser-only): two-page spread on wide
+  screens, one page with swipe on phones, prev/next buttons, arrow keys, page counter, and a
+  speaker toggle for the page-turn sound — off by default, remembered in `localStorage`
+  (try/catch). The sound is a short paper swish synthesised with the Web Audio API
+  (`lib/flip-sound.ts`), so no audio file or licence is needed. Books without samples show
+  "Sample pages coming soon."
+- "What's inside" from `features[]` (TechNova: the twelve Salient Features) and "Comes with"
+  from `support[]`; a details table (class, pages, size, ISBN, MRP, edition, curriculum) that
+  hides empty fields.
+- "Request a sample copy" → `/contact?book=<slug>`; "Ask on WhatsApp" → wa.me/919625741192
+  with a message naming the book.
+- "More from this series" shelf (the other seven books).
+- Page title and description per book, and schema.org `Book` JSON-LD (name, alternate Hindi
+  name, ISBN, pages, image, language, publisher, and an Offer only where the MRP is known).
+
+**Requirements:** ✅ 3D tilt (mouse; device tilt if allowed, otherwise none) · ✅ Flipbook with
+spread/single page, sound toggle off by default, arrow keys, "Sample pages coming soon" ·
+✅ What's inside + details table · ✅ sample-copy and WhatsApp buttons · ✅ series shelf ·
+✅ SEO title/description + Book structured data
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright 99 passed /
+17 skipped ✅ (`tests/book.spec.ts`: page content, TechNova features/ISBN/no samples, JSON-LD,
+flipbook buttons/keys/sound toggle, mouse tilt). Fixed during the gate: flipbook controls are
+disabled until react-pageflip has initialised (`data-ready`); two catalog tests were flaky
+because they clicked or measured before hydration / during the page-turn entrance, so the
+layout now marks `<body data-hydrated>` (`components/frame/hydration-marker.tsx`) and tests use
+an `open()` helper that waits for hydration and for the entrance to settle.
+
+**Screenshots:** `docs/screenshots/phase-07/` (hindi-1, technova-1, art-journey-2 at
+360/768/1440 + reduced motion). Reviewed: spread on desktop, single page on phones, no empty
+rows in the details table.
+
+**Placeholders added:** none new (Art Journey pages show the placeholder covers and
+"Sample pages coming soon").

@@ -1,13 +1,23 @@
 'use client'
 
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { cn } from '@/lib/cn'
+import { playFlipSound } from '@/lib/flip-sound'
 
 // react-pageflip draws on the DOM, so it is loaded in the browser only.
 const HTMLFlipBook = dynamic(() => import('react-pageflip'), { ssr: false })
+
+const SOUND_KEY = 'elara:flip-sound'
+const readSoundPreference = () => {
+  try {
+    return localStorage.getItem(SOUND_KEY) === 'on'
+  } catch {
+    return false
+  }
+}
 
 type Props = {
   pages: string[]
@@ -20,22 +30,38 @@ type Props = {
 
 /**
  * Realistic page turns (react-pageflip): a two-page spread on wide screens, one page with swipe
- * on phones. Arrow keys and the buttons also turn pages.
+ * on phones. Arrow keys and the buttons also turn pages. Page-turn sound is off by default.
  */
 export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) {
   const book = useRef<{ pageFlip: () => { flipNext: () => void; flipPrev: () => void } }>(null)
   const [page, setPage] = useState(0)
+  const [sound, setSound] = useState(false)
+  const [ready, setReady] = useState(false)
   const width = 360
   const height = Math.round(width / ratio)
   const flip = (dir: 'next' | 'prev') =>
-    book.current?.pageFlip()[dir === 'next' ? 'flipNext' : 'flipPrev']()
+    book.current?.pageFlip()?.[dir === 'next' ? 'flipNext' : 'flipPrev']()
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowRight') flip('next')
     if (e.key === 'ArrowLeft') flip('prev')
   }
+  const toggleSound = () => {
+    const next = !sound
+    setSound(next)
+    try {
+      localStorage.setItem(SOUND_KEY, next ? 'on' : 'off')
+    } catch {}
+    if (next) playFlipSound()
+  }
+  const control =
+    'flex size-11 items-center justify-center rounded-full bg-forest text-cream hover:bg-evergreen'
 
   return (
-    <div className={cn('mx-auto w-full max-w-3xl', className)} data-testid="flipbook">
+    <div
+      className={cn('mx-auto w-full max-w-3xl', className)}
+      data-testid="flipbook"
+      data-ready={ready}
+    >
       <div
         tabIndex={0}
         onKeyDown={onKeyDown}
@@ -67,7 +93,14 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
           swipeDistance={30}
           showPageCorners
           disableFlipByClick={false}
+          onInit={() => {
+            setReady(true)
+            setSound(readSoundPreference())
+          }}
           onFlip={(e: { data: number }) => setPage(e.data)}
+          onChangeState={(e: { data: string }) => {
+            if (e.data === 'flipping' && sound) playFlipSound()
+          }}
         >
           {pages.map((src, i) => (
             <div key={src} className="overflow-hidden bg-paper shadow-page">
@@ -87,7 +120,7 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
           type="button"
           onClick={() => flip('prev')}
           aria-label="Previous page"
-          className="flex size-11 items-center justify-center rounded-full bg-forest text-cream hover:bg-evergreen"
+          className={control}
         >
           <ChevronLeft aria-hidden />
         </button>
@@ -98,9 +131,19 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
           type="button"
           onClick={() => flip('next')}
           aria-label="Next page"
-          className="flex size-11 items-center justify-center rounded-full bg-forest text-cream hover:bg-evergreen"
+          className={control}
         >
           <ChevronRight aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-pressed={sound}
+          aria-label="Page-turn sound"
+          title={sound ? 'Page-turn sound on' : 'Page-turn sound off'}
+          className={cn(control, 'ml-2', !sound && 'bg-sage-100 text-forest hover:bg-sage')}
+        >
+          {sound ? <Volume2 aria-hidden /> : <VolumeX aria-hidden />}
         </button>
       </div>
     </div>

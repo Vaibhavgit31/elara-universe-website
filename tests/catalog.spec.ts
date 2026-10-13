@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
-import { expectNoHorizontalScroll } from './helpers'
+import { expectNoHorizontalScroll, open } from './helpers'
 
 test('catalog shows 24 books on three shelves', async ({ page }) => {
-  await page.goto('/catalog/')
+  await open(page, '/catalog/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Find a book by subject and class',
   )
@@ -19,7 +19,7 @@ test('catalog shows 24 books on three shelves', async ({ page }) => {
 })
 
 test('filters are saved in the URL and restored from it', async ({ page }) => {
-  await page.goto('/catalog/')
+  await open(page, '/catalog/')
   await page.getByRole('button', { name: 'Hindi', exact: true }).click()
   await expect(page).toHaveURL(/\?subject=hindi$/)
   await expect(page.getByTestId('book-card')).toHaveCount(8)
@@ -28,7 +28,7 @@ test('filters are saved in the URL and restored from it', async ({ page }) => {
   await expect(page.getByTestId('book-card')).toHaveCount(1)
   await expect(page.getByText('1 of 24 books')).toBeVisible()
 
-  await page.goto('/catalog/?subject=computer&class=5')
+  await open(page, '/catalog/?subject=computer&class=5')
   await expect(page.getByTestId('book-card')).toHaveCount(1)
   await expect(page.getByRole('link', { name: 'TechNova Class 5: peek inside' })).toHaveAttribute(
     'href',
@@ -41,15 +41,15 @@ test('filters are saved in the URL and restored from it', async ({ page }) => {
 })
 
 test('an impossible filter shows the empty shelf', async ({ page }) => {
-  await page.goto('/catalog/?subject=drawing&class=3')
+  await open(page, '/catalog/?subject=drawing&class=3')
   await expect(page.getByTestId('book-card')).toHaveCount(1)
-  await page.goto('/catalog/?class=9')
+  await open(page, '/catalog/?class=9')
   await expect(page.getByTestId('book-card')).toHaveCount(24)
 })
 
 test('phones show two covers per shelf row', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 1440) >= 640, 'phone only')
-  await page.goto('/catalog/')
+  await open(page, '/catalog/')
   const cards = page.getByTestId('book-card')
   const [a, b, c] = await Promise.all([0, 1, 2].map((i) => cards.nth(i).boundingBox()))
   expect(a!.y).toBe(b!.y)
@@ -57,9 +57,9 @@ test('phones show two covers per shelf row', async ({ page }) => {
 })
 
 test('book pages exist for every slug', async ({ page }) => {
-  await page.goto('/catalog/hindi-1/')
+  await open(page, '/catalog/hindi-1/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Basic Hindi Reader Class 1')
-  await page.goto('/catalog/art-journey-8/')
+  await open(page, '/catalog/art-journey-8/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Art Journey Class 8')
   const missing = await page.goto('/catalog/nope/')
   expect(missing?.status()).toBe(404)

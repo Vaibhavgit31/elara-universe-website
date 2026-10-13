@@ -7,3 +7,10 @@ export async function expectNoHorizontalScroll(page: Page) {
   )
   expect(overflow, 'horizontal overflow in px').toBeLessThanOrEqual(0)
 }
+
+/** Opens a page and waits until React is interactive and the page-turn entrance has settled. */
+export async function open(page: Page, url: string) {
+  await page.goto(url)
+  await expect(page.locator('body')).toHaveAttribute('data-hydrated', 'true')
+  await expect(page.getByTestId('page')).toHaveCSS('transform', 'none')
+}

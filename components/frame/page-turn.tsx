@@ -36,6 +36,7 @@ export function PageTurn({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col overflow-x-clip" style={{ perspective: '1600px' }}>
       <motion.div
         key={pathname}
+        data-testid="page"
         className="flex flex-1 flex-col"
         style={{ transformOrigin: 'top center' }}
         initial={{ opacity: 0, rotateX: 8, y: 24 }}

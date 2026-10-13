@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
-import { expectNoHorizontalScroll } from './helpers'
+import { expectNoHorizontalScroll, open } from './helpers'
 
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768
 
 test('header, menu, footer and WhatsApp button are on every page', async ({ page }) => {
-  await page.goto('/styleguide/')
+  await open(page, '/styleguide/')
   await expect(page.getByRole('link', { name: 'Elara Universe home' })).toBeVisible()
   const menu = page.getByRole('navigation', { name: 'Main' }).filter({ visible: true })
   await expect(menu.getByRole('link')).toHaveCount(6)
@@ -27,7 +27,7 @@ test('header, menu, footer and WhatsApp button are on every page', async ({ page
 test('the current page is marked in the menu and ribbons swap with the bottom bar on phones', async ({
   page,
 }) => {
-  await page.goto('/catalog/')
+  await open(page, '/catalog/')
   const ribbons = page.locator('header nav')
   const bar = page.getByTestId('bottom-bar')
   await expect(isPhone(page) ? bar : ribbons).toBeVisible()
@@ -38,7 +38,7 @@ test('the current page is marked in the menu and ribbons swap with the bottom ba
 })
 
 test('clicking a menu item turns the page', async ({ page }) => {
-  await page.goto('/')
+  await open(page, '/')
   await page
     .getByRole('navigation', { name: 'Main' })
     .filter({ visible: true })
@@ -50,7 +50,7 @@ test('clicking a menu item turns the page', async ({ page }) => {
 
 test('phone bottom bar hides on scroll down and returns on scroll up', async ({ page }) => {
   test.skip(!isPhone(page), 'phone only')
-  await page.goto('/styleguide/')
+  await open(page, '/styleguide/')
   const bar = page.getByTestId('bottom-bar')
   await expect(bar).toBeInViewport()
   await page.mouse.wheel(0, 900)
@@ -60,7 +60,7 @@ test('phone bottom bar hides on scroll down and returns on scroll up', async ({ 
 })
 
 test('skip link jumps to the main content', async ({ page }) => {
-  await page.goto('/')
+  await open(page, '/')
   await page.keyboard.press('Tab')
   const skip = page.getByRole('link', { name: 'Skip to content' })
   await expect(skip).toBeFocused()
