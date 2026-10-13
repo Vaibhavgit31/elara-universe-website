@@ -8,12 +8,11 @@ export type FlipPageProps = {
   bare?: boolean
 }
 
-/** The rendered element's props, which is what FlipPad receives across the server/client boundary. */
-export type FlipPageElementProps = {
-  children: ReactNode
-  className?: string
-  'data-bare'?: boolean
-}
+/**
+ * What FlipPad receives: the rendered element's props across the server/client boundary
+ * (`data-bare`), or the raw FlipPage props inside a client tree (`bare`).
+ */
+export type FlipPageElementProps = FlipPageProps & { 'data-bare'?: boolean }
 
 /**
  * One page of a <FlipPad>. It renders a plain element so its props survive the server/client

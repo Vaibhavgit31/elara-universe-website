@@ -415,3 +415,43 @@ chapters 2–4 at 1440 and 360).
 
 **Placeholders added:** Our story paragraph; both founder bios and photos (`content/team.ts`);
 the wording of the belief and step descriptions (marked in code).
+
+---
+
+## Phase 9 — Events
+
+**Built:** `/events` as a scrapbook (`components/events/events-book.tsx`, a two-page flip pad):
+
+- `content/events.ts` already carried the schema (title, slug, type launch | workshop |
+  training | fair, date, city, venue, description, image, registerUrl, isPlaceholder) with
+  three samples, all `isPlaceholder: true`: two upcoming (14 Nov and 5 Dec 2026) and one past
+  (19 Sep 2026) so the scrapbook can be seen. One sample carries an example.com registration
+  link so the "Register" button can be reviewed.
+- **Upcoming**: pinned paper tickets (`components/events/event-ticket.tsx`) with a push-pin,
+  notched sides, a torn bottom edge, a type sticker (colour by type), date block, title,
+  city · venue, description, optional "Register" button, and a "Sample" badge on placeholders;
+  sorted by date. Tickets swing gently on their pins (Motion loop, transform only; off with
+  reduced motion).
+- **Past**: a photo scrapbook (`components/events/scrapbook.tsx`): polaroids with washi tape
+  and handwritten Caveat captions that drop onto the page when it is read; clicking a photo
+  opens a native `<dialog>` lightbox (Escape, backdrop click or the close button closes it).
+- Events move from upcoming to past **by date, live**: `lib/use-today.ts` hydrates with the
+  build date and then switches to the visitor's date (no rebuild needed, no hydration
+  mismatch). The home page's "What's happening" now uses the same `UpcomingEvents` component.
+- Empty state: an empty pinboard illustration with "New events coming soon." (Elu joins it in
+  Phase 12.)
+
+**Requirements:** ✅ `content/events.ts` with the agreed fields and 3 samples ·
+✅ pinned torn-edge tickets sorted by date with type sticker and optional Register ·
+✅ photo scrapbook with Caveat captions and a lightbox · ✅ automatic upcoming/past by date ·
+✅ "New events coming soon" empty state · ✅ "Sample" badge on placeholders
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright 112 passed /
+20 skipped ✅ (`tests/events.spec.ts`: sorted tickets, stickers, Register link, Sample badges,
+scrapbook page, lightbox open/close).
+
+**Screenshots:** `docs/screenshots/phase-09/` (upcoming page at 360/768/1440 + reduced motion,
+scrapbook page at 1440 and 360). Polished after review: on phones the flip-pad page number now
+sits inside the ring binding instead of over the first line of text.
+
+**Placeholders added:** none new (the three sample events and the example.com Register link).

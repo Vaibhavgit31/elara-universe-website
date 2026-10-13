@@ -48,7 +48,8 @@ export const events: Event[] = [
     description:
       'Sample event. A hands-on session showing how TechNova lab sessions and worksheets fit a school computer period.',
     image: null,
-    registerUrl: null,
+    // [PLACEHOLDER] registration link, so the "Register" button can be seen on a sample.
+    registerUrl: 'https://example.com/register',
     isPlaceholder: true,
   },
   {

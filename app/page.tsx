@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Flipbook } from '@/components/book/flipbook'
-import { EventTicket } from '@/components/events/event-ticket'
+import { UpcomingEvents } from '@/components/events/upcoming-events'
 import { FlipPad } from '@/components/flip/flip-pad'
 import { FlipPage } from '@/components/flip/flip-page'
 import { Main } from '@/components/frame/main'
@@ -12,7 +12,7 @@ import { Button, buttonClass } from '@/components/ui/button'
 import { StickyNote } from '@/components/ui/sticky-note'
 import { TurnLink } from '@/components/ui/turn-link'
 import { site, whatsappLink } from '@/content/site'
-import { upcomingEvents } from '@/lib/events'
+import { isoToday } from '@/lib/events'
 
 export const metadata: Metadata = {
   title: { absolute: `${site.name} · Hindi, Computer and Drawing textbooks for Classes 1–8` },
@@ -51,7 +51,6 @@ const whyNotes = [
 ] as const
 
 export default function Home() {
-  const events = upcomingEvents().slice(0, 3)
   return (
     <Main>
       <FlipPad>
@@ -154,17 +153,7 @@ export default function Home() {
         <FlipPage>
           <p className="eyebrow">What&apos;s happening</p>
           <h2>Launches, workshops and fairs</h2>
-          {events.length ? (
-            <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {events.map((event, i) => (
-                <li key={event.slug}>
-                  <EventTicket event={event} className={i % 2 ? 'rotate-1' : '-rotate-1'} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-6 font-hand text-2xl text-forest">New events coming soon.</p>
-          )}
+          <UpcomingEvents buildDate={isoToday()} limit={3} />
           <p className="mt-10">
             <TurnLink href="/events" className="link">
               All events

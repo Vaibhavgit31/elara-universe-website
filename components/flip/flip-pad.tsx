@@ -58,7 +58,7 @@ const Binding = () => (
 const PageNumber = ({ current, count }: { current: number; count: number }) => (
   <p
     aria-live="polite"
-    className="absolute top-11 right-3 z-50 rounded-full bg-paper/85 px-3 py-1 font-hand text-lg text-forest md:top-auto md:right-auto md:bottom-5 md:left-5"
+    className="absolute top-1 right-2 z-[60] rounded-full bg-paper px-3 py-0.5 font-hand text-base text-forest shadow-page md:top-auto md:right-auto md:bottom-5 md:left-5 md:bg-paper/85 md:py-1 md:text-lg md:shadow-none"
   >
     Page {current + 1} of {count}
   </p>
@@ -218,7 +218,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
               contentRefs.current[i] = el
             }}
             className={page.props.className}
-            bare={page.props['data-bare']}
+            bare={page.props['data-bare'] ?? page.props.bare}
           >
             {page.props.children}
           </Sheet>
@@ -245,7 +245,9 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }
           viewport={{ once: true, amount: 0.15 }}
         >
           <Binding />
-          <div className={contentClass(page.props['data-bare'])}>{page.props.children}</div>
+          <div className={contentClass(page.props['data-bare'] ?? page.props.bare)}>
+            {page.props.children}
+          </div>
           <PageNumber current={i} count={pages.length} />
         </motion.section>
       ))}
