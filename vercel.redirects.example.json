@@ -1,0 +1,15 @@
+{
+  "_readme": "Vercel does not allow comments in vercel.json. Copy the entries you need from this file into the `redirects` array of vercel.json. Each QR address printed in the books (/resources/<series>/<class>) can be sent to another website like this. Set `permanent` to true once the destination is final.",
+  "redirects": [
+    {
+      "source": "/resources/technova/3",
+      "destination": "https://learn.example.com/technova/3",
+      "permanent": false
+    },
+    {
+      "source": "/resources/hindi/1",
+      "destination": "https://learn.example.com/hindi/1",
+      "permanent": false
+    }
+  ]
+}

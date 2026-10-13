@@ -521,3 +521,42 @@ published in May 2022 — older than 12 months, but it is the playbook's choice 
    letter after setting the key (Phase 14 step 3) — if it does not arrive, tell me the error
    text shown on the page.
 5. The Google Map needs the live internet; it stays a blank green box in this sandbox.
+
+---
+
+## Phase 11 — QR Corner (placeholder)
+
+**Built:**
+
+- `/resources` (`components/resources/qr-corner.tsx`): the phone-scanning-a-book illustration,
+  "Scanned a QR code from your book? Your learning corner is being set up. Check back soon!"
+  and a button back home. No resources, logins or downloads.
+- `/resources/[series]/[class]` for series `hindi | technova | art-journey` and classes 1–8:
+  all 24 addresses are generated at build time (`generateStaticParams`, `dynamicParams =
+  false`) and show the same placeholder with the series name (and Hindi title) and class, plus a
+  link to that series in the catalog. Anything else under `/resources/` is a 404.
+- Future redirects (task default, instead of next.config): commented examples in
+  `public/_redirects` (Netlify, copied into `out/`) and `vercel.json` with an empty `redirects`
+  array plus `vercel.redirects.example.json` to copy from (Vercel's JSON cannot hold comments).
+- `docs/qr-addresses.md`: the 24 addresses on elarauniversepublications.com.
+
+**Requirements:** ✅ one friendly placeholder page with illustration, text and home button ·
+✅ 24 series/class addresses work now and never break · ✅ commented redirect examples
+(`_redirects` + `vercel.json`, per the agreed default) · ✅ list of 24 addresses (below)
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ (62 routes) · Playwright
+144 passed / 24 skipped ✅ (`tests/resources.spec.ts`: placeholder text and links, series/class
+pages, all 24 addresses return 200, unknown ones 404). Note: the background static server hit its
+two-hour limit during one run and was restarted; the rerun was green.
+
+**Screenshots:** `docs/screenshots/phase-11/` (QR Corner and the TechNova Class 3 address at
+360/768/1440 + reduced motion).
+
+**Placeholders added:** none (the whole section is the agreed placeholder).
+
+**For Vaibhav — the 24 QR Corner addresses** (also in `docs/qr-addresses.md`; the version
+without the final slash works too):
+
+- Basic Hindi Reader 1–8: `https://elarauniversepublications.com/resources/hindi/1/` … `/hindi/8/`
+- TechNova 1–8: `https://elarauniversepublications.com/resources/technova/1/` … `/technova/8/`
+- Art Journey 1–8: `https://elarauniversepublications.com/resources/art-journey/1/` … `/art-journey/8/`

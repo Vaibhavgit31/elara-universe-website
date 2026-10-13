@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
-import { PageStub } from '@/components/frame/page-stub'
+import { QrCorner } from '@/components/resources/qr-corner'
 
-export const metadata: Metadata = { title: 'QR Corner' }
+export const metadata: Metadata = {
+  title: 'QR Corner',
+  description:
+    'Scanned a QR code from your Elara Universe book? Your learning corner is being set up.',
+}
 
-export default function Page() {
-  return <PageStub title="QR Corner" phase={11} />
+export default function ResourcesPage() {
+  return <QrCorner />
 }

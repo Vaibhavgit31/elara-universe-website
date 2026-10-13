@@ -1,0 +1,9 @@
+# Netlify redirects for Elara Universe Publishers (https://docs.netlify.com/routing/redirects/)
+#
+# The QR codes printed in the books point to /resources/<series>/<class>. Those addresses must
+# never break. To send one of them to another website later, add one line per address, e.g.:
+#
+# /resources/technova/3   https://learn.example.com/technova/3   302
+# /resources/hindi/1      https://learn.example.com/hindi/1      302
+#
+# Use 301 instead of 302 once the destination is final. Lines starting with # are comments.
