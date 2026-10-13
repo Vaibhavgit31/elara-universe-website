@@ -1,12 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'framer-motion'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { markPaths, markViewBox } from '@/components/brand/mark-paths'
 import { easeOut } from '@/components/motion/motion-provider'
 import { site } from '@/content/site'
 import { openCover } from '@/lib/cover-store'
+import { useHydrated } from '@/lib/use-hydrated'
 import { useReducedMotion } from '@/lib/use-reduced-motion'
 
 const INTRO_KEY = 'elara:intro-seen'
@@ -33,11 +34,7 @@ export function OpeningCover() {
     () => !introSeen(),
     () => false,
   )
-  const hydrated = useSyncExternalStore(
-    noop,
-    () => true,
-    () => false,
-  )
+  const hydrated = useHydrated()
 
   useEffect(() => {
     if (!hydrated) return
@@ -60,15 +57,14 @@ export function OpeningCover() {
     } catch {}
   }, [open])
 
-  // Leaves unfold from their base one after another; the book and wordmark follow.
+  // Leaves unfold from their base one after another above the wordmark.
   const leafDelay = (i: number) => (reduced || !playIntro ? 0 : i < 7 ? 0.1 + i * 0.12 : 0.95)
-  const shown = hydrated
 
   return (
     <div className="contents" data-cover={open ? 'open' : 'closed'}>
       <AnimatePresence>
         {!open && (
-          <motion.div
+          <m.div
             className="absolute inset-0 z-20 flex origin-left cursor-pointer flex-col items-center justify-center bg-cream shadow-lift"
             onClick={() => setOpen(true)}
             initial={false}
@@ -95,7 +91,7 @@ export function OpeningCover() {
             >
               <svg viewBox={markViewBox} className="w-[45%]" aria-hidden>
                 {markPaths.map((p, i) => (
-                  <motion.path
+                  <m.path
                     key={i}
                     d={p.d}
                     fill={p.fill}
@@ -106,7 +102,7 @@ export function OpeningCover() {
                     }}
                     initial={false}
                     animate={
-                      shown ? { opacity: 1, scale: 1 } : { opacity: 0, scale: i < 7 ? 0.1 : 1 }
+                      hydrated ? { opacity: 1, scale: 1 } : { opacity: 0, scale: i < 7 ? 0.1 : 1 }
                     }
                     transition={{
                       duration: reduced ? 0.5 : 0.5,
@@ -116,29 +112,15 @@ export function OpeningCover() {
                   />
                 ))}
               </svg>
-              <motion.span
-                initial={false}
-                animate={{ opacity: shown ? 1 : 0 }}
-                transition={{ duration: 0.5, delay: reduced || !playIntro ? 0 : 1.1 }}
+              <Image
+                src="/brand/wordmark.svg"
+                alt={site.name}
+                width={1016}
+                height={187}
+                priority
                 className="mt-2 w-full"
-              >
-                <Image
-                  src="/brand/wordmark.svg"
-                  alt={site.name}
-                  width={1016}
-                  height={187}
-                  priority
-                  className="w-full"
-                />
-              </motion.span>
-              <motion.span
-                initial={false}
-                animate={{ opacity: shown ? 1 : 0 }}
-                transition={{ delay: reduced || !playIntro ? 0 : 1.4 }}
-                className="mt-10 font-hand text-2xl text-forest"
-              >
-                tap to open
-              </motion.span>
+              />
+              <span className="mt-10 font-hand text-2xl text-forest">tap to open</span>
             </button>
             {playIntro && (
               <button
@@ -149,7 +131,7 @@ export function OpeningCover() {
                 Skip intro
               </button>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

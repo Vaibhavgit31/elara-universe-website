@@ -2,7 +2,7 @@
 
 import { Sparkles, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import { Elu } from '@/components/mascot/elu'
 import { siteConfig } from '@/content/site-config'
@@ -66,7 +66,7 @@ export function StickerCollector() {
   return (
     <AnimatePresence>
       {label && (
-        <motion.p
+        <m.p
           role="status"
           className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-hindi-tint px-5 py-2 font-hand text-xl whitespace-nowrap shadow-lift md:bottom-8"
           initial={{ opacity: 0, scale: 0.6, y: 20 }}
@@ -75,7 +75,7 @@ export function StickerCollector() {
           transition={{ type: 'spring', stiffness: 400, damping: 20 }}
         >
           You found the {label} sticker!
-        </motion.p>
+        </m.p>
       )}
     </AnimatePresence>
   )

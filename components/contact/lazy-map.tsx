@@ -1,6 +1,6 @@
 'use client'
 
-import { useInView } from 'motion/react'
+import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 
 /** The Google Map loads only once it scrolls into view. */

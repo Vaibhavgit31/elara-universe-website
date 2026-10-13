@@ -36,3 +36,5 @@ next-env.d.ts
 
 # final deliverable zips
 /elara-website-*.zip
+# Lighthouse reports are large; summary.md next to them is kept
+docs/lighthouse/*/*.json

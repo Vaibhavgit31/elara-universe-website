@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { Tag } from '@/components/ui/tag'
 import { buttonClass } from '@/components/ui/button'
 import { eventTypeLabel, type Event, type EventType } from '@/content/events'
@@ -28,7 +28,7 @@ export function EventTicket({
   className?: string
 }) {
   return (
-    <motion.article
+    <m.article
       className={cn('relative origin-top pt-4', className)}
       animate={{ rotate: [-1.2, 1.2, -1.2] }}
       transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
@@ -42,7 +42,7 @@ export function EventTicket({
         style={{ clipPath: torn }}
       >
         {event.isPlaceholder && (
-          <span className="absolute top-2 right-2 rotate-6 rounded-sm bg-drawing px-2 py-0.5 text-label text-cream uppercase">
+          <span className="absolute top-2 right-2 rotate-6 rounded-sm border border-drawing bg-drawing-tint px-2 py-0.5 text-label text-evergreen uppercase">
             Sample
           </span>
         )}
@@ -75,6 +75,6 @@ export function EventTicket({
           )}
         </div>
       </div>
-    </motion.article>
+    </m.article>
   )
 }

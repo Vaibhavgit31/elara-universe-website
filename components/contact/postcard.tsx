@@ -40,7 +40,7 @@ export function Postcard() {
         <div>
           <dt className="eyebrow">Email</dt>
           <dd className="mt-1">
-            <a className="break-words link" href={`mailto:${site.email}`}>
+            <a className="link break-words" href={`mailto:${site.email}`}>
               {site.email}
             </a>
           </dd>

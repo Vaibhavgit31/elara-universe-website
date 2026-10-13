@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { motion, useMotionValueEvent, useScroll } from 'motion/react'
+import { m, useMotionValueEvent, useScroll } from 'framer-motion'
 import { useState } from 'react'
 import { NAV, isActive } from '@/components/frame/nav'
 import { TurnLink } from '@/components/ui/turn-link'
@@ -18,7 +18,7 @@ export function BottomBar() {
   })
 
   return (
-    <motion.nav
+    <m.nav
       aria-label="Main"
       data-testid="bottom-bar"
       className="fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-sage-100 bg-cream pb-[env(safe-area-inset-bottom)] md:hidden"
@@ -45,6 +45,6 @@ export function BottomBar() {
           </TurnLink>
         )
       })}
-    </motion.nav>
+    </m.nav>
   )
 }

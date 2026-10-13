@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from 'motion/react'
+import { m, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import {
   Children,
   createContext,
@@ -78,7 +72,7 @@ const Stack = ({ current, count }: { current: number; count: number }) => (
     className="absolute top-1/2 right-2 z-50 flex -translate-y-1/2 flex-col gap-1.5 md:right-4"
   >
     {Array.from({ length: count }, (_, i) => (
-      <motion.li
+      <m.li
         key={i}
         className="h-1 w-5 origin-right rounded-full bg-forest"
         initial={false}
@@ -125,7 +119,7 @@ function Sheet({
   const castShadow = useTransform(prevP, (v) => (prev ? Math.sin(v * Math.PI) * 0.45 : 0))
 
   return (
-    <motion.section
+    <m.section
       aria-label={`Page ${index + 1} of ${count}`}
       className={cn(
         'absolute inset-0 origin-top overflow-hidden bg-cream [backface-visibility:hidden]',
@@ -133,20 +127,20 @@ function Sheet({
       )}
       style={{ rotateX, visibility, zIndex: count - index }}
     >
-      <motion.div ref={contentRef} className={contentClass(bare)} style={{ y }}>
+      <m.div ref={contentRef} className={contentClass(bare)} style={{ y }}>
         <FlipPageContext value={active}>{children}</FlipPageContext>
-      </motion.div>
-      <motion.div
+      </m.div>
+      <m.div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-evergreen/30 to-evergreen/70"
         style={{ opacity: curl }}
       />
-      <motion.div
+      <m.div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-evergreen/70 via-evergreen/25 to-transparent"
         style={{ opacity: castShadow }}
       />
-    </motion.section>
+    </m.section>
   )
 }
 
@@ -248,7 +242,7 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }
   return (
     <div className="bg-mist">
       {pages.map((page, i) => (
-        <motion.section
+        <m.section
           key={i}
           aria-label={`Page ${i + 1} of ${pages.length}`}
           className={cn('relative min-h-svh bg-cream', page.props.className)}
@@ -261,7 +255,7 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }
             {page.props.children}
           </div>
           <PageNumber current={i} count={pages.length} />
-        </motion.section>
+        </m.section>
       ))}
     </div>
   )

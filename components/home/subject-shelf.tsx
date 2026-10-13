@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'framer-motion'
 import { useState } from 'react'
 import { Tag } from '@/components/ui/tag'
 import { TurnLink } from '@/components/ui/turn-link'
@@ -9,7 +9,7 @@ import { series, subjectLabel } from '@/content/series'
 
 /** A tiny two-page peek that pops up above a book. */
 const Peek = ({ pages, name }: { pages: string[]; name: string }) => (
-  <motion.div
+  <m.div
     role="dialog"
     aria-label={`Peek inside ${name}`}
     className="absolute bottom-full left-1/2 z-30 mb-3 flex w-44 origin-bottom -translate-x-1/2 gap-0.5 rounded bg-paper p-1.5 shadow-lift sm:w-56"
@@ -27,7 +27,7 @@ const Peek = ({ pages, name }: { pages: string[]; name: string }) => (
         Sample pages coming soon
       </p>
     )}
-  </motion.div>
+  </m.div>
 )
 
 // Three series standing on a wooden-and-sage shelf. Hover (or the Peek button) opens a two-page
@@ -39,7 +39,7 @@ export function SubjectShelf() {
       <ul className="grid grid-cols-3 items-end gap-3 px-2 sm:gap-10 sm:px-8">
         {series.map((s) => (
           <li key={s.id} className="relative flex flex-col items-center">
-            <motion.div
+            <m.div
               className="relative w-full max-w-[200px]"
               whileHover={{ y: -14, rotate: [0, -2.5, 2.5, -1.5, 0] }}
               whileTap={{ y: -30, rotate: -6 }}
@@ -62,7 +62,7 @@ export function SubjectShelf() {
                   className="w-full rounded-r-sm border-l-4 border-evergreen/80 shadow-lift"
                 />
               </TurnLink>
-            </motion.div>
+            </m.div>
             <button
               type="button"
               aria-expanded={peek === s.id}

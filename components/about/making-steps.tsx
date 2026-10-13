@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
 import { useReducedMotion } from '@/lib/use-reduced-motion'
 
@@ -64,7 +64,7 @@ export function MakingSteps() {
             data-testid="step-drawing"
           >
             {step.paths.map((d, j) => (
-              <motion.path
+              <m.path
                 key={d}
                 d={d}
                 fill="none"

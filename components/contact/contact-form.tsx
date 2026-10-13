@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { motion, useAnimate } from 'motion/react'
+import { m, useAnimate } from 'framer-motion'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -385,7 +385,7 @@ export function ContactForm() {
           </p>
         )}
       </form>
-      <motion.div
+      <m.div
         role="status"
         initial={false}
         animate={{ opacity: status === 'fallback' ? 1 : 0, y: status === 'fallback' ? 0 : 12 }}
@@ -414,7 +414,7 @@ export function ContactForm() {
             Send on WhatsApp
           </a>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   )
 }

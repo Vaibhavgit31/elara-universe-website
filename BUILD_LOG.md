@@ -11,12 +11,31 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   originals are untouched copies of the files you attached.
 - (Setup) Playwright is pinned to 1.56.x because that is the version whose Chromium build is
   pre-installed in this environment. Upgrading later is a one-line change in `package.json`.
+- (Phase 13) Lighthouse mobile Performance is 58 (Home), 66 (Catalog), 78 (book page) and 90
+  (Contact) against the ≥ 90 target; Accessibility, Best practices and SEO are 100 everywhere.
+  Three rounds of fixes are logged in the Phase 13 report. The remaining cost is the design's own
+  JavaScript (React, Next.js, Motion, Lenis ≈ 240 KB gzip) and the signature animations running
+  during the measurement window on a 4×-throttled phone. Options if you want the number higher,
+  in order of effect: (1) show the intro and ink headline only after the first paint and make the
+  sticker pops CSS-only (keeps the look, saves main-thread time); (2) drop Lenis smooth scrolling
+  (the browser's own scrolling is fine on phones); (3) replace the scroll-linked flip pad on Home
+  with the reduced-motion stacked pages for phones. Measure with PageSpeed Insights on the live
+  site, not in this container, where identical runs vary by ±15 points.
+- (Phase 13) The animation package is now `framer-motion` (what PLAYBOOK.md's "Motion
+  (framer-motion)" row names) instead of the `motion` wrapper package: same library and version,
+  but the wrapper's entry file defeats Next.js/Turbopack tree-shaking and shipped 44 KB of unused
+  drag/layout code on every page.
 
 ## Simplified
 
 Features that still failed after 3 genuine fix attempts and were simplified (brand look kept).
 
-- (none yet)
+- (Phase 13) **Lighthouse Performance ≥ 90** is met on Contact only (Home 58, Catalog 66, book
+  page 78 after three measured rounds of fixes: lazy Motion features + flipbook gating + lighter
+  fonts; first paint without JavaScript + tree-shakeable Motion imports; per-section Suspense
+  boundaries, which made things worse and were reverted). Nothing visible was simplified: the
+  brand animations stay; the target itself is left open with the options listed under
+  "For Vaibhav".
 
 ## Placeholders
 
@@ -667,3 +686,94 @@ activities).
 1440/360, evening desk with Diwali diyas).
 
 **Placeholders added:** festival dates in `content/site-config.ts`.
+
+## Phase 13 — Accessibility, SEO and speed
+
+**Audited and fixed:**
+
+- **Accessibility.** New axe audit (`tests/a11y.spec.ts`, `@axe-core/playwright`, WCAG 2 A/AA,
+  2.1 AA and best-practice rules) on nine routes plus the 404 page: zero violations. Fixes it
+  found: the floating WhatsApp button now sits in an `<aside>` landmark; the "Sample" badge on
+  event tickets was cream on coral (2.7:1) and is now evergreen on the drawing tint; the events
+  page gained an "Upcoming" h2 so headings run h1 → h2 → h3; the flipbook keyboard box has
+  `role="group"` for its label. Lighthouse Accessibility is 100 on all four audited pages.
+- **SEO.** `app/sitemap.ts` (54 URLs: 6 pages, 24 books, 24 QR addresses), `app/robots.ts`
+  (hides `/styleguide/` and `/demo-flip/`), `app/manifest.ts`, and Organization structured data
+  (`components/frame/organization-jsonld.tsx`: legal name, both addresses, phone, email, logo,
+  founders) in the head of every page, next to the Book data on book pages. Open Graph site name,
+  theme colour. Titles and descriptions were already unique per page. `tests/seo.spec.ts` checks
+  all of it.
+- **Speed.**
+  - *First paint no longer waits for JavaScript.* Two things hid every page until scripts ran:
+    the page-turn wrapper started each page at opacity 0, and `app/loading.tsx` wrapped every
+    page in a streaming boundary whose content stayed hidden until an inline script revealed it.
+    The first page load now skips the entrance turn (later turns keep it), the route loader is
+    gone (the tiny book now shows inside the flipbook box while sample pages load), and the ink
+    headline and the opening cover render their visible state in the HTML. Verified with
+    JavaScript switched off: Home and Catalog render fully.
+  - *Animation library loaded where used.* Motion components are `m` + `LazyMotion` (features
+    fetched on demand, `strict`). Imports moved from `motion/react` to `framer-motion` (the same
+    library and version, 14.2.0): the `motion` wrapper re-exports `m` through a namespace object
+    that Turbopack cannot tree-shake, which kept 44 KB (gzip) of drag and layout code in every
+    first load. Home first-load JS: 269 → 239 KB gzip.
+  - *Flipbooks on demand.* react-pageflip and the eight sample images (≈ 780 KB) load only when
+    the reader scrolls near the book on the page being read; the box reserves its aspect ratio,
+    so the book page no longer shifts (CLS 0.56 → 0). The home page no longer downloads sample
+    pages it does not show.
+  - *Fonts.* Noto Sans Devanagari: Devanagari subset only, two weights, not preloaded
+    (−146 KB on every page's critical path); Caveat: one weight; Caveat and Cormorant are
+    fetched when first used instead of preloaded. Only Nunito and Lora are preloaded.
+  - Images were already WebP with explicit sizes (Phase 2); everything below the first screen is
+    lazy-loaded by `next/image`.
+
+**Lighthouse (mobile, `node scripts/lighthouse.mjs <label>`; summaries in `docs/lighthouse/`):**
+
+Before (start of the phase):
+
+| page | performance | accessibility | best-practices | seo | LCP | TBT | CLS |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| home | 48 | 100 | 100 | 100 | 6.3 s | 870 ms | 0 |
+| catalog | 73 | 100 | 100 | 100 | 4.9 s | 370 ms | 0 |
+| book | 48 | 100 | 100 | 100 | 5.8 s | 320 ms | 0.56 |
+| contact | 75 | 100 | 100 | 100 | 4.7 s | 360 ms | 0 |
+
+After:
+
+| page | performance | accessibility | best-practices | seo | LCP | TBT | CLS |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| home | 58 | 100 | 100 | 100 | 5.4 s | 710 ms | 0.04 |
+| catalog | 66 | 100 | 100 | 100 | 5.0 s | 460 ms | 0 |
+| book | 78 | 100 | 100 | 100 | 5.0 s | 110 ms | 0 |
+| contact | 90 | 100 | 100 | 100 | 3.1 s | 220 ms | 0 |
+
+Accessibility, Best practices and SEO are 100 everywhere. Performance ≥ 90 was **not reached**
+on Home, Catalog and the book page (see "For Vaibhav" and "Simplified"). Three rounds of fixes
+were made and measured (lazy Motion + flipbook gating + fonts; first paint without JavaScript +
+tree-shakeable Motion imports; per-section Suspense boundaries, which made blocking time and
+layout stability worse and were reverted). What remains is the cost of the design itself on a
+throttled phone: ≈ 240 KB of JavaScript (React, Next.js, Motion, Lenis, react-hook-form) that
+must run before the signature animations can start, plus the intro, ink headline and flip pad
+work during the measurement window. Scores also swing ±15 points between identical runs in this
+container because the first paint races script start-up (the book page measured 47 and 77 on
+the same build); PageSpeed Insights on the live site is the reliable check.
+
+**Requirements:** ✅ heading order, alt text, labelled fields, focus rings, contrast, reduced
+motion, keyboard (axe + Lighthouse 100) · ✅ unique titles/descriptions, link-preview image,
+sitemap, robots, Organization data · ✅ WebP images with sizes, lazy loading, animation library
+loaded on demand, home JS reduced · ✅ Lighthouse run on Home, Catalog, a book page and Contact ·
+✅ Accessibility ≥ 95 · ✅ SEO ≥ 95 · ❌ Performance ≥ 90 on Home, Catalog and book page
+(Contact reached 90; logged under Simplified / For Vaibhav)
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright
+**188 passed / 72 skipped** ✅ (new: `tests/a11y.spec.ts`, `tests/seo.spec.ts`; `tests/book.spec.ts` now scrolls
+to the flipbook before expecting it, as a reader would).
+
+**Libraries added (dev only):** `lighthouse` 13.5 (Apache-2.0, updated 2026) to measure the
+scores; `@axe-core/playwright` 4.13 (MPL-2.0, updated 2026) for the accessibility audit.
+`framer-motion` replaces the `motion` package name (same code, MIT) for the tree-shaking reason
+above; no second animation library.
+
+**Screenshots:** `docs/screenshots/phase-13/` (Home, Catalog, book page, Contact, Events at
+360/768/1440 and reduced motion).
+
+**Placeholders added:** none.

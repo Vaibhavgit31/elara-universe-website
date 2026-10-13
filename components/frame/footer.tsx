@@ -45,7 +45,7 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a className="break-all link" href={`mailto:${site.email}`}>
+              <a className="link break-all" href={`mailto:${site.email}`}>
                 {site.email}
               </a>
             </li>

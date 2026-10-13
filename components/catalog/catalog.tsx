@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'framer-motion'
 import { useSyncExternalStore } from 'react'
 import { BookCard } from '@/components/book/book-card'
 import { Elu } from '@/components/mascot/elu'
@@ -168,7 +168,7 @@ export function Catalog() {
               {visible
                 .filter((b) => b.subject === s.subject)
                 .map((book) => (
-                  <motion.li
+                  <m.li
                     key={book.slug}
                     layout
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -177,7 +177,7 @@ export function Catalog() {
                     transition={{ duration: 0.35 }}
                   >
                     <BookCard book={book} />
-                  </motion.li>
+                  </m.li>
                 ))}
             </AnimatePresence>
           </ul>

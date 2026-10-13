@@ -26,3 +26,9 @@ export async function padTop(page: Page) {
     return el.getBoundingClientRect().top + window.scrollY
   })
 }
+
+/** Every JSON-LD block on the page, parsed. */
+export const structuredData = async (page: Page) =>
+  (await page.locator('script[type="application/ld+json"]').allTextContents()).map((t) =>
+    JSON.parse(t),
+  )

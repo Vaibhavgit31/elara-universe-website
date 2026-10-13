@@ -18,6 +18,7 @@ export function EventsBook({ buildDate }: { buildDate: string }) {
         <p className="mt-3 max-w-2xl">
           Upcoming events are pinned here; past ones go into the scrapbook on the next page.
         </p>
+        <h2 className="mt-10">Upcoming</h2>
         <UpcomingEvents buildDate={buildDate} detailed />
       </FlipPage>
       {past.length > 0 && (

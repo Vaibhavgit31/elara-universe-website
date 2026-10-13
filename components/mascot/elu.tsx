@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
 import { cn } from '@/lib/cn'
 
@@ -16,11 +16,11 @@ const idle = {
 }
 
 const Eye = ({ x, look = 0 }: { x: number; look?: number }) => (
-  <motion.g style={{ originX: `${x}px`, originY: '78px' }} {...blink}>
+  <m.g style={{ originX: `${x}px`, originY: '78px' }} {...blink}>
     <circle cx={x} cy="78" r="7.5" fill="#FBF9F4" />
     <circle cx={x + look} cy="79" r="3.6" fill="#1B241D" />
     <circle cx={x + look + 1.4} cy="77" r="1.2" fill="#FBF9F4" />
-  </motion.g>
+  </m.g>
 )
 
 const Pencil = ({ x, y, rotate = -30 }: { x: number; y: number; rotate?: number }) => (
@@ -53,7 +53,7 @@ export function Elu({
   const active = useFlipPageActive()
   const look = pose === 'search' || pose === 'phone' ? 2.5 : pose === 'peek' ? -2 : 0
   return (
-    <motion.svg
+    <m.svg
       viewBox="0 0 170 180"
       className={cn('w-28', className)}
       role={label ? 'img' : undefined}
@@ -64,14 +64,14 @@ export function Elu({
     >
       {/* arms behind the body */}
       {pose === 'wave' && (
-        <motion.g
+        <m.g
           style={{ originX: '48px', originY: '98px' }}
           animate={active ? { rotate: [0, -22, 0, -22, 0] } : {}}
           transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 2.5 }}
         >
           <path d="M48 98C30 90 22 72 28 56" {...arm} />
           <Hand x={28} y={55} />
-        </motion.g>
+        </m.g>
       )}
       {pose === 'cheer' && (
         <>
@@ -98,7 +98,7 @@ export function Elu({
       {(pose === 'read' || pose === 'phone') && <path d="M48 98C40 108 48 118 62 118" {...arm} />}
 
       {/* body: a leaf standing on two little feet */}
-      <motion.g
+      <m.g
         animate={active && pose === 'cheer' ? { y: [0, -12, 0] } : {}}
         transition={{ duration: 0.7, repeat: Infinity, repeatDelay: 1.2 }}
       >
@@ -130,7 +130,7 @@ export function Elu({
           strokeWidth="2.5"
           strokeLinecap="round"
         />
-      </motion.g>
+      </m.g>
 
       {/* arms in front of the body */}
       {(pose === 'wave' || pose === 'point') && (
@@ -200,7 +200,7 @@ export function Elu({
           [148, 26],
           [12, 84],
         ].map(([x, y], i) => (
-          <motion.path
+          <m.path
             key={i}
             d="M0-7l2 5 5 .5-4 3.5 1.2 5L0 4l-4.2 3 1.2-5-4-3.5 5-.5z"
             fill="#B68235"
@@ -215,7 +215,7 @@ export function Elu({
           <Hand x={118} y={60} />
         </>
       )}
-    </motion.svg>
+    </m.svg>
   )
 }
 

@@ -28,7 +28,7 @@ export function UpcomingEvents({
       </div>
     )
   return (
-    <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-testid="upcoming">
+    <ul className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-testid="upcoming">
       {upcoming.map((event, i) => (
         <li key={event.slug}>
           <EventTicket

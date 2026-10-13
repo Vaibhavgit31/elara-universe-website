@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useInView, type HTMLMotionProps } from 'motion/react'
+import { m, useInView, type HTMLMotionProps } from 'framer-motion'
 import { useRef, type ReactNode } from 'react'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
 import { easeOut } from '@/components/motion/motion-provider'
@@ -19,7 +19,7 @@ export function Reveal({ children, delay = 0, y = 18, ...rest }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const show = useReveal(ref)
   return (
-    <motion.div
+    <m.div
       ref={ref}
       initial={false}
       animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y }}
@@ -27,7 +27,7 @@ export function Reveal({ children, delay = 0, y = 18, ...rest }: Props) {
       {...rest}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -36,7 +36,7 @@ export function StickerPop({ children, delay = 0, ...rest }: Omit<Props, 'y'>) {
   const ref = useRef<HTMLDivElement>(null)
   const show = useReveal(ref, '0px')
   return (
-    <motion.div
+    <m.div
       ref={ref}
       initial={false}
       animate={show ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0.3, rotate: -8 }}
@@ -44,19 +44,19 @@ export function StickerPop({ children, delay = 0, ...rest }: Omit<Props, 'y'>) {
       {...rest}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }
 
 /** Wobbles like a book being nudged on a shelf when hovered. */
 export function Wobble({ children, ...rest }: HTMLMotionProps<'div'> & { children: ReactNode }) {
   return (
-    <motion.div
+    <m.div
       whileHover={{ rotate: [0, -2.5, 2.5, -1.5, 0], y: -10 }}
       transition={{ duration: 0.6 }}
       {...rest}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }

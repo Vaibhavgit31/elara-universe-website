@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { CoverPlaceholder, coverBoxClass } from '@/components/book/cover-placeholder'
 import { StickerPop } from '@/components/motion/reveal'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,7 @@ export function BookCard({ book }: { book: Book }) {
   const href = `/catalog/${book.slug}`
   return (
     <article className="flex h-full flex-col" data-testid="book-card">
-      <motion.div
+      <m.div
         className="px-2 pt-4 sm:px-3"
         whileHover={{ y: -12 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -37,7 +37,7 @@ export function BookCard({ book }: { book: Book }) {
             <CoverPlaceholder series={book.series} cls={book.class} subject={book.subject} />
           )}
         </TurnLink>
-      </motion.div>
+      </m.div>
       <div aria-hidden className="h-3 bg-gradient-to-b from-brass to-gold-ink" />
       <div aria-hidden className="mx-1 h-1.5 rounded-b bg-sage" />
       <div className="flex flex-1 flex-col gap-2 px-2 pt-4 pb-2 sm:px-3">

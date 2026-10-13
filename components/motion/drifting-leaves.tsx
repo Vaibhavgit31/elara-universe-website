@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'motion/react'
+import { m, useScroll, useTransform } from 'framer-motion'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
 
 // Leaves and paper dots behind the hero, drifting at different speeds for a sense of depth.
@@ -25,7 +25,7 @@ function Leaf({ x, y, size, speed, color, delay }: (typeof leaves)[number]) {
   const { scrollY } = useScroll()
   const drift = useTransform(scrollY, (v) => -v * speed)
   return (
-    <motion.svg
+    <m.svg
       viewBox="0 0 40 40"
       width={size}
       height={size}
@@ -36,7 +36,7 @@ function Leaf({ x, y, size, speed, color, delay }: (typeof leaves)[number]) {
     >
       <path d="M20 2C8 10 4 24 20 38c16-14 12-28 0-36Z" fill={color} opacity=".25" />
       <path d="M20 8v26" stroke={color} strokeWidth="1.5" opacity=".35" />
-    </motion.svg>
+    </m.svg>
   )
 }
 

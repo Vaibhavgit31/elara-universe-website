@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
+import { m, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, type PointerEvent } from 'react'
 import { CoverPlaceholder, coverBoxClass } from '@/components/book/cover-placeholder'
 import type { Book } from '@/content/books'
@@ -12,7 +12,7 @@ const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
 /**
  * The book cover tilts in 3D towards the mouse, with a light shine that follows it. On phones it
  * follows device tilt where the browser allows it without a permission prompt; otherwise it stays
- * still. Nothing moves with reduced motion.
+ * still. Nothing moves with reduced m.
  */
 export function TiltCover({ book }: { book: Book }) {
   const reduced = useReducedMotion()
@@ -59,7 +59,7 @@ export function TiltCover({ book }: { book: Book }) {
       onPointerLeave={reset}
       data-testid="tilt-cover"
     >
-      <motion.div
+      <m.div
         className={`relative ${coverBoxClass}`}
         style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
       >
@@ -75,12 +75,12 @@ export function TiltCover({ book }: { book: Book }) {
         ) : (
           <CoverPlaceholder series={book.series} cls={book.class} subject={book.subject} />
         )}
-        <motion.div
+        <m.div
           aria-hidden
           className="pointer-events-none absolute -inset-1/2 bg-[radial-gradient(circle_at_center,rgb(255_255_255/0.4),transparent_42%)]"
           style={{ x: shineX, y: shineY }}
         />
-      </motion.div>
+      </m.div>
     </div>
   )
 }

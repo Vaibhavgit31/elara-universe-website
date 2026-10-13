@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { siteConfig } from '@/content/site-config'
 import { isoToday } from '@/lib/events'
 import { useToday } from '@/lib/use-today'
@@ -9,7 +9,7 @@ const Diya = () => (
   <svg viewBox="0 0 40 40" className="w-8" aria-hidden>
     <ellipse cx="20" cy="30" rx="14" ry="6" fill="#E07A5F" />
     <ellipse cx="20" cy="28" rx="11" ry="4" fill="#B68235" />
-    <motion.path
+    <m.path
       d="M20 8c-4 6-6 10-3 15h6c3-5 1-9-3-15Z"
       fill="#E8A53A"
       animate={{ scale: [1, 1.15, 0.95, 1] }}
@@ -19,7 +19,7 @@ const Diya = () => (
   </svg>
 )
 const Kite = ({ color }: { color: string }) => (
-  <motion.svg
+  <m.svg
     viewBox="0 0 40 60"
     className="w-8"
     aria-hidden
@@ -29,7 +29,7 @@ const Kite = ({ color }: { color: string }) => (
     <path d="M20 2l16 18-16 22L4 20z" fill={color} />
     <path d="M20 2v40M4 20h32" stroke="#FBF9F4" strokeWidth="1.5" />
     <path d="M20 42c-4 6 2 10-2 16" fill="none" stroke="#3F5645" strokeWidth="1.5" />
-  </motion.svg>
+  </m.svg>
 )
 
 /** Diyas for Diwali, kites for Makar Sankranti, on the dates in content/site-config.ts. */

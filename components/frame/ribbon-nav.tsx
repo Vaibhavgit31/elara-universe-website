@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { NAV, isActive } from '@/components/frame/nav'
 import { TurnLink } from '@/components/ui/turn-link'
 import { cn } from '@/lib/cn'
@@ -21,7 +21,7 @@ export function RibbonNav() {
             aria-current={active ? 'page' : undefined}
             className="rounded-b-md focus-visible:outline-offset-4"
           >
-            <motion.span
+            <m.span
               className={cn(
                 'flex h-[64px] w-[78px] items-end justify-center pb-5 text-[13px] font-bold tracking-wide shadow-page [clip-path:polygon(0_0,100%_0,100%_100%,50%_calc(100%-11px),0_100%)] lg:w-[88px]',
                 active ? 'bg-brass text-evergreen' : 'bg-forest text-cream',
@@ -33,7 +33,7 @@ export function RibbonNav() {
               transition={{ type: 'spring', stiffness: 220, damping: 20 }}
             >
               {label}
-            </motion.span>
+            </m.span>
           </TurnLink>
         )
       })}

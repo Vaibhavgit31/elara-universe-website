@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { expectNoHorizontalScroll, open } from './helpers'
+import { expectNoHorizontalScroll, open, structuredData } from './helpers'
 
 test('a book page shows cover, flipbook, lists, details, buttons and series shelf', async ({
   page,
@@ -38,8 +38,7 @@ test('TechNova pages list the twelve features, the ISBN of book 1 and no samples
 test('Book structured data and page title are present', async ({ page }) => {
   await open(page, '/catalog/technova-3/')
   await expect(page).toHaveTitle(/TechNova Class 3/)
-  const json = await page.locator('script[type="application/ld+json"]').textContent()
-  expect(JSON.parse(json!)).toMatchObject({
+  expect((await structuredData(page)).find((d) => d['@type'] === 'Book')).toMatchObject({
     '@type': 'Book',
     name: 'TechNova Class 3',
     publisher: { name: 'Elara Universe Publishers Private Limited' },
@@ -51,6 +50,8 @@ test('the flipbook turns with buttons and keys and the sound toggle is off by de
 }) => {
   await open(page, '/catalog/hindi-3/')
   const flipbook = page.getByTestId('flipbook')
+  // The book loads once the reader scrolls near it.
+  await flipbook.scrollIntoViewIfNeeded()
   await expect(flipbook).toHaveAttribute('data-ready', 'true')
   await expect(flipbook.getByText('1 / 8')).toBeVisible()
   await flipbook.getByRole('button', { name: 'Next page' }).click()

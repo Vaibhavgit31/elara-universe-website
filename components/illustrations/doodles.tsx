@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'motion/react'
+import { m, useScroll, useTransform } from 'framer-motion'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
 import { cn } from '@/lib/cn'
 
@@ -50,14 +50,14 @@ export function Doodle({
   const y = useTransform(scrollY, (v) => -v * speed)
   const { viewBox, paths, text } = doodles[kind]
   return (
-    <motion.svg
+    <m.svg
       aria-hidden
       viewBox={viewBox}
       style={{ y }}
       className={cn('pointer-events-none absolute w-24 text-sage/70 md:w-32', className)}
     >
       {paths.map((d, i) => (
-        <motion.path
+        <m.path
           key={d}
           d={d}
           {...stroke}
@@ -67,7 +67,7 @@ export function Doodle({
         />
       ))}
       {text && (
-        <motion.text
+        <m.text
           x="6"
           y="78"
           fontSize="54"
@@ -79,8 +79,8 @@ export function Doodle({
           transition={{ duration: 1.2, delay: 0.4 }}
         >
           {text}
-        </motion.text>
+        </m.text>
       )}
-    </motion.svg>
+    </m.svg>
   )
 }

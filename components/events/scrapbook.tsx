@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react'
 import Image from 'next/image'
-import { motion } from 'motion/react'
+import { m } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
 import { WashiTape } from '@/components/ui/washi-tape'
@@ -25,7 +25,7 @@ export function Scrapbook({ events }: { events: Event[] }) {
     <>
       <ul className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
         {events.map((event, i) => (
-          <motion.li
+          <m.li
             key={event.slug}
             className="relative"
             initial={false}
@@ -66,7 +66,7 @@ export function Scrapbook({ events }: { events: Event[] }) {
                 </span>
               </figcaption>
             </figure>
-          </motion.li>
+          </m.li>
         ))}
       </ul>
       <dialog
