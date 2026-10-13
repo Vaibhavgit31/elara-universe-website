@@ -228,3 +228,57 @@ nothing scrolls sideways at 360 px.
 **For Vaibhav:** to try it on your phone over Wi-Fi run `npm run dev`, note the "Network" URL
 it prints (e.g. `http://192.168.x.x:3000`) and open `http://192.168.x.x:3000/demo-flip` on the
 phone connected to the same Wi-Fi. On a Mac, allow incoming connections if macOS asks.
+
+---
+
+## Phase 5 — Home page
+
+**Built:** `app/page.tsx` as a `<FlipPad>` of seven pages, plus the pieces it needs:
+
+1. **Cover → first spread** (`components/home/opening-cover.tsx`): a closed cream book with
+   the official logo, spine and brass frame. Opens on tap, on the first scroll/wheel/touch, or
+   after 1.5 s (rotates around its left edge; fade with reduced motion). Underneath: eyebrow,
+   headline "Books that grow curious minds." (`[PLACEHOLDER]`), the PLAYBOOK subline, "Explore
+   the catalog" and "Request a sample copy".
+2. **Three subjects on a shelf** (`subject-shelf.tsx`, `content/series.ts`): Basic Hindi Reader,
+   TechNova and Art Journey standing on a brass-and-sage shelf. Hover lifts a book and opens a
+   tiny two-page peek; a "Peek" button does the same on phones. Each cover links to
+   `/catalog?subject=…`.
+3. **Why schools choose Elara**: four sticky notes with washi tape (`components/ui/sticky-note`)
+   — NEP 2020/NCF 2023, text-cum-workbook, digital support, teacher support with "Test
+   generator: coming soon".
+4. **Every book has a QR door**: inline SVG of a phone scanning a book's QR code, link to
+   `/resources`.
+5. **Peek inside**: `components/book/flipbook.tsx` (react-pageflip, browser-only import) with
+   the eight Hindi Class 1 sample pages — two-page spread on wide screens, one page with swipe
+   on phones, prev/next buttons, arrow keys, page counter.
+6. **What's happening**: the next events from `content/events.ts` as pinned tickets
+   (`components/events/event-ticket.tsx`), each with a "Sample" badge; "New events coming
+   soon" when there are none.
+7. **Back cover**: forest-green page, "Bring Elara to your school", sample-copy button and
+   WhatsApp link.
+
+Subject doodles (`components/illustrations/doodles.tsx`: अ आ क, cursor and pixels, crayons and
+a splash) sit in the margins and drift with scroll. All copy I wrote is marked `[PLACEHOLDER]`
+in code comments; no statistics anywhere.
+
+**Requirements:** ✅ opening cover (tap / scroll / 1.5 s) · ✅ shelf with peeks and filtered
+links · ✅ four sticky notes incl. "Coming soon" · ✅ QR door · ✅ Hindi Class 1 flipbook ·
+✅ next events from `content/events.ts` · ✅ back-cover CTA with form link + WhatsApp ·
+✅ facts only from PLAYBOOK.md · ✅ doodles drifting on scroll
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright 65 passed /
+11 skipped ✅ (`tests/home.spec.ts`: auto-open, tap-open, seven pages and content, flipbook
+turning). Fixed during the gate: `FlipPage`'s `bare` flag now travels as `data-bare` so the
+cover fills the whole sheet; the Hindi doodle viewBox; ticket titles wrapping; the phone page
+number moved to the top-right corner so it never sits on text.
+
+**Screenshots:** `docs/screenshots/phase-05/` — cover closed and every page at 360/768/1440,
+plus reduced motion. Reviewed and fixed as above.
+
+**Placeholders added:** home headline and the copy marked in `app/page.tsx`; the three sample
+events in `content/events.ts` (two upcoming, one past so the scrapbook can be previewed);
+Art Journey blurb "to be confirmed".
+
+**For Vaibhav:** events are sorted into upcoming/past when the site is built (static site), so
+rebuild and redeploy after an event date passes, or when you add events.

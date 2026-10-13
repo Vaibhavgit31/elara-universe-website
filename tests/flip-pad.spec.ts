@@ -53,7 +53,7 @@ test('the long page scrolls inside before it flips', async ({ page }, { project 
   const inner = await second
     .locator('> div')
     .first()
-    .evaluate((el) => el.offsetHeight - window.innerHeight)
+    .evaluate((el) => (el as HTMLElement).offsetHeight - window.innerHeight)
   expect(inner).toBeGreaterThan(200)
   await scrollTo(page, top + height + inner / 2)
   await expect(page.getByText('Page 2 of 5')).toBeVisible()

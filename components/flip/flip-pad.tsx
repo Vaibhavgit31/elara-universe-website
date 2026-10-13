@@ -19,13 +19,14 @@ import {
 } from 'react'
 import { cn } from '@/lib/cn'
 
-import type { FlipPageProps } from '@/components/flip/flip-page'
+import type { FlipPageElementProps, FlipPageProps } from '@/components/flip/flip-page'
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const useFlipProgress = (local: MotionValue<number>, start: number, extra: number, len: number) =>
   useTransform(local, (v) => (len ? clamp01((v - start - extra) / len) : 0))
 
-const contentClass = 'mx-auto w-full max-w-6xl px-4 pt-16 pb-14 sm:px-8'
+const contentClass = (bare?: boolean) =>
+  bare ? 'relative' : 'relative mx-auto w-full max-w-6xl px-4 pt-16 pb-14 sm:px-8'
 
 /** The pad's binding: a board across the top with rings holding every page. */
 const Binding = () => (
@@ -51,7 +52,7 @@ const Binding = () => (
 const PageNumber = ({ current, count }: { current: number; count: number }) => (
   <p
     aria-live="polite"
-    className="absolute bottom-16 left-3 z-50 rounded-full bg-paper/85 px-3 py-1 font-hand text-lg text-forest md:bottom-5 md:left-5"
+    className="absolute top-11 right-3 z-50 rounded-full bg-paper/85 px-3 py-1 font-hand text-lg text-forest md:top-auto md:right-auto md:bottom-5 md:left-5"
   >
     Page {current + 1} of {count}
   </p>
@@ -97,6 +98,7 @@ function Sheet({
   contentRef,
   children,
   className,
+  bare,
 }: SheetProps) {
   const p = useFlipProgress(local, start, extra, flipLen)
   const prevP = useFlipProgress(local, prev?.start ?? 0, prev?.extra ?? 0, flipLen)
@@ -116,7 +118,7 @@ function Sheet({
       )}
       style={{ rotateX, visibility, zIndex: count - index }}
     >
-      <motion.div ref={contentRef} className={contentClass} style={{ y }}>
+      <motion.div ref={contentRef} className={contentClass(bare)} style={{ y }}>
         {children}
       </motion.div>
       <motion.div
@@ -149,7 +151,7 @@ function slotsFor({ stageH, heights }: Layout, count: number) {
 }
 
 /** Scroll-driven flip pad: a sticky stage where each page lifts over the top binding. */
-function ScrollPad({ pages }: { pages: ReactElement<FlipPageProps>[] }) {
+function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
   const count = pages.length
   const wrapperRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -206,8 +208,11 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageProps>[] }) {
             contentRef={(el) => {
               contentRefs.current[i] = el
             }}
-            {...page.props}
-          />
+            className={page.props.className}
+            bare={page.props['data-bare']}
+          >
+            {page.props.children}
+          </Sheet>
         ))}
         <Binding />
         <Stack current={current} count={count} />
@@ -218,7 +223,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageProps>[] }) {
 }
 
 /** Reduced motion: no 3D. Pages stack in normal flow and fade in as they arrive. */
-function StackedPages({ pages }: { pages: ReactElement<FlipPageProps>[] }) {
+function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
   return (
     <div className="bg-mist">
       {pages.map((page, i) => (
@@ -231,7 +236,7 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageProps>[] }) {
           viewport={{ once: true, amount: 0.15 }}
         >
           <Binding />
-          <div className={contentClass}>{page.props.children}</div>
+          <div className={contentClass(page.props['data-bare'])}>{page.props.children}</div>
           <PageNumber current={i} count={pages.length} />
         </motion.section>
       ))}
@@ -240,8 +245,8 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageProps>[] }) {
 }
 
 export function FlipPad({ children }: { children: ReactNode }) {
-  const pages = Children.toArray(children).filter((child): child is ReactElement<FlipPageProps> =>
-    isValidElement(child),
+  const pages = Children.toArray(children).filter(
+    (child): child is ReactElement<FlipPageElementProps> => isValidElement(child),
   )
   const reduced = useReducedMotion()
   return reduced ? <StackedPages pages={pages} /> : <ScrollPad pages={pages} />

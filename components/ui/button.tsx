@@ -16,13 +16,17 @@ type Props = {
   children: ReactNode
 } & Omit<ComponentProps<'button'>, 'className' | 'children'>
 
-// Every button is at least 44px tall (PLAYBOOK motion rules) and presses down like a stamp.
-export function Button({ variant = 'primary', href, className, children, ...rest }: Props) {
-  const classes = cn(
+/** Button classes for elements that cannot be a <Button>, e.g. external <a> links. */
+export const buttonClass = (variant: keyof typeof variants = 'primary', className?: string) =>
+  cn(
     'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-[transform,background-color,color] duration-200 active:translate-y-px active:scale-[0.97]',
     variants[variant],
     className,
   )
+
+// Every button is at least 44px tall (PLAYBOOK motion rules) and presses down like a stamp.
+export function Button({ variant = 'primary', href, className, children, ...rest }: Props) {
+  const classes = buttonClass(variant, className)
   if (href) {
     return (
       <TurnLink href={href} className={classes}>
