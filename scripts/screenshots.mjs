@@ -1,5 +1,5 @@
 // Phase-gate screenshots: node scripts/screenshots.mjs <phase> <route> [route...]
-// Saves docs/screenshots/<phase>/<route>-{360,768,1440,reduced-motion}.png from http://localhost:3000.
+// Saves docs/screenshots/<phase>/<route>-{360,768,1024,1440,reduced-motion}.png from http://localhost:3000.
 import { mkdir } from 'node:fs/promises'
 import { chromium } from '@playwright/test'
 
@@ -12,6 +12,7 @@ await mkdir(dir, { recursive: true })
 const shots = [
   { name: '360', viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true },
   { name: '768', viewport: { width: 768, height: 1024 }, hasTouch: true },
+  { name: '1024', viewport: { width: 1024, height: 768 } },
   { name: '1440', viewport: { width: 1440, height: 900 } },
   { name: 'reduced-motion', viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' },
 ]

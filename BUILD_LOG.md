@@ -25,6 +25,19 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   (framer-motion)" row names) instead of the `motion` wrapper package: same library and version,
   but the wrapper's entry file defeats Next.js/Turbopack tree-shaking and shipped 44 KB of unused
   drag/layout code on every page.
+- (Phase 14) Browsers: the site was tested in Chromium only (desktop, tablet and the Pixel 7
+  phone profile in Playwright). Safari, Firefox and a real Android phone cannot be run in this
+  build environment (no WebKit/Firefox builds, and installing browsers is not allowed here).
+  Please open the live site once in Safari (iPhone) and Firefox; the flip pad, flipbook and
+  contact form are the parts to watch.
+- (Phase 14) The test enquiry through the contact form was not sent: there is no Web3Forms key
+  in this environment, so the page shows the email and WhatsApp buttons (that state is tested).
+  After deploying with `NEXT_PUBLIC_WEB3FORMS_KEY` set, send one enquiry and check the inbox.
+- (Phase 14) The 24 QR Corner addresses were checked on the local build (all 200, unknown ones
+  404). Check them on the live site after connecting the domain (`DEPLOY.md`, step 5).
+- (Phase 14) `DEPLOY.md` walks through Netlify Drop and Vercel. The DNS record values shown
+  there are the hosts' documented defaults; copy the exact values from the host's panel when
+  you add the domain. Which registrar holds elarauniversepublications.com is a placeholder.
 
 ## Simplified
 
@@ -39,9 +52,27 @@ Features that still failed after 3 genuine fix attempts and were simplified (bra
 
 ## Placeholders
 
-Every `[PLACEHOLDER]` and `isPlaceholder` on the site, with where it lives.
+Every `[PLACEHOLDER]` and `isPlaceholder` on the site, with where it lives (Phase 14 list).
 
-- (none yet)
+- **Books** (`content/books.ts`): Basic Hindi Reader Classes 2 and 4–8 have no cover, sample
+  pages, page count or MRP (`isPlaceholder: true`); Class 1 and 3 are real (cover, 8 sample
+  pages, 72/84 pages, MRP ₹240 for Class 1). TechNova 1–8: covers real; ISBN only for Class 1;
+  no MRP, page counts or edition. Art Journey 1–8: drawn placeholder covers, no facts
+  (`isPlaceholder: true`); the series itself is `isPlaceholder: true` in `content/series.ts`.
+- **Events** (`content/events.ts`): all three events are samples with `[PLACEHOLDER]` titles and
+  venues and an example registration link; each shows a "Sample" badge.
+- **Team** (`content/team.ts`): both co-founders have `[PLACEHOLDER]` bios and no photo (the
+  polaroids show a drawn silhouette).
+- **Company** (`content/site.ts`): the four social links are empty (footer icons point nowhere);
+  the registrar of the domain is unknown (`DEPLOY.md`).
+- **Festival dates** (`content/site-config.ts`): Diwali and Makar Sankranti windows for 2026–27
+  are `[PLACEHOLDER]` to confirm each year.
+- **Copy written for this build, open for approval** (marked `[PLACEHOLDER]` in the code): the
+  hero headline "Books that grow curious minds." (`components/home/hero.tsx`); the three sticky
+  notes, the Peek-inside caption and the back-cover line on Home (`app/page.tsx`); the About
+  story paragraph (needs when and why Elara Universe started), the beliefs and the chapter
+  copy (`app/about/page.tsx`); the "How a book is made" step descriptions
+  (`components/about/making-steps.tsx`).
 
 ---
 
@@ -777,3 +808,39 @@ above; no second animation library.
 360/768/1440 and reduced motion).
 
 **Placeholders added:** none.
+
+## Phase 14 — Final check, README and DEPLOY.md
+
+**Done:**
+
+1. **Placeholders.** Every `[PLACEHOLDER]` and `isPlaceholder` is listed under "Placeholders" at
+   the top of this log (books, events, team, social links, festival dates, and the copy written
+   for this build that is open for approval).
+2. **Widths and browsers.** New `tests/widths.spec.ts` opens seven pages at 360, 768, 1024 and
+   1440 px and checks the header, the heading and that nothing scrolls sideways (360/768/1440
+   were already Playwright projects; 1024 is new). The screenshot script now also captures
+   1024 px. Chromium only: Safari, Firefox and a real Android phone cannot run in this
+   environment (see "For Vaibhav").
+3. **Test enquiry.** Not sent: no Web3Forms key here; the keyless state (email + WhatsApp
+   buttons) is what the build shows and what the tests cover (see "For Vaibhav").
+4. **Deployment.** `DEPLOY.md`: build on your computer, Netlify Drop (drag `out/`) and Netlify
+   from Git, Vercel from Git, connecting elarauniversepublications.com step by step (both
+   hosts, both DNS ways), checking HTTPS, launch checklist, troubleshooting. `vercel.json`
+   gained `"trailingSlash": true` so the slashless QR form redirects on Vercel too.
+5. **QR Corner addresses.** All 24 return 200 on the built site and unknown ones 404
+   (`tests/resources.spec.ts`); the list is in `docs/qr-addresses.md`.
+6. **README.md.** Running and checking the site, where things live, how to add or change a
+   book, an event, a team photo, company facts and switches, the contact form key, QR
+   redirects, and how to redeploy.
+
+**Requirements:** ✅ placeholder list · ✅ 360/768/1024/1440 tested (Chromium) · ❌ Safari,
+Firefox, Android (not available here; For Vaibhav) · ❌ test enquiry (no key; For Vaibhav) ·
+✅ deployment walkthrough with DNS and HTTPS (`DEPLOY.md`; not deployed, as agreed) · ✅ 24 QR
+addresses checked on the build (live check listed in DEPLOY.md) · ✅ README
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **192 passed / 84 skipped** ✅
+
+**Screenshots:** `docs/screenshots/phase-14/` (Home, Catalog, book page, About, Events,
+Contact, a QR address at 360/768/1024/1440 and reduced motion).
+
+**Placeholders added:** none (the registrar of the domain is noted in `DEPLOY.md`).
