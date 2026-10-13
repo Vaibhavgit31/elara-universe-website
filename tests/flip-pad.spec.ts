@@ -1,18 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
-import { expectNoHorizontalScroll, open } from './helpers'
+import { expectNoHorizontalScroll, open, padTop } from './helpers'
 
 const scrollTo = (page: Page, y: number) => page.evaluate((v) => window.scrollTo(0, v), y)
-/** Waits until the pad has measured its pages (it grows beyond one screen), then returns its top. */
-async function padTop(page: Page) {
-  await page.waitForFunction(() => {
-    const el = document.querySelector('[data-testid="flip-pad"]') as HTMLElement
-    return el.offsetHeight > window.innerHeight * 2
-  })
-  return page.evaluate(() => {
-    const el = document.querySelector('[data-testid="flip-pad"]') as HTMLElement
-    return el.getBoundingClientRect().top + window.scrollY
-  })
-}
 
 test('demo pad shows five pages and a page counter', async ({ page }) => {
   await open(page, '/demo-flip/')

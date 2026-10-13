@@ -377,3 +377,41 @@ rows in the details table.
 
 **Placeholders added:** none new (Art Journey pages show the placeholder covers and
 "Sample pages coming soon").
+
+---
+
+## Phase 8 — About Us
+
+**Built:** `/about` as a four-chapter `<FlipPad>` book (`app/about/page.tsx`):
+
+1. **Our story** — `[PLACEHOLDER]` paragraph (Vaibhav's 3–4 sentences to come) plus the facts
+   we do have (subjects, classes, NEP/NCF alignment, Noida and Ghaziabad).
+2. **What we believe** — three sticky notes: joyful, activity-based learning; NEP-aligned books;
+   books for every learner, including students in non-Hindi-speaking regions.
+3. **Meet the founders** — polaroid cards held with washi tape for Sunil Sharma and Tausif Khan
+   (both Co-founder) from `content/team.ts`, with illustrated initials avatars until photos
+   land in `/public/team/`; bios are `[PLACEHOLDER]`.
+4. **How a book is made** — write and edit, illustrate, print, add digital support: four line
+   drawings (`components/about/making-steps.tsx`) that draw themselves in (Motion `pathLength`)
+   when the chapter is read; instant with reduced motion.
+
+Each chapter opens with a large brass chapter number and a drop cap (`dropcap` utility). To make
+"draw in as you scroll" work inside the flip pad (where every stacked page is geometrically "in
+view"), `FlipPad` now provides `useFlipPageActive()` — true only for the page being read — and
+`WashiTape` was extracted into `components/ui/washi-tape.tsx` for notes and polaroids. No
+history, dates or achievements were invented.
+
+**Requirements:** ✅ chapter book with four chapters · ✅ large chapter number + drop cap ·
+✅ polaroids with washi tape, team from `content/team.ts`, initials avatars, `[PLACEHOLDER]`
+bios · ✅ four illustrated steps that draw in on scroll · ✅ nothing invented
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright 107 passed /
+17 skipped ✅ (`tests/about.spec.ts`: chapters, founders, placeholders, drawing-in on reaching
+chapter 4; reduced motion drawn at once). Fixed during the gate: the page needed an `h1`
+("About Us"); a shared `padTop()` test helper.
+
+**Screenshots:** `docs/screenshots/phase-08/` (chapter 1 at 360/768/1440 + reduced motion, and
+chapters 2–4 at 1440 and 360).
+
+**Placeholders added:** Our story paragraph; both founder bios and photos (`content/team.ts`);
+the wording of the belief and step descriptions (marked in code).

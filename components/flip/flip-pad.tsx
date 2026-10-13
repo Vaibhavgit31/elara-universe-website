@@ -9,7 +9,9 @@ import {
 } from 'motion/react'
 import {
   Children,
+  createContext,
   isValidElement,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -22,6 +24,10 @@ import type { FlipPageElementProps, FlipPageProps } from '@/components/flip/flip
 import { useReducedMotion } from '@/lib/use-reduced-motion'
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
+
+const FlipPageContext = createContext(true)
+/** True while this page is the one being read (always true outside a flip pad). */
+export const useFlipPageActive = () => useContext(FlipPageContext)
 const useFlipProgress = (local: MotionValue<number>, start: number, extra: number, len: number) =>
   useTransform(local, (v) => (len ? clamp01((v - start - extra) / len) : 0))
 
@@ -78,6 +84,7 @@ const Stack = ({ current, count }: { current: number; count: number }) => (
 type SheetProps = FlipPageProps & {
   index: number
   count: number
+  active: boolean
   local: MotionValue<number>
   start: number
   extra: number
@@ -99,6 +106,7 @@ function Sheet({
   children,
   className,
   bare,
+  active,
 }: SheetProps) {
   const p = useFlipProgress(local, start, extra, flipLen)
   const prevP = useFlipProgress(local, prev?.start ?? 0, prev?.extra ?? 0, flipLen)
@@ -119,7 +127,7 @@ function Sheet({
       style={{ rotateX, visibility, zIndex: count - index }}
     >
       <motion.div ref={contentRef} className={contentClass(bare)} style={{ y }}>
-        {children}
+        <FlipPageContext value={active}>{children}</FlipPageContext>
       </motion.div>
       <motion.div
         aria-hidden
@@ -200,6 +208,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
             key={i}
             index={i}
             count={count}
+            active={current === i}
             local={local}
             start={starts[i]}
             extra={extras[i]}

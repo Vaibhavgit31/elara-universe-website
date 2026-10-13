@@ -94,3 +94,10 @@
 @utility link {
   @apply text-forest underline decoration-brass decoration-2 underline-offset-4 hover:text-evergreen;
 }
+
+/* Drop cap for the first paragraph of a chapter. */
+@utility dropcap {
+  &::first-letter {
+    @apply float-left mr-2 font-heading text-[3.2em] leading-[0.82] font-bold text-forest;
+  }
+}
