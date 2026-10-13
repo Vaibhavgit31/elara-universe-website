@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Tag, subjectTag } from '@/components/ui/tag'
 
@@ -98,6 +99,83 @@ export default function StyleguidePage() {
           <Button variant="brass">Peek inside</Button>
           <Button variant="ghost">Skip intro</Button>
         </div>
+      </Section>
+
+      <Section title="Brand">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <figure className="rounded-xl bg-cream p-6">
+            <Image
+              src="/brand/logo-full.svg"
+              alt="Elara Universe Publishers Private Limited logo"
+              width={1204}
+              height={672}
+              className="mx-auto w-full max-w-xs"
+            />
+            <figcaption className="mt-4 text-center eyebrow">Full logo · logo-full.svg</figcaption>
+          </figure>
+          <div className="flex flex-col justify-between gap-6">
+            <figure className="rounded-xl bg-paper p-6 ring-1 ring-sage-100">
+              <Image
+                src="/brand/logo-horizontal.svg"
+                alt="Elara Universe horizontal logo"
+                width={1874}
+                height={220}
+                className="w-full"
+              />
+              <figcaption className="mt-4 text-center eyebrow">
+                Header lockup · logo-horizontal.svg
+              </figcaption>
+            </figure>
+            <figure className="flex items-center justify-center gap-6 rounded-xl bg-cream p-6">
+              <Image
+                src="/brand/mark.svg"
+                alt="Elara Universe lotus-and-book mark"
+                width={324}
+                height={220}
+                className="h-16 w-auto"
+              />
+              <Image
+                src="/brand/icon-192.png"
+                alt="App icon"
+                width={192}
+                height={192}
+                className="h-16 w-16 rounded-2xl"
+              />
+              <Image
+                src="/brand/icon-32.png"
+                alt="Favicon"
+                width={32}
+                height={32}
+                className="h-8 w-8"
+              />
+              <figcaption className="eyebrow">Mark and icons</figcaption>
+            </figure>
+          </div>
+        </div>
+        <ul className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+          {['technova-1', 'technova-5', 'hindi-1', 'hindi-3'].map((name) => (
+            <li key={name}>
+              <Image
+                src={`/books/${name}-thumb.webp`}
+                alt={`${name} cover`}
+                width={309}
+                height={400}
+                className="w-full rounded shadow-page"
+              />
+            </li>
+          ))}
+          {[1, 2].map((n) => (
+            <li key={n}>
+              <Image
+                src={`/books/art-journey-${n}.svg`}
+                alt={`Art Journey ${n} placeholder cover`}
+                width={309}
+                height={400}
+                className="w-full rounded shadow-page"
+              />
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title="Tags">

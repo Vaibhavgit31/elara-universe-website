@@ -77,3 +77,51 @@ at 360px.
 
 **For Vaibhav:** the dev server is not left running in this one-go build; `npm run dev` prints
 the local and network URLs. Phone check over Wi-Fi: open the "Network" URL it prints.
+
+---
+
+## Phase 2 — Logo and book images
+
+**Built:** `scripts/prepare-images.mjs` (sharp + pdftoppm, sources never modified) which makes:
+
+- Logo: `public/brand/logo-full.svg` (verbatim copy), `logo-horizontal.svg` (mark left, ELARA
+  UNIVERSE right, official colours only), `mark.svg`, icons 16/32/192/512 in `public/brand/` plus
+  `app/favicon.ico`, `app/icon.png` (32) and `app/apple-icon.png` (180) on cream, and the
+  1200×630 link preview `app/opengraph-image.png` (full logo centred on cream). Next.js emits the
+  icon and `og:image` tags automatically (verified in `out/index.html`).
+- TechNova: front covers `public/books/technova-1..8.webp` (1000 px tall) + `-thumb.webp`
+  (400 px), cropped to the trimmed 8.5×11 in front cover of each wraparound page, and
+  `technova-back.webp` (book 1 back cover).
+- Basic Hindi Reader: `hindi-1.webp`, `hindi-3.webp` (+ thumbs) from page 1 of each PDF, and
+  8 sample pages each in `public/books/samples/hindi-1/01–08.webp` and `hindi-3/01–08.webp`
+  (1200 px tall; images only, no text extracted). Pages chosen: Class 1 → 6 (contents), 9
+  (chapter 1 vowels), 17 (vowel song), 18 (chapter 2 consonants), 23 (rainbow poem), 28 (lazy
+  monkey story), 34 (fair activity), 68 (days of the week); Class 3 → 8 (contents), 9 (my school
+  poem), 10 (weather), 12 (yoga), 19 (maze), 27 (months game), 59 (clock activity), 76 (Birbal
+  story opening).
+- Art Journey: 8 illustrated placeholder SVG covers `public/books/art-journey-1..8.svg` (coral +
+  cream, crayons, class number, labelled "PLACEHOLDER COVER · ARTWORK COMING SOON").
+- Contact sheets: `docs/screenshots/phase-02/contact-sheet-{covers,samples,brand}.png`.
+- Styleguide gained a "Brand" section showing the logos, icons and sample covers.
+
+**Requirements**
+
+- ✅ logo-full.svg copied · ✅ horizontal header version · ✅ favicon/app icons 16/32/180/192/512
+  on cream · ✅ 1200×630 link preview
+- ✅ TechNova 1–8 front covers 1000 px + 400 px thumbs · ✅ technova-back.webp
+- ✅ hindi-1 / hindi-3 covers · ✅ 8 inside pages per book at 1200 px · ✅ no Hindi text extracted
+- ✅ 8 Art Journey placeholder covers marked as placeholders
+- ✅ Contact sheet (see "For Vaibhav")
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright 20/20 ✅ (new
+`tests/images.spec.ts` checks the assets are served and the head carries the icon/OG tags)
+
+**Screenshots:** `docs/screenshots/phase-02/` (styleguide with brand section at 360/768/1440 +
+reduced motion, and the three contact sheets). Reviewed: covers are cropped cleanly without
+spine or bleed; sample pages are the colourful ones; lockup and icons are legible down to 16 px.
+
+**Placeholders added:** Art Journey covers 1–8 (`public/books/art-journey-*.svg`) until artwork
+arrives.
+
+**For Vaibhav:** the contact sheet is `docs/screenshots/phase-02/contact-sheet-covers.png`
+(+ `-samples.png`, `-brand.png`). To re-run after adding PDFs: `node scripts/prepare-images.mjs`.
