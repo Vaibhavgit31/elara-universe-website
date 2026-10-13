@@ -455,3 +455,69 @@ scrapbook page at 1440 and 360). Polished after review: on phones the flip-pad p
 sits inside the ring binding instead of over the first line of text.
 
 **Placeholders added:** none new (the three sample events and the example.com Register link).
+
+---
+
+## Phase 10 — Contact
+
+**Built:** `/contact` (`app/contact/page.tsx`) with a letter and a postcard side by side:
+
+- `components/contact/contact-form.tsx`: a letter on lined cream paper ("Dear Elara
+  Universe, … Yours sincerely"). Fields: name, school name (optional), role (teacher, principal,
+  parent, distributor, other), phone (Indian mobile check, spaces/dashes allowed, +91 optional),
+  email, city, subjects (Hindi, Computer, Drawing chips), classes (1–8 chips), message.
+  react-hook-form + zod 4 (`@hookform/resolvers`), clear error messages under each field,
+  `aria-invalid`/`role=alert`, typed text kept if sending fails.
+- `?book=<slug>` pre-fills the message with "Sample copy request: <Series> Class <n>" and
+  ticks that subject and class.
+- Sending: **Web3Forms** (recommended: free, no backend, works from a static site) with the key
+  in `NEXT_PUBLIC_WEB3FORMS_KEY`. Hidden `botcheck` honeypot (bots that tick it get a polite
+  "sent" and nothing is posted). Client-side cooldown: one letter per minute per browser
+  (`localStorage`, try/catch). Nothing is stored on the site.
+- On success the letter folds (scales/rotates), a paper plane fades in and flies off the
+  screen (Motion `useAnimate` sequence, transform/opacity only), then a thank-you note appears
+  and a small burst of leaves and stars fires (canvas-confetti, loaded on demand). With reduced
+  motion only the note appears.
+- Without a key (this build): after a valid submit the letter is handed over — "Your letter is
+  written!" with **Send by email** (mailto with the whole letter in the body) and **Send on
+  WhatsApp** (wa.me with the letter as text).
+- `components/contact/postcard.tsx`: both addresses (Registered office: Noida; Office:
+  Ghaziabad), phone, email, a WhatsApp button, and a Google Map (`lazy-map.tsx`) that is only
+  inserted once it scrolls into view (Motion `useInView`).
+
+**Requirements:** ✅ letter on lined paper with all fields and an Indian phone check ·
+✅ `?book=` pre-fill · ✅ fold → paper plane → thank-you note; note only with reduced motion ·
+✅ form service via env variable, honeypot, basic (client-side) rate limit, nothing stored ·
+✅ clear errors, text kept on failure · ✅ postcard with addresses, phone, email, WhatsApp, lazy
+map · ✅ env variables documented below
+
+**Checks:** `tsc` ✅ · `eslint` ✅ (React Compiler rules satisfied) · Prettier ✅ ·
+`next build` ✅ · Playwright **132 passed / 24 skipped** on two builds: one with
+`NEXT_PUBLIC_WEB3FORMS_KEY=playwright-test` (mocked Web3Forms: failure keeps the text, success
+shows the note) and the deliverable build without a key (email/WhatsApp hand-over). Also
+covered: postcard facts, lazy map `src`, validation messages, `?book=` pre-fill, hidden honeypot.
+
+**Screenshots:** `docs/screenshots/phase-10/` (contact and pre-filled contact at 360/768/1440 +
+reduced motion, validation errors, fallback panel).
+
+**Libraries added (checked):** react-hook-form 7.90 (MIT, updated Oct 2026), zod 4.6 (MIT,
+Oct 2026), @hookform/resolvers 5.9 (MIT, Aug 2026), canvas-confetti 1.9.4 (ISC, Oct 2025,
+~10 KB gzipped, loaded only after a successful send). Note: react-pageflip 2.0.3 (MIT) was last
+published in May 2022 — older than 12 months, but it is the playbook's choice and works well.
+
+**Placeholders added:** none.
+
+**For Vaibhav — environment variables:**
+1. Create a free account at web3forms.com, add `info@elarauniversepublications.com` (or the
+   inbox you prefer) and copy the **Access Key**.
+2. Set `NEXT_PUBLIC_WEB3FORMS_KEY=<that key>` before the site is built: in Netlify → Site
+   configuration → Environment variables, or Vercel → Project → Settings → Environment
+   Variables, or in a local `.env.local` file (copy `.env.example`) when you build on your Mac
+   for a drag-and-drop deploy. The key is public by design (Web3Forms keys are meant for
+   browsers).
+3. Rebuild and deploy. Until then the form hands letters to email/WhatsApp.
+4. I could not fetch the Web3Forms docs from this environment (blocked), so the field names
+   follow its standard API (`access_key`, `botcheck`, JSON `success`). Please send one test
+   letter after setting the key (Phase 14 step 3) — if it does not arrive, tell me the error
+   text shown on the page.
+5. The Google Map needs the live internet; it stays a blank green box in this sandbox.
