@@ -1,0 +1,96 @@
+@import 'tailwindcss';
+
+/* ---- Design tokens: "The Living Book" (PLAYBOOK.md → Design system) ---- */
+@theme {
+  --color-paper: #fbf9f4;
+  --color-cream: #f5f0e8;
+  --color-mist: #eef3ea;
+  --color-sage-100: #dce5d2;
+  --color-sage: #8a9a74;
+  --color-forest: #3f5645;
+  --color-evergreen: #1b241d;
+  --color-brass: #b68235;
+  --color-gold-ink: #8a6122;
+  --color-hindi: #e8a53a;
+  --color-hindi-tint: #fcefd6;
+  --color-computer: #4a90c2;
+  --color-computer-tint: #e1eef7;
+  --color-drawing: #e07a5f;
+  --color-drawing-tint: #fbe4dd;
+
+  /* Type scale: body 16px at 360px → 18px at 1024px and up, line-height 1.6 */
+  --text-body: clamp(1rem, 0.932rem + 0.3vw, 1.125rem);
+  --text-body--line-height: 1.6;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.5;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.14em;
+  --text-label--font-weight: 700;
+  --text-h1: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+  --text-h1--line-height: 1.08;
+  --text-h2: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
+  --text-h2--line-height: 1.15;
+  --text-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+  --text-h3--line-height: 1.25;
+
+  --shadow-page: 0 1px 2px rgb(27 36 29 / 0.06), 0 12px 32px -12px rgb(27 36 29 / 0.25);
+  --shadow-lift: 0 2px 4px rgb(27 36 29 / 0.08), 0 24px 48px -16px rgb(27 36 29 / 0.35);
+}
+
+/* Font families come from next/font variables set on <html> (app/layout.tsx). */
+@theme inline {
+  --font-body: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-lora), Georgia, serif;
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-hand: var(--font-caveat), cursive;
+  --font-devanagari: var(--font-devanagari), var(--font-nunito), sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-paper font-body text-body text-evergreen antialiased;
+    /* Paper grain: a 200px tile of faint fractal noise (≈ 0.5 KB, no network request). */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.14 0 0 0 0 0.07 0 0 0 0.075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-bold text-evergreen;
+    text-wrap: balance;
+  }
+  h1 {
+    @apply text-h1;
+  }
+  h2 {
+    @apply text-h2;
+  }
+  h3 {
+    @apply text-h3 font-semibold;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-brass);
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+  }
+  ::selection {
+    background: var(--color-sage-100);
+  }
+}
+
+/* Small uppercase label in gold ink (e.g. "Class 3", "Hindi"). */
+@utility eyebrow {
+  @apply font-body text-label text-gold-ink uppercase;
+}
+
+/* Text link: forest ink with a brass underline (pencil-stroke animation arrives in Phase 12). */
+@utility link {
+  @apply text-forest underline decoration-brass decoration-2 underline-offset-4 hover:text-evergreen;
+}
