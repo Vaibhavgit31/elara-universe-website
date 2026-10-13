@@ -20,8 +20,14 @@ test('the cover opens by itself and shows the hero', async ({ page }) => {
   await expectNoHorizontalScroll(page)
 })
 
-test('tapping the cover opens it at once', async ({ page }) => {
+test('tapping the cover opens it at once', async ({ page }, { project }) => {
   await page.goto('/')
+  // With reduced motion the pad re-mounts as a stacked layout right after hydration.
+  if (project.name === 'reduced-motion')
+    await expect(page.getByRole('region', { name: 'Page 1 of 7' })).toHaveCSS(
+      'position',
+      'relative',
+    )
   await page.getByRole('button', { name: 'Open the book' }).click()
   await expect(page.locator('[data-cover]')).toHaveAttribute('data-cover', 'open', { timeout: 800 })
   await expect(page.getByRole('button', { name: 'Open the book' })).toBeHidden()

@@ -1,10 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { easeOut } from '@/components/motion/motion-provider'
 import { site } from '@/content/site'
+import { useReducedMotion } from '@/lib/use-reduced-motion'
 
 // The closed book on the home page. Opens on tap, on the first scroll, or after 1.5 seconds.
 export function OpeningCover() {

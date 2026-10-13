@@ -282,3 +282,52 @@ Art Journey blurb "to be confirmed".
 
 **For Vaibhav:** events are sorted into upcoming/past when the site is built (static site), so
 rebuild and redeploy after an event date passes, or when you add events.
+
+---
+
+## Phase 6 — Catalog page and book data
+
+**Built:**
+
+- `content/books.ts`: 24 books (Basic Hindi Reader 1–8, TechNova 1–8, Art Journey 1–8) with
+  `slug, series, subject, class, title, titleHindi, cover, thumb, samples[], pages, size, isbn,
+  mrp, edition, features[], support[], description, isPlaceholder`. Filled only from PLAYBOOK.md
+  and the files: TechNova's twelve Salient Features and ISBN 978-93-93258-70-0 (book 1), Hindi
+  Class 1 MRP ₹240 and 72 pages, Class 3 84 pages, Hindi/TechNova support lists, cover trim
+  size 8.5 × 11 in measured from the PDFs. Everything else is `null` and hidden.
+- `/catalog` (`components/catalog/catalog.tsx`): sticky-note filter tabs for Subject (All,
+  Hindi, Computer, Drawing) and Class (All, 1–8), saved in the URL as `?subject=&class=`.
+  Filters are read with `useSyncExternalStore` from `location.search`, so the full catalog is in
+  the HTML (SEO) and the filter applies as soon as the page is interactive; a shared link such as
+  `/catalog/?subject=hindi&class=3` restores the filter. Books slide to their new places when a
+  filter changes (Motion layout animation); an illustrated empty shelf appears when nothing
+  matches, with a "Show all books" button.
+- One shelf per subject (`components/book/book-card.tsx`): each card carries its own piece of
+  brass-and-sage shelf so neighbours join into a continuous shelf — eight books per row on
+  desktop, four on tablets, **two per row on phones**. Hovering lifts a book off the shelf.
+  Cards show cover (or a "cover coming soon" placeholder for Hindi 2, 4–8), series, class,
+  subject tag, MRP if known (otherwise "Request a sample copy" → `/contact?book=<slug>`) and a
+  "Peek inside" button.
+- `/catalog/[slug]`: a minimal page for every book generated at build time (24 routes), so no
+  card leads to a 404 before Phase 7 fleshes it out.
+- `lib/use-reduced-motion.ts`: a hydration-safe `prefers-reduced-motion` hook (false while
+  hydrating, then the real value) used wherever the choice changes markup (flip pad, Lenis,
+  opening cover). Verified: no console or hydration errors in either motion mode.
+
+**Requirements:** ✅ `content/books.ts` with 24 entries and only known facts · ✅ sticky-note
+tabs saved in the URL · ✅ one shelf per subject, hover lift · ✅ two covers per shelf row on
+phones · ✅ cover, series, class, tag, MRP/"Request a sample copy", "Peek inside" · ✅ empty state
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ (38 routes) · Playwright
+82 passed / 14 skipped ✅ (`tests/catalog.spec.ts`: 24 books on three shelves, URL filters
+round-trip, empty/invalid filters, two per row on phones, book pages and 404).
+
+**Fixed during the gate:** placeholder covers stretched their shelf at eight columns (cover box
+now fixed-ratio with `min-h-0`); a shared class constant imported from a client module into a
+server page became a client reference — moved to a shared module.
+
+**Screenshots:** `docs/screenshots/phase-06/` (catalog, filtered catalog, a book page at
+360/768/1440 + reduced motion).
+
+**Placeholders added:** Hindi Classes 2, 4–8 covers ("cover coming soon"), Art Journey 1–8
+(placeholder covers), every `null` field above.

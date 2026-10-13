@@ -1,8 +1,8 @@
 'use client'
 
 import { ReactLenis } from 'lenis/react'
-import { useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
+import { useReducedMotion } from '@/lib/use-reduced-motion'
 
 // Gentle smooth scrolling with Lenis. Touch scrolling stays native (syncTouch off), and the
 // whole thing is skipped when the visitor prefers reduced motion.

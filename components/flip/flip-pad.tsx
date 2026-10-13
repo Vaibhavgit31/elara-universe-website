@@ -3,7 +3,6 @@
 import {
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useTransform,
   type MotionValue,
@@ -20,6 +19,7 @@ import {
 import { cn } from '@/lib/cn'
 
 import type { FlipPageElementProps, FlipPageProps } from '@/components/flip/flip-page'
+import { useReducedMotion } from '@/lib/use-reduced-motion'
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const useFlipProgress = (local: MotionValue<number>, start: number, extra: number, len: number) =>
