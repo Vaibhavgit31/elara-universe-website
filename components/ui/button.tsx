@@ -19,7 +19,7 @@ type Props = {
 /** Button classes for elements that cannot be a <Button>, e.g. external <a> links. */
 export const buttonClass = (variant: keyof typeof variants = 'primary', className?: string) =>
   cn(
-    'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-[transform,background-color,color] duration-200 active:translate-y-px active:scale-[0.97]',
+    'stamp inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-[transform,background-color,color] duration-200 active:translate-y-px active:scale-[0.96]',
     variants[variant],
     className,
   )

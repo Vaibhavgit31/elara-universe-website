@@ -5,6 +5,7 @@ import { motion, useAnimate } from 'motion/react'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { Elu } from '@/components/mascot/elu'
 import { Button, buttonClass } from '@/components/ui/button'
 import { bookBySlug } from '@/content/books'
 import { series, subjectLabel, type Subject } from '@/content/series'
@@ -218,7 +219,8 @@ export function ContactForm() {
 
   if (status === 'sent' && letter)
     return (
-      <div role="status" className="relative -rotate-1 bg-hindi-tint p-8 shadow-page">
+      <div role="status" className="relative -rotate-1 bg-hindi-tint p-8 pr-32 shadow-page">
+        <Elu pose="cheer" label="Elu cheering" className="absolute top-4 right-4 w-24" />
         <p className="font-hand text-3xl">Thank you, {letter.name}!</p>
         <p className="mt-3">
           Your letter is on its way to {site.email}. We&apos;ll write back to {letter.email}.

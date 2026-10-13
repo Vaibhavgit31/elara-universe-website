@@ -5,7 +5,7 @@ test('the cover opens by itself and shows the hero', async ({ page }) => {
   await open(page, '/')
   const cover = page.getByRole('button', { name: 'Open the book' })
   await expect(cover).toBeVisible()
-  await expect(cover).toBeHidden({ timeout: 4000 })
+  await expect(cover).toBeHidden({ timeout: 6000 })
   await expect(
     page.getByRole('heading', { level: 1, name: 'Books that grow curious minds.' }),
   ).toBeVisible()

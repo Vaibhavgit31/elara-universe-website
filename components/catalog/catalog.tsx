@@ -3,6 +3,8 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useSyncExternalStore } from 'react'
 import { BookCard } from '@/components/book/book-card'
+import { Elu } from '@/components/mascot/elu'
+import { StickerPop } from '@/components/motion/reveal'
 import { Button } from '@/components/ui/button'
 import { books } from '@/content/books'
 import { series, subjectLabel, type Subject } from '@/content/series'
@@ -56,19 +58,20 @@ function Tabs<T extends string>({
       {options.map((option, i) => {
         const active = option === value
         return (
-          <button
-            key={option}
-            type="button"
-            aria-pressed={active}
-            onClick={() => onChange(option)}
-            className={cn(
-              'min-h-11 min-w-11 px-3 py-2 text-small font-bold shadow-page transition-transform hover:-translate-y-0.5',
-              i % 2 ? 'rotate-1' : '-rotate-1',
-              active ? 'bg-brass text-evergreen' : 'bg-hindi-tint text-forest',
-            )}
-          >
-            {render(option)}
-          </button>
+          <StickerPop key={option} delay={i * 0.04} className="inline-block">
+            <button
+              type="button"
+              aria-pressed={active}
+              onClick={() => onChange(option)}
+              className={cn(
+                'min-h-11 min-w-11 px-3 py-2 text-small font-bold shadow-page transition-transform hover:-translate-y-0.5',
+                i % 2 ? 'rotate-1' : '-rotate-1',
+                active ? 'bg-brass text-evergreen' : 'bg-hindi-tint text-forest',
+              )}
+            >
+              {render(option)}
+            </button>
+          </StickerPop>
         )
       })}
     </fieldset>
@@ -99,7 +102,8 @@ const EmptyShelf = () => (
         ?
       </text>
     </svg>
-    <p className="mt-4 font-hand text-2xl text-forest">Nothing on this shelf yet.</p>
+    <Elu pose="search" label="Elu searching the shelf" className="mx-auto mt-2 w-24" />
+    <p className="mt-2 font-hand text-2xl text-forest">Nothing on this shelf yet.</p>
     <Button
       variant="secondary"
       className="mt-4"

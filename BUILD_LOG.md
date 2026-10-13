@@ -560,3 +560,69 @@ without the final slash works too):
 - Basic Hindi Reader 1–8: `https://elarauniversepublications.com/resources/hindi/1/` … `/hindi/8/`
 - TechNova 1–8: `https://elarauniversepublications.com/resources/technova/1/` … `/technova/8/`
 - Art Journey 1–8: `https://elarauniversepublications.com/resources/art-journey/1/` … `/art-journey/8/`
+
+---
+
+## Phase 12 — Animations, mascot Elu and polish
+
+**Built** (all Motion/CSS, `transform` and `opacity` only, every piece reduced-motion aware):
+
+- **Reusable pieces** (`components/motion/`): `Reveal`, `StickerPop`, `Wobble` (`reveal.tsx`,
+  sharing `useReveal()` which combines in-view detection with the flip pad's active page),
+  `InkText` (letters write themselves in; plain text with reduced motion, full text kept for
+  screen readers), `DriftingLeaves` (parallax leaves and paper dots), plus `MotionProvider`
+  (`reducedMotion="user"`), `lib/use-reduced-motion.ts`, `lib/cover-store.ts` and
+  `lib/use-crayon-trail.ts`. The paper plane lives in the contact form (Phase 10).
+- **First-visit intro** (`components/home/opening-cover.tsx`): the logo's seven lotus leaves
+  unfold one by one from their base, then the book pages and wordmark appear and the cover opens
+  (≈1.5 s + the 0.9 s opening). Once per session (`sessionStorage`), with a **Skip intro**
+  button; later visits show the logo at once. Reduced motion: a fade, then the cover opens.
+  `scripts/prepare-images.mjs` now also emits `components/brand/mark-paths.ts` and
+  `public/brand/wordmark.svg` from the official logo.
+- **Hero** (`components/home/hero.tsx`): the headline writes itself in ink once the cover opens,
+  the margin doodles draw themselves (pathLength; the Devanagari letters fade in), leaves and
+  dots drift at different speeds, a crayon-dot trail follows the mouse (desktop only), and Elu
+  waves.
+- **Elu, the mascot** (`components/mascot/elu.tsx`): an original sage-green leaf sprite with a
+  pencil, drawn as inline SVG with poses `wave`, `point`, `read`, `search`, `cheer`, `phone`
+  and `peek` (plus `EluPeek` for page corners). Blinks, sways, waves, bounces when cheering
+  (stars pop). Placed in the hero (wave), peeking over the shelf page, on the catalog's empty
+  shelf (search), the events empty board (point), QR Corner (phone), the 404 page (search) and
+  the contact thank-you note (cheer). Loops pause when the page is not the one being read.
+- **Shelf**: books wobble on hover and hop when tapped. **Catalog**: class tabs and the "Class n"
+  labels pop in like stickers. **Notes and polaroids** lift at a corner on hover.
+- **Micro-interactions** (`app/globals.css`): buttons press like a rubber stamp with a soft
+  brass ink ring on tap (`stamp`), text links carry a hand-drawn pencil-stroke underline
+  (`link`), `lift-corner` cards, a crayon-dot trail, and a tiny flipping-book loader
+  (`components/ui/book-loader.tsx`, used by `app/loading.tsx`).
+- **Performance**: only transform/opacity animate; loops are gated by the flip pad's active
+  page; confetti and react-pageflip load on demand. Home page JavaScript (from
+  `scripts/js-size.mjs`): **before 810 KB raw / 259 KB gzip, after 821 KB raw / 262 KB gzip**
+  (+3 KB gzip for the intro, Elu, ink text and leaves). Phase 13 looks at trimming the total.
+- **Brand check**: every page re-read against the colour and font rules — cream/sage/brass
+  pages, subject colours only on tags, stickers, pins and badges; Lora headings, Cormorant only
+  on the hero line and wordmark, Nunito body, Caveat for handwritten notes, Noto Sans
+  Devanagari for Hindi.
+
+**Requirements:** ✅ reusable animation pieces · ✅ first-visit intro with Skip · ✅ original
+mascot with six poses + peek, blink/wave/peek/cheer, used in hero, empty states, QR Corner, 404 ·
+✅ stamp buttons, pencil-stroke links, corner-lift cards · ✅ transform/opacity only, off-screen
+loops paused, JS size reported · ✅ reduced motion = fade or nothing (tested) · ✅ colour/font
+check · ✅ GIFs recorded
+
+**Checks:** `tsc` ✅ · `eslint` ✅ (React Compiler rules) · Prettier ✅ · `next build` ✅ ·
+Playwright **157 passed / 27 skipped** ✅ (`tests/polish.spec.ts`: intro + skip + once per
+session, Elu on hero/404/QR Corner, stamp/pencil/lift classes, reduced motion plain headline and
+no transforms). Fixed during the gate: the cover's decorative frame intercepted taps (now
+`pointer-events-none`, and the whole cover opens on tap); the Skip button sat below the fold.
+
+**Screenshots:** `docs/screenshots/phase-12/` (intro frames at 350/450/500 ms, hero open, 404,
+QR Corner, catalog, phone variants, plus home and a book page at 360/768/1440 + reduced motion).
+
+**Videos:** `docs/videos/` — eight GIFs: `intro-cover-ink`, `flip-pad-scroll`,
+`page-turn-ribbons`, `shelf-wobble-peek`, `catalog-filter-slide`, `book-tilt-flipbook`,
+`events-tickets-scrapbook`, `buttons-stamp-elu` (recorded with Playwright frame captures and
+assembled with ImageMagick; Playwright's ffmpeg has no GIF encoder). The contact paper plane
+needs a build with a form key, so it is covered by the keyed test run rather than a GIF.
+
+**Placeholders added:** none.

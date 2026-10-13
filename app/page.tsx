@@ -4,9 +4,10 @@ import { UpcomingEvents } from '@/components/events/upcoming-events'
 import { FlipPad } from '@/components/flip/flip-pad'
 import { FlipPage } from '@/components/flip/flip-page'
 import { Main } from '@/components/frame/main'
-import { OpeningCover } from '@/components/home/opening-cover'
+import { Hero } from '@/components/home/hero'
 import { SubjectShelf } from '@/components/home/subject-shelf'
 import { Doodle } from '@/components/illustrations/doodles'
+import { EluPeek } from '@/components/mascot/elu'
 import { QrDoor } from '@/components/illustrations/qr-door'
 import { Button, buttonClass } from '@/components/ui/button'
 import { StickyNote } from '@/components/ui/sticky-note'
@@ -56,29 +57,7 @@ export default function Home() {
       <FlipPad>
         {/* 1. Cover → first spread */}
         <FlipPage bare>
-          <section
-            className="relative flex min-h-svh flex-col justify-center px-4 pt-16 pb-24 sm:px-8"
-            style={{ perspective: '1200px' }}
-          >
-            <OpeningCover />
-            <Doodle kind="hindi" className="top-20 right-4 md:right-16" speed={0.1} />
-            <Doodle kind="computer" className="bottom-28 left-4 md:left-16" speed={0.05} />
-            <Doodle kind="drawing" className="right-8 bottom-24 hidden md:block" speed={0.14} />
-            <div className="mx-auto w-full max-w-6xl">
-              <p className="eyebrow">{site.name}</p>
-              {/* [PLACEHOLDER] headline suggested in PLAYBOOK.md */}
-              <h1 className="mt-3 max-w-3xl font-display text-h1 font-medium">
-                Books that grow curious minds.
-              </h1>
-              <p className="mt-5 max-w-2xl text-lg">{site.tagline}</p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Button href="/catalog">Explore the catalog</Button>
-                <Button href="/contact" variant="secondary">
-                  Request a sample copy
-                </Button>
-              </div>
-            </div>
-          </section>
+          <Hero />
         </FlipPage>
 
         {/* 2. Three subjects on a shelf */}
@@ -87,6 +66,7 @@ export default function Home() {
           <p className="eyebrow">Three subjects, Classes 1–8</p>
           <h2>Pick a book off the shelf</h2>
           <SubjectShelf />
+          <EluPeek className="right-4 bottom-0 h-16 w-24 md:right-10" />
         </FlipPage>
 
         {/* 3. Why schools choose Elara */}

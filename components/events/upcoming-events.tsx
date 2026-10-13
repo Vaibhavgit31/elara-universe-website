@@ -2,6 +2,7 @@
 
 import { EventTicket } from '@/components/events/event-ticket'
 import { EmptyBoard } from '@/components/illustrations/empty-board'
+import { Elu } from '@/components/mascot/elu'
 import { splitEvents } from '@/lib/events'
 import { useToday } from '@/lib/use-today'
 
@@ -19,7 +20,10 @@ export function UpcomingEvents({
   if (!upcoming.length)
     return (
       <div className="mt-8 flex flex-col items-center gap-4 text-center">
-        <EmptyBoard className="w-56" />
+        <div className="flex items-end gap-2">
+          <Elu pose="point" label="Elu pointing at the empty board" className="w-20" />
+          <EmptyBoard className="w-56" />
+        </div>
         <p className="font-hand text-2xl text-forest">New events coming soon.</p>
       </div>
     )

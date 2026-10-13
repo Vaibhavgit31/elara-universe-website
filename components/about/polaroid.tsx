@@ -35,7 +35,7 @@ const InitialsAvatar = ({ name }: { name: string }) => (
 /** A polaroid held to the page with washi tape. */
 export function Polaroid({ person, className }: { person: Person; className?: string }) {
   return (
-    <figure className={cn('relative w-60 bg-paper p-3 pb-5 shadow-lift', className)}>
+    <figure className={cn('relative w-60 lift-corner bg-paper p-3 pb-5 shadow-lift', className)}>
       <WashiTape className="-rotate-3" />
       <div className="aspect-square overflow-hidden bg-mist">
         {person.photo ? (

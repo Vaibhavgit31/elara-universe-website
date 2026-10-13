@@ -1,5 +1,6 @@
 import { Main } from '@/components/frame/main'
 import { QrDoor } from '@/components/illustrations/qr-door'
+import { Elu } from '@/components/mascot/elu'
 import { Button } from '@/components/ui/button'
 import { Tag } from '@/components/ui/tag'
 import { subjectLabel, type Series } from '@/content/series'
@@ -41,7 +42,14 @@ export function QrCorner({ series, cls }: { series?: Series; cls?: number }) {
             )}
           </div>
         </div>
-        <QrDoor className="w-full max-w-md justify-self-center" />
+        <div className="relative w-full max-w-md justify-self-center">
+          <QrDoor className="w-full" />
+          <Elu
+            pose="phone"
+            label="Elu holding a phone"
+            className="absolute -bottom-6 -left-4 w-24 sm:w-32"
+          />
+        </div>
       </div>
     </Main>
   )

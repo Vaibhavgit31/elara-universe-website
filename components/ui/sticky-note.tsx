@@ -24,7 +24,7 @@ export function StickyNote({
   children: ReactNode
 }) {
   return (
-    <div className={cn('relative p-6 pt-8 shadow-page', tints[tone], tilt, className)}>
+    <div className={cn('relative lift-corner p-6 pt-8 shadow-page', tints[tone], tilt, className)}>
       <WashiTape />
       <h3 className="font-hand text-2xl leading-tight">{title}</h3>
       <div className="mt-2 text-small">{children}</div>

@@ -41,7 +41,8 @@ export function SubjectShelf() {
           <li key={s.id} className="relative flex flex-col items-center">
             <motion.div
               className="relative w-full max-w-[200px]"
-              whileHover={{ y: -14, rotate: -1.5 }}
+              whileHover={{ y: -14, rotate: [0, -2.5, 2.5, -1.5, 0] }}
+              whileTap={{ y: -30, rotate: -6 }}
               onHoverStart={() => setPeek(s.id)}
               onHoverEnd={() => setPeek(null)}
             >

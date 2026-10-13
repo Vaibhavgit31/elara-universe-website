@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { CoverPlaceholder, coverBoxClass } from '@/components/book/cover-placeholder'
+import { StickerPop } from '@/components/motion/reveal'
 import { Button } from '@/components/ui/button'
 import { Tag } from '@/components/ui/tag'
 import { TurnLink } from '@/components/ui/turn-link'
@@ -45,7 +46,7 @@ export function BookCard({ book }: { book: Book }) {
         </Tag>
         <h3 className="text-base leading-snug">
           {book.series}
-          <span className="block eyebrow">Class {book.class}</span>
+          <StickerPop className="block origin-left eyebrow">Class {book.class}</StickerPop>
         </h3>
         <p className="mt-auto text-small font-semibold text-forest">
           {book.mrp ? (

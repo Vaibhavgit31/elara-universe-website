@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Main } from '@/components/frame/main'
+import { Elu } from '@/components/mascot/elu'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = { title: 'Page not found' }
@@ -51,16 +52,16 @@ const MissingPage = () => (
         strokeLinecap="round"
       />
     </g>
-    <text x="100" y="40" fontSize="22" fontFamily="Georgia, serif" fill="#8A9A74">
-      ?
-    </text>
   </svg>
 )
 
 export default function NotFound() {
   return (
     <Main className="mx-auto w-full max-w-3xl items-center px-4 py-16 text-center sm:px-6">
-      <MissingPage />
+      <div className="flex items-end justify-center gap-2">
+        <Elu pose="search" label="Elu searching for the missing page" className="w-24 sm:w-32" />
+        <MissingPage />
+      </div>
       <p className="mt-8 eyebrow">Error 404</p>
       <h1>This page is missing from the book</h1>
       <p className="mt-3 max-w-md">
