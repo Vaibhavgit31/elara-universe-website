@@ -176,3 +176,55 @@ motion). Fixed after review: tablet header overlapped the ribbons (now mark-only
 and the footer email wrapped mid-word.
 
 **Placeholders added:** social links are empty (`content/site.ts → socials`).
+
+---
+
+## Phase 4 — Flip-pad scroll
+
+**Built:** `components/flip/flip-pad.tsx` (+ `flip-page.tsx`), the core "Living Book" idea, and
+`/demo-flip` with five sample pages.
+
+- `<FlipPad>` wraps `<FlipPage>` sections. A sticky full-height stage holds every page stacked
+  (cream sheets, first on top); a ring binding board runs across the top. Scroll position drives
+  everything through Motion values (`useScroll` → `useTransform`), so flips reverse when you
+  scroll back and nothing re-renders per frame.
+- Each page owns a scroll slot: content taller than the screen scrolls inside the page first
+  (`translateY`), then the page rotates up around its top edge (`rotateX` 0 → −180°). The lifting
+  page darkens as it curls and casts a moving shadow (gradient overlays whose opacity follows the
+  flip) on the page beneath. The last page never flips: the pad simply releases into the footer.
+- Page-stack progress on the right edge (page edges that thin out as pages are read) and a
+  handwritten corner page number "Page 3 of 7" (`aria-live`).
+- Only `transform` and `opacity` animate; `backface-visibility: hidden` hides pages past 90°.
+- Reduced motion: no 3D. Pages stack in normal flow and fade in (`StackedPages`).
+- All page content is server-rendered HTML text (verified in `out/demo-flip/index.html`).
+- Lenis smooth scrolling added site-wide (`components/frame/smooth-scroll.tsx`): gentle on
+  wheel, native on touch, disabled with reduced motion.
+
+**Requirements**
+
+- ✅ `<FlipPad>` / `<FlipPage>`, cream sheets bound at the top with a ring binding strip
+- ✅ Scroll-driven rotateX 0 → −180° with moving shadow and curl, reversible
+- ✅ Page-stack progress indicator + "Page x of y" corner number
+- ✅ Tall sections scroll inside first, then flip
+- ✅ Same vertical flip on phones (tested at 360 px)
+- ✅ Reduced motion: no 3D, fade-stacked pages
+- ✅ Real HTML text · ✅ `/demo-flip` with 5 pages
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright 52 passed /
+8 skipped ✅ (`tests/flip-pad.spec.ts`: five pages + counter, 3D lift and counter advance,
+reverse, inner scroll before flip, reduced-motion stack).
+
+**Fixed during the gate:** (1) `FlipPage` was a client component, so across the server/client
+boundary its elements arrived as lazy references and `FlipPad` saw no pages; `FlipPage` is now a
+plain shared component. (2) The pad's position is derived from window scroll plus the measured
+wrapper offset, and the current page is recomputed when the pages are measured, so a scroll that
+happens before measurement is never lost.
+
+**Screenshots:** `docs/screenshots/phase-04/` — demo at 360/768/1440, reduced motion (full page
+and a viewport capture on page 3), and mid-flip captures at 35 %, 65 % and 2.4 screens for
+desktop and phone. Reviewed: the page folds up over the rings with its shadow on the page below;
+nothing scrolls sideways at 360 px.
+
+**For Vaibhav:** to try it on your phone over Wi-Fi run `npm run dev`, note the "Network" URL
+it prints (e.g. `http://192.168.x.x:3000`) and open `http://192.168.x.x:3000/demo-flip` on the
+phone connected to the same Wi-Fi. On a Mac, allow incoming connections if macOS asks.
