@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { Main } from '@/components/frame/main'
 import { Button } from '@/components/ui/button'
 import { Tag, subjectTag } from '@/components/ui/tag'
 
@@ -41,7 +42,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 
 export default function StyleguidePage() {
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-16 px-4 py-12 sm:px-6">
+    <Main className="mx-auto w-full max-w-5xl gap-16 px-4 py-12 sm:px-6">
       <header>
         <p className="eyebrow">Design system</p>
         <h1>The Living Book</h1>
@@ -187,6 +188,6 @@ export default function StyleguidePage() {
           ))}
         </div>
       </Section>
-    </main>
+    </Main>
   )
 }

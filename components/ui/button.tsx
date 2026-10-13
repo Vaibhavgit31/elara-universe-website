@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import type { ComponentProps, ReactNode } from 'react'
+import { TurnLink } from '@/components/ui/turn-link'
 import { cn } from '@/lib/cn'
 
 const variants = {
@@ -25,9 +25,9 @@ export function Button({ variant = 'primary', href, className, children, ...rest
   )
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <TurnLink href={href} className={classes}>
         {children}
-      </Link>
+      </TurnLink>
     )
   }
   return (

@@ -125,3 +125,54 @@ arrives.
 
 **For Vaibhav:** the contact sheet is `docs/screenshots/phase-02/contact-sheet-covers.png`
 (+ `-samples.png`, `-brand.png`). To re-run after adding PDFs: `node scripts/prepare-images.mjs`.
+
+---
+
+## Phase 3 — The frame (menu, footer, page turns)
+
+**Built:** `app/layout.tsx` now wraps every page in the shared frame:
+
+- `components/frame/header.tsx` + `ribbon-nav.tsx`: desktop menu as bookmark ribbons hanging
+  from the top edge (forest ribbons, the current page's ribbon is brass and hangs 18 px longer,
+  V-notched bottoms, spring slide when the page changes, sway on hover). Header logo on the left
+  (horizontal lockup; the mark alone at tablet width so the ribbons fit).
+- `bottom-bar.tsx`: phone menu, fixed bottom bar of six bookmark tabs (icons + short labels,
+  56 px tall, safe-area padding). Hides on scroll down and returns on scroll up (Motion
+  `useScroll` + `useMotionValueEvent`).
+- `footer.tsx`: back-cover style (cream board, double brass rule): full logo, Registered office
+  (Noida) and Office (Ghaziabad), phone, email, page links, four social icons with empty links,
+  "© 2026 Elara Universe Publishers Private Limited" (year from build time).
+- `page-turn.tsx` + `components/ui/turn-link.tsx`: page-turn transition. Internal links use
+  `TurnLink` (Next `Link` with `onNavigate`): the current page lifts and turns around its top edge
+  (≈360 ms) before the router moves, then the new page settles in (≈300 ms, ≈600 ms in total).
+  With reduced motion `MotionConfig reducedMotion="user"` drops the 3D transforms, leaving fades.
+- `whatsapp-button.tsx`: floating button to wa.me/919625741192 with a pre-filled greeting,
+  bottom right on desktop and above the bottom bar on phones.
+- `app/not-found.tsx`: "This page is missing from the book" with a torn-out-page illustration
+  (Elu arrives in Phase 12). Exported as `out/404.html`.
+- Accessibility: "Skip to content" link (visible on focus), `<Main id="main">` landmark on every
+  page, brass focus rings, `aria-current="page"` on the active menu item, labelled navs.
+- `components/motion/motion-provider.tsx`: one `MotionConfig` for the site's easing and
+  reduced-motion behaviour. Stub pages for Catalog, About, Events, Contact and QR Corner so the
+  menu never 404s before their phases.
+
+**Requirements**
+
+- ✅ Desktop ribbon menu with longer active ribbon, hover sway, logo left
+- ✅ Phone bottom bar ≥ 56 px, hides on scroll down / shows on scroll up
+- ✅ Footer with logo, both addresses, phone, email, page links, social icons, © line
+- ✅ Page-turn transition ≈ 600 ms; fade with reduced motion
+- ✅ Floating WhatsApp button (desktop bottom right, above the phone bar)
+- ✅ 404 page with illustration
+- ✅ Visible focus rings + skip link
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ (11 routes) · Playwright 41
+passed / 3 skipped (phone-only test on non-phone projects) ✅ — `tests/frame.spec.ts` covers the
+menu, active state, page turn, bottom-bar hide/show, skip link, footer facts, WhatsApp link and
+the 404 page.
+
+**Screenshots:** `docs/screenshots/phase-03/` (home, catalog stub, 404 at 360/768/1440 + reduced
+motion). Fixed after review: tablet header overlapped the ribbons (now mark-only at 768–1023 px)
+and the footer email wrapped mid-word.
+
+**Placeholders added:** social links are empty (`content/site.ts → socials`).

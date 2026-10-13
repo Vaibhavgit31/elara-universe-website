@@ -29,6 +29,13 @@ export const site = {
     },
   ],
   founders: ['Sunil Sharma', 'Tausif Khan'],
+  // Social links are not known yet (PLAYBOOK "Content still needed"); empty = [PLACEHOLDER].
+  socials: [
+    { name: 'Instagram', url: '' },
+    { name: 'Facebook', url: '' },
+    { name: 'YouTube', url: '' },
+    { name: 'LinkedIn', url: '' },
+  ],
 } as const
 
 export const whatsappLink = (message?: string) =>
