@@ -60,6 +60,11 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   "please confirm", so the Art room's badges are shown from the series data with
   `isPlaceholder` still true. If Art Journey covers a different range, change it in
   `content/series.ts` and the badges follow.
+- (Phase 2, Step E) Every page now wears the acrylic classroom look. A few short labels were
+  written for it and are marked `[PLACEHOLDER]` in the code: the shelf eyebrows on the Catalog
+  ("Hindi shelf" …), the "Sample pages" / "Report card" eyebrows and the "Turn the pages" note on
+  a book page, the "Your school" note on the events board and the two badge labels on QR Corner.
+  Change any of them freely; no facts are stated in them.
 
 ## Simplified
 
@@ -1126,3 +1131,82 @@ phone crop at 360/768).
 **Placeholders added:** the hero headline/hint and hotspot hints (`content/hero.ts`), the room
 leads and section labels marked in the components, FAQ answers for ordering, prices and sample
 copies (`content/faq.ts`).
+
+## Phase 2 — Step E: every other page in the acrylic classroom
+
+**Built** (five page clusters restyled in parallel to the Step C system; the home page was the
+reference):
+
+- **Catalog** (`app/catalog/page.tsx`, `components/catalog/catalog.tsx`,
+  `components/book/book-card.tsx`): heading band with a crayon accent; the sticky-note tabs are
+  now a glass filter panel with the class-picker pill chips (44 px, `aria-pressed`, leaf-700 when
+  pressed) and the live "N of 24 books" count; one full-width shelf band per series alternating
+  paper and mint, each with the series heading, the Devanagari name, the hand-written tagline
+  and the blurb; books on small glass cards that lift on hover above a brass rail (`BookCard` is
+  shared with the book page); the empty shelf is a glass panel with Elu. Filters still live in
+  the URL. Shelves show 4 covers per row from 640 px and 8 from 1280 px.
+- **Book page** (`app/catalog/[slug]/page.tsx`): the tilting cover on a glass panel with the
+  price and the two buttons; subject tag, h1 with "Class N" crayon-underlined in the subject
+  colour, Devanagari title and report badges (Class, NEP 2020); "Peek inside" on glass beside a
+  sticky note with the flipbook hints (or a notebook page with Elu reading when samples are still
+  to come); "What's inside" and "Comes with" as ruled notebook pages (`NotebookCard` gained a
+  `titleAs` prop); "Details" as a report card in a wooden frame; "More from this series" on a
+  mint band. JSON-LD unchanged.
+- **About** (`app/about/page.tsx`, new `components/about/chapter-board.tsx`,
+  `making-steps.tsx`, `polaroid.tsx`): still a four-page flip pad; each chapter opens on a
+  brass-framed chalkboard where "Chapter N" and the title are chalk (the title writes itself in
+  when its page is read: `ChalkText` gained a `start` prop); the story on a ruled notebook page
+  with the drop cap and Elu reading; beliefs as sticky notes on glass; founders' polaroids
+  (token colours, Lora initials) beside notebook pages with name, role and bio; the four
+  making-of steps pinned to the cork notice board in a 2 + 1 / 1 + 2 layout with their
+  self-drawing line art.
+- **Events** (`components/events/*`, `components/illustrations/empty-board.tsx`): page 1 is
+  the notice board with the upcoming tickets pinned to it (torn edge, punched sides, date leaf,
+  type tag, Sample sticker, brass Register; they swing only once their page is read, never with
+  reduced motion) plus a pinned "Your school" note; page 2 is the scrapbook: polaroids dropping
+  onto a glass panel, lightbox on glass. `Pinned` gained a `bare` variant; the date leaf is now
+  one shared `components/ui/date-leaf.tsx` used by the home notice board too.
+- **Contact** (`app/contact/page.tsx`, `components/contact/postcard.tsx`): the full letter on a
+  glass panel, the postcard as glass with a brass POST stamp and postmark, labelled phone/email
+  rows and the map. The form itself is unchanged.
+- **QR Corner** (`components/resources/qr-corner.tsx`, `qr-door.tsx` in token colours): heading
+  with the series name and "Class N" accent, the Devanagari name, report badges for class and
+  subject, the two buttons, and the scanning phone with Elu on a glass panel (same on all 24
+  book addresses).
+- **404, Web Support and login stubs** (`app/not-found.tsx`, `app/web-support/page.tsx`,
+  `app/login/page.tsx`): glass panels, a small chalk "404" slate, the heading system; the stubs
+  keep their copy until Steps F and G replace them.
+- **Footer** (`components/frame/footer.tsx`): a full-width glass band with a brass rule, the
+  logo, the tagline hand-written beside a pencil, eyebrow address columns, 44 px contact rows,
+  the pencil-stroke footer nav and round social targets.
+- **Shared:** `lib/accent.ts` (`splitAccent`, the "last word gets the crayon" rule used by the
+  home rooms and the catalog shelves); `lib/cn.ts` now tells tailwind-merge about `shadow-page`
+  and `shadow-lift`, so `shadow-none` really overrides them (that was the one defect the
+  screenshots showed: a ghost paper card behind the first event ticket).
+
+**Step A checks repeated:** `tests/widths.spec.ts` (13 laptop/phone/zoom sizes × 10 routes:
+no horizontal scroll, nothing outside the viewport, header and content edges within 2 px,
+equal margins) passes on every restyled page; the twelve screenshot baselines were refreshed.
+
+**Tests:** every page spec gained assertions for the new pieces (chips, Devanagari names,
+badges, chalk chapter labels, step count, ticket order and target, footer nav count); nothing
+was weakened. Full suite: **369 passed / 507 skipped by project**; after the shelf-column
+adjustment the catalog, book, width and polish specs were re-run (189 passed) and the baselines
+refreshed.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright ✅ (above).
+
+**Screenshots:** `docs/screenshots/phase2-E/` — catalog, book (hindi-1, technova-3), about,
+events, contact, QR Corner (bare and hindi/1), 404, web-support, login at 360/768/1024/1440 and
+reduced motion. Looked at: the flip-pad pages read as classroom scenes, the phone layouts keep
+two covers per row and nothing clips; one defect found and fixed (ticket ghost card), one
+adjustment (8-column shelves wrapped the "Peek inside" label at 1024 px → 4 columns until
+1280 px).
+
+**Simplified:** nothing.
+
+**Placeholders added:** small labels written for this step, all marked in the code: the shelf
+eyebrows ("Hindi shelf" …, `catalog.tsx`), the "Sample pages" eyebrow and the "Turn the pages"
+sticky note and the "Report card" eyebrow (`app/catalog/[slug]/page.tsx`), the "Your school"
+note on the events board (`upcoming-events.tsx`), the QR Corner badge labels
+(`qr-corner.tsx`).

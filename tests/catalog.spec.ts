@@ -10,12 +10,38 @@ test('catalog shows 24 books on three shelves', async ({ page }) => {
   await expect(page.getByText('24 of 24 books')).toBeVisible()
   for (const shelf of ['Basic Hindi Reader', 'TechNova', 'Art Journey'])
     await expect(page.getByRole('heading', { level: 2, name: new RegExp(shelf) })).toBeVisible()
+  // Phase 2 Step E: the Hindi shelf shows its Devanagari name and every shelf its tagline.
+  await expect(page.getByText('बेसिक हिंदी रीडर')).toBeVisible()
+  await expect(page.getByText('Read • Learn • Grow')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Peek inside', exact: true })).toHaveCount(24)
   await expect(page.getByText('MRP ₹240')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Request a sample copy' }).first()).toHaveAttribute(
     'href',
     /\/contact\/\?book=/,
   )
   await expectNoHorizontalScroll(page)
+})
+
+test('filter chips are 44px pills that show which one is pressed', async ({ page }) => {
+  await open(page, '/catalog/')
+  const allSubjects = page.getByRole('button', { name: 'All subjects' })
+  await expect(allSubjects).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'All classes' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  for (const name of ['All subjects', '3']) {
+    const box = (await page.getByRole('button', { name, exact: true }).boundingBox())!
+    expect(box.height, `${name} height`).toBeGreaterThanOrEqual(44)
+    expect(box.width, `${name} width`).toBeGreaterThanOrEqual(44)
+  }
+  await page.getByRole('button', { name: '3', exact: true }).click()
+  await expect(page.getByRole('button', { name: '3', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(allSubjects).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByText('3 of 24 books')).toBeVisible()
 })
 
 test('filters are saved in the URL and restored from it', async ({ page }) => {

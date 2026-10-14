@@ -4,15 +4,20 @@ import { AnimatePresence, m } from 'framer-motion'
 import { useSyncExternalStore } from 'react'
 import { BookCard } from '@/components/book/book-card'
 import { Elu } from '@/components/mascot/elu'
-import { StickerPop } from '@/components/motion/reveal'
 import { Button } from '@/components/ui/button'
-import { books } from '@/content/books'
-import { series, subjectLabel, type Subject } from '@/content/series'
+import { Glass } from '@/components/ui/glass'
+import { Section } from '@/components/ui/section'
+import { SectionHeading } from '@/components/ui/section-heading'
+import { books, type Book } from '@/content/books'
+import { series, subjectLabel, type Series, type Subject } from '@/content/series'
+import { splitAccent } from '@/lib/accent'
 import { cn } from '@/lib/cn'
 
 const subjects = ['all', ...series.map((s) => s.subject)] as const
 const classes = ['all', '1', '2', '3', '4', '5', '6', '7', '8'] as const
 const EVENT = 'catalog:filter'
+/** Shelf bands alternate between the two light tones, like the book rooms on the home page. */
+const tones = ['paper', 'mint'] as const
 
 // Filters live in the URL (?subject=hindi&class=3) so a teacher can share a filtered link.
 // The full catalog is in the HTML; the filter applies as soon as the page is interactive.
@@ -38,8 +43,8 @@ function setParam(key: string, value: string) {
   window.dispatchEvent(new Event(EVENT))
 }
 
-/** Sticky-note filter tabs. */
-function Tabs<T extends string>({
+/** One row of filter chips, in the style of the class picker on the home page. */
+function Chips<T extends string>({
   label,
   options,
   value,
@@ -53,69 +58,90 @@ function Tabs<T extends string>({
   render: (v: T) => string
 }) {
   return (
-    <fieldset className="flex flex-wrap items-center gap-2">
-      <legend className="float-left mr-3 w-full eyebrow sm:w-auto">{label}</legend>
-      {options.map((option, i) => {
-        const active = option === value
-        return (
-          <StickerPop key={option} delay={i * 0.04} className="inline-block">
-            <button
-              type="button"
-              aria-pressed={active}
-              onClick={() => onChange(option)}
-              className={cn(
-                'min-h-11 min-w-11 px-3 py-2 text-small font-bold shadow-page transition-transform hover:-translate-y-0.5',
-                i % 2 ? 'rotate-1' : '-rotate-1',
-                active ? 'bg-brass text-evergreen' : 'bg-hindi-tint text-forest',
-              )}
-            >
-              {render(option)}
-            </button>
-          </StickerPop>
-        )
-      })}
+    <fieldset className="min-w-0">
+      <legend className="eyebrow">{label}</legend>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={option === value}
+            onClick={() => onChange(option)}
+            className={cn(
+              'focus-glow stamp inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-4 font-heading text-lg font-bold transition-colors duration-200',
+              option === value ? 'bg-leaf-700 text-white' : 'glass text-forest hover:bg-white/70',
+            )}
+          >
+            {render(option)}
+          </button>
+        ))}
+      </div>
     </fieldset>
   )
 }
 
+/** An empty shelf: Elu searches it, and one button clears both filters. */
 const EmptyShelf = () => (
-  <div className="rounded-md bg-mist p-10 text-center">
-    <svg viewBox="0 0 200 90" className="mx-auto w-48" aria-hidden>
-      <rect x="10" y="60" width="180" height="10" rx="2" fill="#B68235" />
-      <rect x="16" y="70" width="168" height="5" rx="2" fill="#8A9A74" />
-      <path
-        d="M70 52c10-24 50-24 60 0"
-        fill="none"
-        stroke="#8A9A74"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeDasharray="5 6"
-      />
-      <text
-        x="100"
-        y="40"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize="22"
-        fill="#8A9A74"
+  <Glass radius="lg" className="flex items-center gap-8 p-6 md:p-8">
+    <Elu pose="search" label="Elu searching the shelf" className="w-24 shrink-0 sm:w-32" />
+    <div className="min-w-0 flex-1">
+      <p className="font-hand text-2xl text-forest">Nothing on this shelf yet.</p>
+      <Button
+        variant="secondary"
+        className="mt-4"
+        onClick={() => {
+          setParam('subject', 'all')
+          setParam('class', 'all')
+        }}
       >
-        ?
-      </text>
-    </svg>
-    <Elu pose="search" label="Elu searching the shelf" className="mx-auto mt-2 w-24" />
-    <p className="mt-2 font-hand text-2xl text-forest">Nothing on this shelf yet.</p>
-    <Button
-      variant="secondary"
-      className="mt-4"
-      onClick={() => {
-        setParam('subject', 'all')
-        setParam('class', 'all')
-      }}
-    >
-      Show all books
-    </Button>
-  </div>
+        Show all books
+      </Button>
+    </div>
+  </Glass>
 )
+
+/** One series on its shelf: heading, names and tagline on the left, the blurb on the right,
+ *  then the books on a brass rail. */
+function Shelf({ s, shelf }: { s: Series; shelf: Book[] }) {
+  return (
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+        <div>
+          {/* [PLACEHOLDER] wording of the eyebrow */}
+          <SectionHeading
+            eyebrow={`${subjectLabel[s.subject]} shelf`}
+            {...splitAccent(s.name)}
+            crayon={s.subject}
+          />
+          {s.nameHindi && (
+            <p lang="hi" className="mt-2 font-devanagari text-h3 font-semibold text-forest">
+              {s.nameHindi}
+            </p>
+          )}
+          <p className="mt-2 font-hand text-2xl text-forest">{s.tagline}</p>
+        </div>
+        <p className="max-w-sm text-small text-forest">{s.blurb}</p>
+      </div>
+      <ul className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8">
+        <AnimatePresence initial={false}>
+          {shelf.map((book) => (
+            <m.li
+              key={book.slug}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.35 }}
+            >
+              <BookCard book={book} />
+            </m.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+      <div aria-hidden className="mt-4 h-1 rounded-full bg-brass/80 shadow-page" />
+    </>
+  )
+}
 
 export function Catalog() {
   const params = new URLSearchParams(useSearch())
@@ -132,57 +158,50 @@ export function Catalog() {
   const shelves = series.filter((s) => visible.some((b) => b.subject === s.subject))
 
   return (
-    <div className="space-y-10">
-      <div className="space-y-5 rounded-md bg-cream p-5 shadow-page sm:p-6" aria-label="Filters">
-        <Tabs
-          label="Subject"
-          options={subjects}
-          value={subject}
-          onChange={(v) => setParam('subject', v)}
-          render={(v) => (v === 'all' ? 'All subjects' : subjectLabel[v as Subject])}
-        />
-        <Tabs
-          label="Class"
-          options={classes}
-          value={cls}
-          onChange={(v) => setParam('class', v)}
-          render={(v) => (v === 'all' ? 'All classes' : v)}
-        />
-        <p className="text-small text-forest" aria-live="polite">
-          {visible.length} of {books.length} books
-        </p>
-      </div>
-      {shelves.length === 0 && <EmptyShelf />}
-      {shelves.map((s) => (
-        <section key={s.id} aria-labelledby={`shelf-${s.id}`}>
-          <h2 id={`shelf-${s.id}`} className="mb-4 flex flex-wrap items-baseline gap-x-3">
-            {s.name}
-            {s.nameHindi && (
-              <span className="font-devanagari text-h3 font-semibold text-forest">
-                {s.nameHindi}
-              </span>
-            )}
-          </h2>
-          <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8">
-            <AnimatePresence initial={false}>
-              {visible
-                .filter((b) => b.subject === s.subject)
-                .map((book) => (
-                  <m.li
-                    key={book.slug}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.35 }}
-                  >
-                    <BookCard book={book} />
-                  </m.li>
-                ))}
-            </AnimatePresence>
-          </ul>
-        </section>
+    <>
+      <Section className="py-8 md:py-12">
+        <Glass
+          radius="lg"
+          role="group"
+          aria-label="Filters"
+          className="flex flex-wrap items-end justify-between gap-x-12 gap-y-6 p-6 md:p-8"
+        >
+          <div className="flex min-w-0 flex-col gap-6">
+            <Chips
+              label="Subject"
+              options={subjects}
+              value={subject}
+              onChange={(v) => setParam('subject', v)}
+              render={(v) => (v === 'all' ? 'All subjects' : subjectLabel[v])}
+            />
+            <Chips
+              label="Class"
+              options={classes}
+              value={cls}
+              onChange={(v) => setParam('class', v)}
+              render={(v) => (v === 'all' ? 'All classes' : v)}
+            />
+          </div>
+          <p className="text-small font-semibold text-forest" aria-live="polite">
+            {visible.length} of {books.length} books
+          </p>
+        </Glass>
+      </Section>
+      {shelves.length === 0 && (
+        <Section className="pb-12">
+          <EmptyShelf />
+        </Section>
+      )}
+      {shelves.map((s, i) => (
+        <Section
+          key={s.id}
+          id={`shelf-${s.id}`}
+          tone={tones[i % tones.length]}
+          className="py-12 md:py-16"
+        >
+          <Shelf s={s} shelf={visible.filter((b) => b.subject === s.subject)} />
+        </Section>
       ))}
-    </div>
+    </>
   )
 }

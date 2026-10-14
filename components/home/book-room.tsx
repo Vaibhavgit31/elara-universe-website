@@ -8,6 +8,7 @@ import { Tag } from '@/components/ui/tag'
 import { books } from '@/content/books'
 import { series } from '@/content/series'
 import { site, whatsappLink } from '@/content/site'
+import { splitAccent } from '@/lib/accent'
 
 /** Room name per series, as the eyebrow reads it: "Our books · Hindi class". */
 const rooms = { hindi: 'Hindi class', technova: 'Computer lab', 'art-journey': 'Art room' } as const
@@ -21,18 +22,13 @@ export function BookRoom({ seriesId }: { seriesId: BookRoomId }) {
   const book = books.find((b) => b.series === s.name)
   const features = book?.features.slice(0, 5) ?? []
   const support = book?.support ?? []
-  // The last word of the name takes the crayon underline; a one-word name (TechNova) gets none.
-  const cut = s.name.lastIndexOf(' ')
-  const title = cut > 0 ? s.name.slice(0, cut) : s.name
-  const accent = cut > 0 ? s.name.slice(cut + 1) : undefined
 
   return (
     <div className="grid gap-10 md:grid-cols-2 md:items-center md:gap-16" data-room-series={s.id}>
       <div>
         <SectionHeading
           eyebrow={`Our books · ${rooms[seriesId]}`}
-          title={title}
-          accent={accent}
+          {...splitAccent(s.name)}
           crayon={s.subject}
         />
         {s.nameHindi && (

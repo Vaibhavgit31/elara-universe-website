@@ -4,11 +4,14 @@ import { cn } from '@/lib/cn'
 /** A page torn from a ruled notebook: rules, a margin line and (on larger screens) punched holes. */
 export function NotebookCard({
   title,
+  titleAs: Title = 'h3',
   holes = true,
   className,
   children,
 }: {
   title?: string
+  /** Heading level of the hand-written title (h3 by default). */
+  titleAs?: 'h2' | 'h3'
   holes?: boolean
   className?: string
   children: ReactNode
@@ -31,7 +34,7 @@ export function NotebookCard({
           ))}
         </span>
       )}
-      {title && <h3 className="font-hand text-2xl leading-8 font-normal">{title}</h3>}
+      {title && <Title className="font-hand text-2xl leading-8 font-normal">{title}</Title>}
       <div className="leading-8">{children}</div>
     </article>
   )

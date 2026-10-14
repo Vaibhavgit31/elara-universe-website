@@ -12,7 +12,7 @@ const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
 /**
  * The book cover tilts in 3D towards the mouse, with a light shine that follows it. On phones it
  * follows device tilt where the browser allows it without a permission prompt; otherwise it stays
- * still. Nothing moves with reduced m.
+ * still. Nothing moves with reduced motion. Sits inside a glass panel on the book page.
  */
 export function TiltCover({ book }: { book: Book }) {
   const { x, y, rotateX, rotateY, shineX, shineY, onPointerMove, onPointerLeave, reduced } =

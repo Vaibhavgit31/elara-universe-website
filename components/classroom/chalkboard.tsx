@@ -62,18 +62,21 @@ export function Chalkboard({
 
 /**
  * A line written in chalk. With `write` the letters appear one by one once the line scrolls into
- * view; the full text is in the server HTML and stays readable by assistive tech, and with reduced
- * motion it is plain text.
+ * view (and `start` is true, so a flip page can hold the writing until it is being read); the full
+ * text is in the server HTML and stays readable by assistive tech, and with reduced motion it is
+ * plain text.
  */
 export function ChalkText({
   text,
   write = false,
+  start = true,
   delay = 0,
   as: Tag = 'p',
   className,
 }: {
   text: string
   write?: boolean
+  start?: boolean
   delay?: number
   as?: 'h1' | 'h2' | 'h3' | 'p'
   className?: string
@@ -87,7 +90,7 @@ export function ChalkText({
     className,
   )
   if (reduced || !write) return <Tag className={classes}>{text}</Tag>
-  const visible = inView || !hydrated
+  const visible = (inView && start) || !hydrated
   // Long lines write in faster so every heading is readable within a second (motion rules).
   const step = Math.min(0.035, 0.6 / text.length)
   return (

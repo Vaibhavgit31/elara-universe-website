@@ -3,23 +3,27 @@
 import Image from 'next/image'
 import { m } from 'framer-motion'
 import { CoverPlaceholder, coverBoxClass } from '@/components/book/cover-placeholder'
-import { StickerPop } from '@/components/motion/reveal'
 import { Button } from '@/components/ui/button'
+import { Glass } from '@/components/ui/glass'
 import { Tag } from '@/components/ui/tag'
 import { TurnLink } from '@/components/ui/turn-link'
 import { formatMrp, type Book } from '@/content/books'
 import { subjectLabel } from '@/content/series'
+import { useReducedMotion } from '@/lib/use-reduced-motion'
 
-/** A book standing on its own piece of shelf; neighbours join into one continuous shelf. */
+/** A book on a glass card: the cover (a link), its subject tag, class, price or sample-copy link
+ *  and "Peek inside". The card lifts a little on hover and stays put with reduced motion. */
 export function BookCard({ book }: { book: Book }) {
   const href = `/catalog/${book.slug}`
+  const reduced = useReducedMotion()
   return (
-    <article className="flex h-full flex-col" data-testid="book-card">
-      <m.div
-        className="px-2 pt-4 sm:px-3"
-        whileHover={{ y: -12 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      >
+    <m.article
+      data-testid="book-card"
+      className="h-full"
+      whileHover={reduced ? undefined : { y: -8 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      <Glass className="flex h-full flex-col gap-2 p-2">
         <TurnLink
           href={href}
           aria-label={`${book.title}: peek inside`}
@@ -37,30 +41,27 @@ export function BookCard({ book }: { book: Book }) {
             <CoverPlaceholder series={book.series} cls={book.class} subject={book.subject} />
           )}
         </TurnLink>
-      </m.div>
-      <div aria-hidden className="h-3 bg-gradient-to-b from-brass to-gold-ink" />
-      <div aria-hidden className="mx-1 h-1.5 rounded-b-sm bg-sage" />
-      <div className="flex flex-1 flex-col gap-2 px-2 pt-4 pb-2 sm:px-3">
         <Tag tone={book.subject} className="self-start">
           {subjectLabel[book.subject]}
         </Tag>
-        <h3 className="text-base leading-snug">
-          {book.series}
-          <StickerPop className="block origin-left eyebrow">Class {book.class}</StickerPop>
-        </h3>
-        <p className="mt-auto text-small font-semibold text-forest">
+        <p className="eyebrow">Class {book.class}</p>
+        <p className="mt-auto text-small leading-8 font-semibold text-forest">
           {book.mrp ? (
             formatMrp(book.mrp)
           ) : (
-            <TurnLink href={`/contact?book=${book.slug}`} className="link">
+            // py-1.5 with -my-1.5 gives a 44px tap target without changing the line height.
+            <TurnLink
+              href={`/contact?book=${book.slug}`}
+              className="link -my-1.5 inline-block py-1.5"
+            >
               Request a sample copy
             </TurnLink>
           )}
         </p>
-        <Button href={href} variant="secondary" className="min-h-10 px-4 py-1.5 text-small">
+        <Button href={href} variant="secondary" className="w-full px-2 text-small">
           Peek inside
         </Button>
-      </div>
-    </article>
+      </Glass>
+    </m.article>
   )
 }

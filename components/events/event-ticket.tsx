@@ -1,13 +1,17 @@
 'use client'
 
 import { m } from 'framer-motion'
-import { Tag } from '@/components/ui/tag'
+import { useFlipPageActive } from '@/components/flip/flip-pad'
 import { buttonClass } from '@/components/ui/button-class'
+import { DateLeaf } from '@/components/ui/date-leaf'
+import { Tag } from '@/components/ui/tag'
 import { eventTypeLabel, type Event, type EventType } from '@/content/events'
-import { monthShort } from '@/lib/events'
 import { cn } from '@/lib/cn'
+import { useHydrated } from '@/lib/use-hydrated'
+import { useReducedMotion } from '@/lib/use-reduced-motion'
 
-const stickerTone: Record<EventType, 'hindi' | 'computer' | 'neutral' | 'drawing'> = {
+/** Subject colours stay on the small type tag only. */
+const tagTone: Record<EventType, 'hindi' | 'computer' | 'neutral' | 'drawing'> = {
   launch: 'hindi',
   workshop: 'computer',
   training: 'neutral',
@@ -16,59 +20,60 @@ const stickerTone: Record<EventType, 'hindi' | 'computer' | 'neutral' | 'drawing
 
 // A torn bottom edge: a zigzag of 18 teeth.
 const torn = `polygon(0 0, 100% 0, ${Array.from({ length: 19 }, (_, i) => `${100 - (i * 100) / 18}% ${i % 2 ? 97 : 100}%`).join(', ')})`
+// Punched sides: a half-circle notch bitten out of each edge, like a ticket stub.
+const punched =
+  '[mask-image:radial-gradient(circle_at_0_50%,transparent_9px,black_10px),radial-gradient(circle_at_100%_50%,transparent_9px,black_10px)] [mask-composite:intersect]'
 
-/** A paper ticket pinned to the page; it swings gently on its pin. */
-export function EventTicket({
-  event,
-  detailed = false,
-  className,
-}: {
-  event: Event
-  detailed?: boolean
-  className?: string
-}) {
+/** The "Sample" sticker on placeholder events (a ticket row item or, with `absolute`, a corner). */
+export const SampleSticker = ({ className }: { className?: string }) => (
+  <span
+    className={cn(
+      'rotate-6 rounded-sm border border-drawing bg-drawing-tint px-2 py-0.5 text-label text-evergreen uppercase',
+      className,
+    )}
+  >
+    Sample
+  </span>
+)
+
+/** A paper ticket pinned to the notice board: date leaf, type tag, title, place, description and
+ *  the Register link. Once its page is being read it swings gently on the pin; it hangs still
+ *  before hydration and with reduced motion. */
+export function EventTicket({ event }: { event: Event }) {
+  const hydrated = useHydrated()
+  const active = useFlipPageActive()
+  const reduced = useReducedMotion()
+  const swing = hydrated && active && !reduced
   return (
     <m.article
-      className={cn('relative origin-top pt-4', className)}
-      animate={{ rotate: [-1.2, 1.2, -1.2] }}
-      transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+      className="origin-top shadow-page"
+      initial={false}
+      animate={swing ? { rotate: [-1.2, 1.2, -1.2] } : { rotate: 0 }}
+      transition={swing ? { duration: 7, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.4 }}
     >
-      <span
-        aria-hidden
-        className="absolute top-0 left-1/2 z-10 size-5 -translate-x-1/2 rounded-full bg-drawing shadow-[inset_-2px_-2px_4px_rgb(0_0_0/0.3),0_2px_3px_rgb(0_0_0/0.3)]"
-      />
       <div
-        className="relative flex gap-4 bg-paper [mask-image:radial-gradient(circle_at_0_50%,transparent_9px,black_10px),radial-gradient(circle_at_100%_50%,transparent_9px,black_10px)] [mask-composite:intersect] p-5 pb-7 shadow-page"
+        className={cn('flex gap-4 bg-paper p-4 pb-6 sm:p-6 sm:pb-8', punched)}
         style={{ clipPath: torn }}
       >
-        {event.isPlaceholder && (
-          <span className="absolute top-2 right-2 rotate-6 rounded-sm border border-drawing bg-drawing-tint px-2 py-0.5 text-label text-evergreen uppercase">
-            Sample
-          </span>
-        )}
-        <time
-          dateTime={event.date}
-          className="flex shrink-0 flex-col items-center border-r border-dashed border-sage pr-4 font-heading"
-        >
-          <span className="text-3xl leading-none font-bold">{event.date.slice(8)}</span>
-          <span className="mt-1 eyebrow">{monthShort(event.date)}</span>
-          <span className="text-small text-forest">{event.date.slice(0, 4)}</span>
-        </time>
+        <DateLeaf date={event.date} year />
         <div className="min-w-0">
-          <Tag tone={stickerTone[event.type]} className="-rotate-2">
-            {eventTypeLabel[event.type]}
-          </Tag>
-          <h3 className="mt-2 pr-10 text-lg leading-snug break-words">{event.title}</h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <Tag tone={tagTone[event.type]} className="-rotate-2">
+              {eventTypeLabel[event.type]}
+            </Tag>
+            {event.isPlaceholder && <SampleSticker />}
+          </div>
+          <h3 className="mt-2 text-lg leading-snug break-words">{event.title}</h3>
           <p className="mt-1 text-small break-words text-forest">
             {event.city} · {event.venue}
           </p>
-          {detailed && <p className="mt-3 text-small">{event.description}</p>}
-          {detailed && event.registerUrl && (
+          <p className="mt-3 text-small">{event.description}</p>
+          {event.registerUrl && (
             <a
               href={event.registerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={buttonClass('brass', 'mt-4 min-h-10 px-4 py-1.5 text-small')}
+              className={buttonClass('brass', 'mt-4')}
             >
               Register
             </a>

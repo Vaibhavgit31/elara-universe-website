@@ -40,20 +40,24 @@ export function NoticeBoard({
   )
 }
 
-/** One notice pinned to the board (a list item): a paper card with a push-pin and a slight tilt. */
+/** One notice pinned to the board (a list item): a paper card with a push-pin and a slight tilt.
+ *  `bare` keeps only the pin and the tilt, for notices that are their own piece of paper. */
 export function Pinned({
   tilt = 'none',
+  bare = false,
   className,
   children,
 }: {
   tilt?: keyof typeof tilts
+  bare?: boolean
   className?: string
   children: ReactNode
 }) {
   return (
     <li
       className={cn(
-        'relative rounded-sm bg-paper p-6 pt-8 shadow-page transition-transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+        'relative transition-transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+        bare ? 'pt-3' : 'rounded-sm bg-paper p-6 pt-8 shadow-page',
         tilts[tilt].card,
         className,
       )}

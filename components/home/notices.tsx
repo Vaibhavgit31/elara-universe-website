@@ -2,30 +2,18 @@
 
 import { NoticeBoard, Pinned } from '@/components/classroom/notice-board'
 import { Button } from '@/components/ui/button'
+import { DateLeaf } from '@/components/ui/date-leaf'
 import { Tag } from '@/components/ui/tag'
 import { eventTypeLabel, type Event } from '@/content/events'
-import { formatDate, monthShort, splitEvents } from '@/lib/events'
+import { formatDate, splitEvents } from '@/lib/events'
 import { useToday } from '@/lib/use-today'
 
 const tilts = ['left', 'right', 'none'] as const
 
-/** A tear-off calendar leaf: the day in big type over the short month (the full date follows). */
-const DateLeaf = ({ date }: { date: string }) => (
-  <span
-    aria-hidden
-    className="flex w-14 shrink-0 flex-col items-center rounded-sm bg-mist py-2 shadow-page"
-  >
-    <span className="font-heading text-h3 leading-none font-bold text-forest">
-      {Number(date.slice(8))}
-    </span>
-    <span className="mt-1 eyebrow">{monthShort(date)}</span>
-  </span>
-)
-
 /** One notice: date leaf, event type, title, date, city · venue and a Sample tag on placeholders. */
 const Notice = ({ event }: { event: Event }) => (
   <div className="flex items-start gap-4">
-    <DateLeaf date={event.date} />
+    <DateLeaf date={event.date} decorative />
     <div className="min-w-0">
       <p className="eyebrow">{eventTypeLabel[event.type]}</p>
       <h3 className="mt-1">{event.title}</h3>

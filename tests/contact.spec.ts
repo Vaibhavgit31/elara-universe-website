@@ -29,6 +29,9 @@ test('contact page shows the letter form and the postcard', async ({ page }) => 
     'href',
     /wa\.me/,
   )
+  await expect(
+    postcard.getByRole('link', { name: 'info@elarauniversepublications.com' }),
+  ).toHaveAttribute('href', 'mailto:info@elarauniversepublications.com')
   await expect(page.locator('input[name="botcheck"]')).toBeHidden()
   await expectNoHorizontalScroll(page)
 })

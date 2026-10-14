@@ -1,7 +1,9 @@
 'use client'
 
 import { m } from 'framer-motion'
+import { NoticeBoard, Pinned } from '@/components/classroom/notice-board'
 import { useFlipPageActive } from '@/components/flip/flip-pad'
+import { cn } from '@/lib/cn'
 import { useReducedMotion } from '@/lib/use-reduced-motion'
 
 // How a book is made (PLAYBOOK: write and edit, illustrate, print, then add digital support).
@@ -49,44 +51,57 @@ const steps = [
   },
 ]
 
-/** Four illustrated steps whose line drawings draw themselves in when the page is read. */
-export function MakingSteps() {
+const tilts = ['left', 'right', 'none'] as const
+/** On wide screens the first and last notices span two of the board's three columns, so the four
+ *  steps fill the board in a zigzag (1 wide, 2 / 3, 4 wide) with no empty cell. */
+const wide = (i: number) => i === 0 || i === steps.length - 1
+
+/** The four steps pinned to the notice board; each line drawing draws itself in when the page is read. */
+export function MakingSteps({ className }: { className?: string }) {
   const active = useFlipPageActive()
   const reduced = useReducedMotion()
   return (
-    <ol className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+    <NoticeBoard className={className}>
       {steps.map((step, i) => (
-        <li key={step.title}>
-          <svg
-            viewBox="0 0 120 120"
-            className="h-28 w-28 text-forest"
-            aria-hidden
-            data-testid="step-drawing"
-          >
-            {step.paths.map((d, j) => (
-              <m.path
-                key={d}
-                d={d}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                initial={false}
-                animate={{ pathLength: active ? 1 : 0, opacity: active ? 1 : 0 }}
-                transition={{
-                  duration: reduced ? 0.4 : 1,
-                  delay: reduced ? 0 : i * 0.35 + j * 0.15,
-                  ease: 'easeInOut',
-                }}
-              />
-            ))}
-          </svg>
-          <p className="mt-2 eyebrow">Step {i + 1}</p>
-          <h3>{step.title}</h3>
-          <p className="mt-2 text-small">{step.text}</p>
-        </li>
+        <Pinned
+          key={step.title}
+          tilt={tilts[i % tilts.length]}
+          className={cn(wide(i) && 'lg:col-span-2')}
+        >
+          <div className={cn('flex flex-col gap-4', wide(i) && 'lg:flex-row lg:gap-8')}>
+            <svg
+              viewBox="0 0 120 120"
+              className="size-28 shrink-0 text-forest"
+              aria-hidden
+              data-testid="step-drawing"
+            >
+              {step.paths.map((d, j) => (
+                <m.path
+                  key={d}
+                  d={d}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={false}
+                  animate={{ pathLength: active ? 1 : 0, opacity: active ? 1 : 0 }}
+                  transition={{
+                    duration: reduced ? 0.4 : 1,
+                    delay: reduced ? 0 : i * 0.35 + j * 0.15,
+                    ease: 'easeInOut',
+                  }}
+                />
+              ))}
+            </svg>
+            <div className="min-w-0">
+              <p className="eyebrow">Step {i + 1}</p>
+              <h3 className="mt-2">{step.title}</h3>
+              <p className="mt-2 text-small">{step.text}</p>
+            </div>
+          </div>
+        </Pinned>
       ))}
-    </ol>
+    </NoticeBoard>
   )
 }

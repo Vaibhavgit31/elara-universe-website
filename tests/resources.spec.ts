@@ -24,6 +24,9 @@ test('book addresses show the series and class on the same placeholder', async (
     'href',
     '/catalog/?subject=computer',
   )
+  // Report-card badges name the class and the subject.
+  await expect(page.locator('dl').filter({ hasText: 'Class' })).toContainText('3')
+  await expect(page.locator('dl').filter({ hasText: 'Subject' })).toContainText('Computer')
   await open(page, '/resources/hindi/1/')
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     /Basic Hindi Reader\s*Class 1/,

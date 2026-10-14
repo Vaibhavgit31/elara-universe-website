@@ -21,6 +21,7 @@ test('header, menu, footer and WhatsApp button are on every page', async ({ page
     footer.getByRole('link', { name: 'info@elarauniversepublications.com' }),
   ).toBeVisible()
   await expect(footer.getByText(/© \d{4} Elara Universe Publishers Private Limited/)).toBeVisible()
+  await expect(footer.getByRole('navigation', { name: 'Footer' }).getByRole('link')).toHaveCount(7)
   await expectNoHorizontalScroll(page)
 })
 
