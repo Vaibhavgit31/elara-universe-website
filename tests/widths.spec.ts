@@ -32,6 +32,7 @@ const routes = [
   '/login/',
   '/login/forgot/',
   '/web-support/',
+  '/web-support/help/',
 ]
 
 /** Visible, non-decorative elements that poke past the viewport, as "tag.class(left,right)". */

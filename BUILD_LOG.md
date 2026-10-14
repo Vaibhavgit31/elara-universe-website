@@ -1330,3 +1330,84 @@ the three demo accounts; no emails are sent (no Web3Forms key, no Supabase SMTP)
 **Simplified:** nothing.
 
 **Placeholders added:** the lead lines on the admin pages (marked in the code).
+
+## Phase 2 — Step G: Web Support portal
+
+**Built** (only the *flow* of a publisher portal, in the acrylic classroom design):
+
+- **Signed out, `/web-support`** (`components/portal/public-intro.tsx`): the four steps from the
+  Hindi Reader back cover on a chalkboard (visit the website → request access → get approval →
+  use the content; the one-line notes under each step are `[PLACEHOLDER]` wording), the
+  **Request access** form on glass (name, school, role teacher | principal | coordinator,
+  email, phone, book series, class, optional note; honeypot; five per IP per hour) and a glass
+  login card reusing `LoginForm`. Requests go through `store.createRequest` and
+  `notifyTeam()` (Web3Forms email to the team when the key exists) and appear on `/admin`,
+  where "Create account" pre-fills the new-teacher form.
+- **Signed in, the portal layout** (`PortalShell`, `PortalNav`): a sticky glass sidebar with
+  the school and the person's name and the links My books, My tests, Test Maker, Help & Doubts,
+  Profile (plus Admin for admins) and Sign out; on phones it folds into a "Portal menu" bar.
+- **My books** (`/web-support`): "Select your title" with Step 1 Subject and Step 2 Series
+  dropdowns, kept in the URL (`?subject=hindi&series=basic-hindi-reader`, shareable, Back
+  works, a subject the account does not teach falls back to its first one). Teachers see only
+  their assigned subjects and classes, admins everything (`lib/portal.ts`). One glass card per
+  class with the cover, "<Series> (Class n)", **Learning Resources** and **Generate Test
+  Paper**; cards lift on hover and the covers turn in like a page when the series changes
+  (never on the first paint, never with reduced motion). The grid sizes itself by the column it
+  sits in (container queries): one row per book with the cover beside it on phones, three
+  cards on a laptop. Accounts without classes see a "write to us" note.
+- **Learning resources** (`/web-support/books/[slug]`, only for books the account teaches,
+  others 404): cover, subject tag, title, Generate Test Paper, back to My books, and WAI-ARIA
+  tabs (arrow keys) for E-book (the sample flipbook for now), Animated videos (embedded
+  player), Worksheets (PDF view + download), Interactive quizzes and Downloads, all from
+  `content/resources.ts`. Empty tabs say "Coming soon" with the titles that are expected.
+- **Help & Doubts** (`/web-support/help`, public, inside the portal layout when signed in):
+  every question from `content/faq.ts` grouped by its seven topics, each at its own `#anchor`
+  (highlighted when targeted), a search box that narrows them as you type, and **Ask a doubt**
+  (`#ask`): saved to `doubts`, emailed to the team when Web3Forms is set, `?q=` pre-fills the
+  question (the chatbot's "Ask our team" uses it), signed-in teachers get their details filled.
+- **My tests** (`/web-support/tests`, the teacher's own papers only) and the saved test page
+  (`/web-support/tests/[id]`, another teacher's id is a 404); **Profile** (name, school, phone
+  through `store.updateOwnProfile`; classes and subjects read-only; change password).
+  `/web-support/test-maker` is a protected placeholder until Step I.
+- Shared: `Chips` moved into `components/ui/form.tsx`; `CoverPlaceholder` lettering now scales
+  with the cover (container units), so the "cover coming soon" covers read at 80 px and 300 px.
+
+**Requirements**
+
+- ✅ Public page: four steps, glass login card, Request access form → `access_requests` + email
+- ✅ Portal layout with glass sidebar (school, name, My books, My tests, Help & Doubts, Profile,
+  Sign out); top menu on phones
+- ✅ Subject → Series dropdowns in the URL, Back works; assigned classes only, admins all
+- ✅ Book grid: cover, "<Series> (Class n)", Learning Resources + Generate Test Paper, hover lift,
+  page-flip covers when the series changes
+- ✅ Learning Resources tabs (E-book flipbook, videos, worksheets with PDF view + download,
+  quizzes, downloads) from `content/resources.ts`; "Coming soon" when empty
+- ✅ Help & Doubts: searchable FAQ by topic with anchors, Ask a doubt → `doubts` + email, `?q=`
+- ✅ Every portal page except the intro and Help is protected on the server; tests for the
+  redirect, teacher vs admin (Step F) and another teacher's test (404)
+
+**Tests:** `tests/portal.spec.ts` — 10 tests (public page on all four projects; the five
+protected addresses redirect to login with `next`; a request reaches the admin page; sidebar,
+subjects and the three assigned classes, also on the phone; URL choice and Back; admin sees 3
+subjects and 8 classes; Learning Resources tabs with the arrow key, Generate Test Paper link and
+a 404 for an unassigned class; My tests vs another teacher's paper; Profile save; Help search,
+anchors and the empty search; `?q=` doubt reaching the admin). `tests/helpers.ts` gained
+`signInAs()` (signs in once per worker and reuses the cookies). The axe audit now covers
+`/login/`, `/web-support/`, `/web-support/help/` and six signed-in pages; the width checks cover
+`/web-support/help/`; the sitemap lists Help.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **469 passed / 746 skipped by project** ✅ — one Step F test failed in that run because Sign out now sits inside the phone "Portal menu"; the test opens the menu first and passes on every project (re-run)
+
+**Screenshots:** `docs/screenshots/phase2-G/` — `/web-support/` signed out and signed in,
+`/web-support/books/hindi-1/`, `/web-support/tests/`, `/web-support/profile/`,
+`/web-support/help/` (signed out and in), `/catalog/` (placeholder covers), at
+360/768/1024/1440 and reduced motion. Looked at, three defects found and fixed: the book
+cards' button labels wrapped onto two lines in the narrow portal column (→ container-query
+grid), the "cover coming soon" lettering clipped on small covers (→ scales with the cover), and
+on phones one long QR address in a Help answer widened the cards past the screen (→ answers
+wrap anywhere).
+
+**Simplified:** nothing.
+
+**Placeholders added:** the step notes on the chalkboard, the lead lines on Web Support and
+Help, the e-book note ("The sample pages for now…"), all marked in the code.

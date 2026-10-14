@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { open } from './helpers'
+import { demo, open, signInAs } from './helpers'
 
 const routes = [
   '/',
@@ -12,6 +12,9 @@ const routes = [
   '/contact/',
   '/resources/',
   '/resources/technova/3/',
+  '/login/',
+  '/web-support/',
+  '/web-support/help/',
 ]
 
 for (const route of routes)
@@ -44,3 +47,24 @@ test('404 page passes the audit too', async ({ page }, { project }) => {
     .analyze()
   expect(results.violations.map((v) => v.id)).toEqual([])
 })
+
+// Phase 2, Step G: the signed-in portal pages (mock-mode demo teacher and admin).
+const portal = [
+  ['teacher', '/web-support/'],
+  ['teacher', '/web-support/books/hindi-1/'],
+  ['teacher', '/web-support/tests/'],
+  ['teacher', '/web-support/profile/'],
+  ['admin', '/admin/'],
+  ['admin', '/admin/teachers/new/'],
+] as const
+
+for (const [who, route] of portal)
+  test(`no accessibility violations on ${route} (signed in)`, async ({ page }, { project }) => {
+    test.skip(project.name !== 'reduced-motion', 'audit once')
+    await signInAs(page, demo[who])
+    await open(page, route)
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
+      .analyze()
+    expect(results.violations.map((v) => `${v.id}: ${v.nodes[0]?.target.join(' ')}`)).toEqual([])
+  })

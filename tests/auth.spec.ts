@@ -101,6 +101,8 @@ test.describe('login', () => {
       page.getByRole('heading', { level: 1, name: `Hello, ${teacher.name}` }),
     ).toBeVisible()
     await expectTeacherLink(page, 'My portal')
+    // On phones the portal links (Sign out among them) fold into the "Portal menu" (Step G).
+    if (isPhone(page)) await page.getByRole('button', { name: 'Portal menu' }).click()
     await page.getByRole('button', { name: 'Sign out' }).click()
     await expect(page).toHaveURL('/', nav)
     await expectTeacherLink(page, 'Teacher login')

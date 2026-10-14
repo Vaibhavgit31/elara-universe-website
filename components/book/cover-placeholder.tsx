@@ -27,17 +27,18 @@ export function CoverPlaceholder({
       role="img"
       aria-label={`${series} Class ${cls} cover coming soon`}
       className={cn(
-        'flex h-full w-full flex-col items-center justify-center gap-1 overflow-hidden p-3 text-center leading-tight',
+        // A size container, so the lettering scales with the cover (80px in a list, 300px on a page).
+        '@container flex h-full w-full flex-col items-center justify-center gap-1 overflow-hidden p-[8%] text-center leading-tight',
         tints[subject],
         className,
       )}
     >
-      <span className="font-heading text-xs font-bold sm:text-small">{series}</span>
-      <span className="font-heading text-2xl font-bold sm:text-3xl">{cls}</span>
-      <span className="text-[9px] font-bold tracking-widest uppercase">
+      <span className="font-heading text-[clamp(9px,8cqw,15px)] font-bold">{series}</span>
+      <span className="font-heading text-[clamp(18px,18cqw,30px)] font-bold">{cls}</span>
+      <span className="text-[clamp(7px,5cqw,9px)] font-bold tracking-widest uppercase">
         {subjectLabel[subject]}
       </span>
-      <span className="font-hand text-sm sm:text-base">cover coming soon</span>
+      <span className="font-hand text-[clamp(10px,9cqw,16px)]">cover coming soon</span>
     </div>
   )
 }
