@@ -81,6 +81,24 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
 - (Phase 2, Step F) This session pushes to the branch it was given,
   `claude/stoic-clarke-ihq1sb`, instead of `claude/elara-publishers-website-waf1o4` named in the
   handover prompt. Both start from the same history; merge or rename whichever you prefer.
+- (Phase 2, Step I) The Hindi wording printed on test papers was written for this build:
+  section titles (सही उत्तर चुनिए, रिक्त स्थान भरिए, सही या गलत लिखिए, सही मिलान कीजिए, एक शब्द में
+  उत्तर दीजिए, संक्षेप में उत्तर दीजिए, विस्तार से उत्तर दीजिए), header labels (नाम, कक्षा, अनुक्रमांक,
+  समय, पूर्णांक, दिनांक, सामान्य निर्देश, उत्तर कुंजी, सेट, खंड) and the default instruction
+  "सभी प्रश्न अनिवार्य हैं।". Please have a Hindi teacher read them once ().
+- (Phase 2, Step I) Chapter lists are needed for Basic Hindi Reader Classes 2 and 4–8 and for
+  every TechNova and Art Journey book (); until then teachers type the
+  chapters or topics. The Class 1 and 3 Hindi lists were read from the PDFs and need checking
+  (the open points are in ).
+- (Phase 2, Step I) Each teacher may draft 40 sections or single questions a day
+  ( in ; about 8–10 papers). Change it as you like
+  once you see the xAI bill.
+- (Phase 2, Step I) The Word file uses Mangal for Hindi, which ships with Windows and Office; on a
+  Mac, Word substitutes a Devanagari font (Kohinoor Devanagari or Devanagari MT), so line breaks
+  can move slightly. The PDF from the browser's print always looks exactly like the preview.
+- (Phase 2, Step I) Drag-and-drop in the editor uses Motion's  (already part of the
+  site) instead of , whose last release is 22 months old (the "updated in the last
+  12 months" rule). Keyboard users have Move up / Move down.
 
 ## Simplified
 
@@ -1496,3 +1514,112 @@ for the panel), `docx@9.11.0` (Word download in Step I, loaded only when clicked
 **Simplified:** nothing.
 
 **Placeholders added:** none (the panel's two sentences of copy are plain instructions).
+
+## Phase 2 — Step I: Test Maker
+
+**Built** (`/web-support/test-maker`, teachers and admins; opened from a book card's "Generate
+Test Paper" with the class and book chosen, from the sidebar, or from My tests):
+
+- **Chapters** (`content/chapters.ts`): Basic Hindi Reader Class 1 (26 entries) and Class 3 (17
+  entries) typed in Unicode Devanagari from the contents pages read earlier
+  (`docs/research/hindi-chapters.md`), marked `needsChecking` and shown with "Chapter names were
+  typed from the book's contents page and still need checking"; the printed test papers are
+  left out. Every other book (Hindi 2 and 4–8, all TechNova, all Art Journey) has a
+  `[PLACEHOLDER]` list of six chapters that is easy to replace; for those the form asks the
+  teacher to type the chapters or topics instead.
+- **Form** (`components/test-maker/setup-form.tsx`): class (only the teacher's) → book (only
+  their subjects) → chapters (chips, select all / clear) → question types with count and marks
+  each (multiple choice, fill in the blanks, true/false, match the following, one word, short
+  answer, long answer; picture / drawing tasks for Art Journey only) → difficulty mix → total
+  marks and time, with a warning when the questions or the mix do not add up → exam name,
+  school name (from the profile), optional logo (PNG/JPEG under 150 KB), date, instructions
+  (in the paper's language). Hindi papers are in Devanagari; Computer and Drawing in English.
+- **Generation** (`app/api/test-maker/draft/route.ts`, `lib/test-maker/generate.ts`): one
+  request per section, drafted by Grok through `generateText` + `Output.object` with a zod
+  schema (strict JSON), then checked again by type (four distinct options with the answer
+  among them, a blank in fill-ins, the exact true/false word, 3–6 match pairs…); invalid output
+  is asked again up to three times. The prompt names the book, series, subject and class,
+  lists the chosen chapters and says to stay within them, applies the NEP 2020 / NCF 2023
+  competency focus and the difficulty mix, and asks for Devanagari for Hindi. The route checks
+  the session, that the book is one the teacher teaches, that chapters come from the real list,
+  the Origin, and the **daily limit per teacher** (`testDraftsPerDay: 40` in
+  `content/site-config.ts`, counted per drafted section or question with
+  `store.bumpUsage('test', …)`). Every drafted question is labelled **"AI draft — please
+  check"** until the teacher edits it or presses "Mark checked".
+- **Editor** (`components/test-maker/editor.tsx`): edit the question, the four options with the
+  correct one, match pairs, true/false or the answer for the key; reorder by dragging the
+  handle (Motion's `Reorder`) or with Move up / Move down from the keyboard; delete; regenerate
+  one question (the new draft avoids the questions already there); add your own question;
+  change marks; the live total ("30 of 30 marks · 60 minutes") follows every change.
+- **Output** (`components/test-maker/paper-sheet.tsx`, `lib/test-maker/paper.ts`): an A4 sheet
+  with the school header (logo, school, exam, class, book, subject, set, time, maximum marks,
+  date, name and roll number lines, instructions), sections with their marks
+  ("खंड क: सही उत्तर चुनिए (5 × 1 = 5)"), numbered questions with marks, options, match tables,
+  answer lines or a drawing box, and the answer key on its own page. **Set B** shuffles the
+  questions in each section and the options (seeded, so it is the same every time; the match
+  column is shuffled in both sets). **PDF** through the browser's print (`@page { size: A4 }`;
+  printing a page with a paper prints only the paper), **Word** through `docx@9.11.0` in the
+  browser (`lib/test-maker/docx.ts`, loaded on click): A4, Calibri for Latin and Mangal in the
+  complex-script slot for Devanagari, the same header, sections and key.
+- **Save, duplicate, delete** (`app/web-support/test-maker/actions.ts`): papers are saved with
+  their settings and sections (zod-checked) to `tests`, listed under My tests with Duplicate and
+  Delete (two-step) buttons, and open straight in the editor at `/web-support/tests/<id>`.
+- **Mock mode:** without the xAI variables the same route returns sample questions in the
+  paper's language, marked "(नमूना)" / "(Sample)", and the Test Maker shows "Mock mode: sample
+  questions, no AI".
+
+**Hindi rendering checked in both outputs:** the browser's PDF (Chromium print, A4, three pages:
+paper, rest of paper, answer key) embeds Noto Sans Devanagari and shapes the conjuncts
+(प्रश्न, स्वस्थ, विकल्प) correctly — `docs/screenshots/phase2-I/print-to-pdf-pages.png`; the
+Word file opened in LibreOffice (with Noto Sans Devanagari installed in the sandbox as a stand-in
+for Windows' Mangal) renders the same text correctly on A4 —
+`docs/screenshots/phase2-I/word-file-in-libreoffice.png`. Two print defects found and fixed: a
+section heading could be left alone at the foot of a page (→ `break-after: avoid`), and the
+tall vowel signs of a heading that starts a new page showed as specks at the foot of the
+previous one (→ normal line height and a little top padding on the paper's headings).
+
+**Requirements**
+
+- ✅ `content/chapters.ts` for every book and class; Hindi typed from the contents pages and
+  marked "needs checking"; TechNova and Art Journey `[PLACEHOLDER]` lists
+- ✅ Form: class (teacher's classes) → book → chapters → types with count and marks (picture tasks
+  for Art Journey) → difficulty mix → total marks and time with a warning → exam, school, logo,
+  date, instructions; Hindi in Devanagari, Computer and Drawing in English
+- ✅ Grok drafts one section at a time, zod-validated structured JSON, retries; book, class,
+  chapters, NEP 2020 / NCF 2023 focus; "AI draft — please check" on every question
+- ✅ Editor: edit, drag reorder, delete, regenerate one, add your own, change marks, live totals
+- ✅ A4 print preview with header, sections, marks and a separate answer key; Set A / Set B; PDF
+  through print with a print stylesheet; Word through `docx`; Hindi checked in both
+- ✅ Save, duplicate, delete; My tests in the sidebar; daily limit per teacher in config
+- ✅ Mock mode without the key
+
+**Tests:** `tests/test-maker.spec.ts` — 10 tests: "Generate Test Paper" pre-fills class and
+book and limits the class list (desktop and phone); totals and mix warnings, no drawing tasks
+for TechNova, placeholder chapters must be typed; a Hindi paper drafted section by section, then
+edited (label goes on edit, move, delete, add, marks, regenerate) with the live total (desktop
+and phone); the A4 preview (Devanagari header and section titles, 16 questions, answer key, Set B
+order differs, key can be left out); printing shows only the paper and the PDF is A4 with Noto
+Sans Devanagari embedded (`pdffonts`); the Word download unzips to A4 with `w:cs="Mangal"` and
+the Hindi text; save, open from My tests, duplicate, delete; the draft endpoint needs a session,
+an assigned book and real chapters; the daily limit (40, then 429); axe on all three steps.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **500 passed / 792 skipped by project**, 0 failed ✅
+
+**Screenshots:** `docs/screenshots/phase2-I/` — set up, edit and print preview at
+360/768/1024/1440 and reduced motion, the print view (print media) at 1440, My tests, the
+three PDF pages and the Word file rendered by LibreOffice. Looked at: the form, editor and paper
+fit the phone without sideways scrolling; the paper is legible down to 360 px.
+
+**Decisions** (logged for Vaibhav): drag-to-reorder uses Motion's `Reorder` (already installed)
+instead of `@dnd-kit/core`, whose last release is 22 months old (the 12-month rule); keyboard
+users get Move up / Move down. The save keeps the address unchanged and offers "Open it from My
+tests", because changing the address in place makes Next.js remount the editor.
+
+**Mock-mode features:** Test Maker drafts (sample questions in the paper's language).
+
+**Simplified:** nothing.
+
+**Placeholders added:** the TechNova, Art Journey and remaining Hindi chapter lists
+(`content/chapters.ts`); the Hindi exam wording on the paper (section titles, header labels and
+the default instruction "सभी प्रश्न अनिवार्य हैं।", `lib/test-maker/paper.ts` and
+`defaults.ts`) is standard wording written for this build and needs a check.

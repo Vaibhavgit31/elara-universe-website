@@ -80,7 +80,7 @@ export function PortalNav({
     <Glass
       radius="lg"
       spotlight={false}
-      className="p-4 md:sticky md:top-[calc(var(--topbar-h)+1rem)] md:p-6"
+      className="p-4 md:sticky md:top-[calc(var(--topbar-h)+1rem)] md:p-6 print:hidden"
     >
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">

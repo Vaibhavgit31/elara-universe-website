@@ -7,7 +7,7 @@ import type { Profile } from '@/lib/data/types'
 /** The signed-in Web Support layout: the glass sidebar beside the page (above it on phones). */
 export const PortalShell = ({ session, children }: { session: Profile; children: ReactNode }) => (
   <Main>
-    <Section className="grid items-start gap-6 py-8 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-10 md:py-12 lg:grid-cols-[17rem_minmax(0,1fr)]">
+    <Section className="grid items-start gap-6 py-8 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-10 md:py-12 lg:grid-cols-[17rem_minmax(0,1fr)] print:block print:p-0">
       <PortalNav
         name={session.name || session.email}
         school={session.school}

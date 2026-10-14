@@ -1,4 +1,5 @@
 import { FileText } from 'lucide-react'
+import { SavedTestActions } from '@/components/portal/saved-test-actions'
 import { Glass } from '@/components/ui/glass'
 import { Tag } from '@/components/ui/tag'
 import { TurnLink } from '@/components/ui/turn-link'
@@ -25,6 +26,9 @@ export function SavedTestCard({ test }: { test: SavedTest }) {
         <Tag tone={test.subject} className="mt-3">
           {subjectLabel[test.subject]} · Class {test.class}
         </Tag>
+        <div className="mt-2 -ml-3">
+          <SavedTestActions id={test.id} title={test.title} />
+        </div>
       </div>
     </Glass>
   )

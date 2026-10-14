@@ -429,3 +429,19 @@ html[data-solid] .mesh-blob {
       0 0 / 100% 100% no-repeat;
   }
 }
+
+/* Test Maker: printing (or "Save as PDF") a page that holds a test paper prints only the paper
+   on A4. Everything around it (top bar, footer, floating buttons, the portal) is left out.
+   MDN: @page size, print media queries. */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  body:has(#paper-print) {
+    background: white;
+  }
+  body:has(#paper-print) > *:not(:has(#paper-print)) {
+    display: none !important;
+  }
+}
