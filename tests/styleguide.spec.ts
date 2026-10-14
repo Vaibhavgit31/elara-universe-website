@@ -17,7 +17,7 @@ test('styleguide shows every token, font, surface, motif and the rules', async (
     await expect(page.getByText(token, { exact: true })).toBeVisible()
   await expect(page.getByText('बेसिक हिंदी रीडर · अ आ क')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Peek inside' })).toBeVisible()
-  await expect(page.getByText('Today: Hindi, Computer and Drawing')).toBeAttached()
+  await expect(page.getByText('Today: Hindi, Computer and Drawing').first()).toBeAttached()
   await expect(page.getByText('Ruled notebook page')).toBeVisible()
   await expect(page.getByText('Sticky note', { exact: true })).toBeVisible()
   await expect(page.getByRole('table', { name: 'A timetable layout' })).toBeVisible()
@@ -59,9 +59,14 @@ test('glass spotlight, magnetic buttons, ripple and focus glow work and rest wit
     ? expect(wrapper).toHaveCSS('transform', 'none')
     : expect.poll(() => wrapper.evaluate((el) => getComputedStyle(el).transform)).not.toBe('none'))
   await button.dispatchEvent('pointerdown', { clientX: box.x, clientY: box.y })
-  await expect(button.locator('.ripple')).toHaveCount(1)
+  await expect(button.locator('.ripple')).toHaveCount(reduced ? 0 : 1)
   await button.focus()
   await expect(button).toHaveClass(/focus-glow/)
+  // The ring is drawn outside the button, so nothing may clip it, and it spins unless reduced.
+  await expect(button).not.toHaveCSS('overflow', 'hidden')
+  expect(await button.evaluate((el) => getComputedStyle(el, '::after').animationName)).toBe(
+    reduced ? 'none' : 'focus-spin',
+  )
 })
 
 test('body font size is 16px on phones and 18px on desktop', async ({ page }, { project }) => {

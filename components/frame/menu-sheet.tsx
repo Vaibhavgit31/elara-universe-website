@@ -28,12 +28,12 @@ export function MenuSheet() {
         ref={dialog}
         aria-label="Menu"
         onClick={(e) => e.target === e.currentTarget && close()}
-        className="glass m-0 mt-[var(--topbar-h)] w-full max-w-none rounded-t-none rounded-b-lg border-x-0 border-t-0 p-0 backdrop:bg-evergreen/40 open:animate-sheet motion-reduce:animate-none"
+        className="glass fixed inset-x-0 top-0 m-0 mt-[var(--topbar-h)] w-full max-w-none rounded-t-none rounded-b-lg border-x-0 border-t-0 p-0 backdrop:bg-evergreen/40 open:animate-sheet motion-reduce:animate-none"
       >
         <nav
           aria-label="Main"
           data-testid="menu-sheet"
-          className="container-page flex flex-col gap-1 py-4"
+          className="container-page flex flex-col gap-2 py-4"
         >
           {NAV.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href)
@@ -53,7 +53,7 @@ export function MenuSheet() {
               </TurnLink>
             )
           })}
-          <div className="mt-3 flex items-center justify-between gap-3 px-2">
+          <div className="mt-4 flex items-center justify-between gap-4 px-2">
             <TeacherButton />
             <StickerBookButton />
             <button

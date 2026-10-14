@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
 import { useSession } from '@/lib/session'
 
-/** "Teacher login" for visitors, "My portal" once logged in. The label hides on narrow bars. */
+/** "Teacher login" for visitors, "My portal" once logged in. In the top bar the label shows
+ *  from 1280px only (icon-only before that); in the phone sheet it always shows. */
 export function TeacherButton({
   className,
-  label = true,
+  iconOnlyUntilXl = false,
 }: {
   className?: string
-  label?: boolean
+  iconOnlyUntilXl?: boolean
 }) {
   const session = useSession()
   const [href, text, Icon] = session
@@ -21,10 +22,14 @@ export function TeacherButton({
     <Button
       href={href}
       variant={session ? 'brass' : 'primary'}
-      className={cn('min-h-11 px-4 py-1.5 text-small', !label && 'px-3', className)}
+      className={cn(
+        'min-h-11 py-1.5 text-small',
+        iconOnlyUntilXl ? 'px-3 xl:px-4' : 'px-4',
+        className,
+      )}
     >
       <Icon aria-hidden size={18} />
-      <span className={cn(!label && 'sr-only')}>{text}</span>
+      <span className={cn(iconOnlyUntilXl && 'sr-only xl:not-sr-only')}>{text}</span>
     </Button>
   )
 }

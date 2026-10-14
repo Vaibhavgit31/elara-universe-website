@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-// Ruled every 32px (one rule = sage-100 at 80%) so leading-8 text sits exactly on the lines.
-const rules =
-  'bg-[repeating-linear-gradient(transparent_0,transparent_31px,rgba(220,229,210,0.8)_31px,rgba(220,229,210,0.8)_32px)]'
-
 /** A page torn from a ruled notebook: rules, a margin line and (on larger screens) punched holes. */
 export function NotebookCard({
   title,
@@ -20,8 +16,7 @@ export function NotebookCard({
   return (
     <article
       className={cn(
-        'relative rounded-sm bg-paper py-8 pr-6 pl-10 shadow-page sm:pr-8 sm:pl-16',
-        rules,
+        'relative rounded-sm bg-paper ruled py-8 pr-6 pl-10 shadow-page sm:pr-8 sm:pl-16',
         className,
       )}
     >

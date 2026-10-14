@@ -23,11 +23,13 @@ export function Glass({
   className,
   style,
   children,
+  onPointerMove: consumerMove,
   ...rest
 }: Props) {
   const { rotateX, rotateY, onPointerMove, onPointerLeave, reduced } = useTilt(6)
   const spot = (e: PointerEvent<HTMLDivElement>) => {
-    if (reduced) return
+    consumerMove?.(e)
+    if (reduced || !spotlight) return
     const r = e.currentTarget.getBoundingClientRect()
     e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
     e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
@@ -35,7 +37,7 @@ export function Glass({
   const classes = cn('glass', radii[radius], spotlight && 'glass-spot', className)
   if (!tilt)
     return (
-      <div {...rest} className={classes} style={style} onPointerMove={spotlight ? spot : undefined}>
+      <div {...rest} className={classes} style={style} onPointerMove={spot}>
         {children}
       </div>
     )
@@ -49,7 +51,7 @@ export function Glass({
         {...(rest as ComponentProps<typeof m.div>)}
         className={classes}
         style={{ ...style, rotateX, rotateY, transformStyle: 'preserve-3d' }}
-        onPointerMove={spotlight ? spot : undefined}
+        onPointerMove={spot}
       >
         {children}
       </m.div>

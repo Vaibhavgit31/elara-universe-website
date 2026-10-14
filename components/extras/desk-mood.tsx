@@ -17,7 +17,7 @@ export function DeskMood() {
     <>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 bg-[#f0d9b0] opacity-35"
+        className="pointer-events-none absolute inset-0 z-0 bg-brass/20"
         data-testid="desk-evening"
       />
       <svg

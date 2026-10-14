@@ -6,12 +6,12 @@ import { buttonClass, type Variant } from '@/components/ui/button-class'
 import { TurnLink } from '@/components/ui/turn-link'
 import { useReducedMotion } from '@/lib/use-reduced-motion'
 
-type Props = {
-  variant?: Variant
-  href?: string
-  className?: string
-  children: ReactNode
-} & Omit<ComponentProps<'button'>, 'className' | 'children'>
+type Common = { variant?: Variant; className?: string; children: ReactNode }
+type Props = Common &
+  (
+    | ({ href: string } & Omit<ComponentProps<typeof TurnLink>, 'href' | 'className' | 'children'>)
+    | ({ href?: undefined } & Omit<ComponentProps<'button'>, 'className' | 'children'>)
+  )
 
 /** Pulls a little toward the cursor and ripples where it is tapped; still with reduced motion. */
 function useMagnetic() {
@@ -30,34 +30,40 @@ function useMagnetic() {
     y.set(0)
   }
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
+    if (reduced) return
     const r = e.currentTarget.getBoundingClientRect()
     setRipple({ x: e.clientX - r.left, y: e.clientY - r.top, key: e.timeStamp })
   }
+  // The ripple is clipped by its own layer, so the focus ring outside the button stays visible.
   const rippleNode = ripple && (
     <span
-      key={ripple.key}
       aria-hidden
-      className="ripple"
-      style={{ left: ripple.x, top: ripple.y }}
-      onAnimationEnd={() => setRipple(null)}
-    />
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]"
+    >
+      <span
+        key={ripple.key}
+        className="ripple"
+        style={{ left: ripple.x, top: ripple.y }}
+        onAnimationEnd={() => setRipple(null)}
+      />
+    </span>
   )
   return { style: { x, y }, onPointerMove, onPointerLeave, onPointerDown, rippleNode }
 }
 
 /** A link or button in the system: magnetic, with a ripple on tap and the focus glow. */
-export function Button({ variant = 'primary', href, className, children, ...rest }: Props) {
+export function Button({ variant = 'primary', className, children, ...rest }: Props) {
   const classes = buttonClass(variant, className)
   const { style, rippleNode, ...handlers } = useMagnetic()
   return (
     <m.span style={style} className="inline-flex" {...handlers}>
-      {href ? (
-        <TurnLink href={href} className={classes}>
+      {rest.href !== undefined ? (
+        <TurnLink {...rest} className={classes}>
           {rippleNode}
           {children}
         </TurnLink>
       ) : (
-        <button type="button" className={classes} {...rest}>
+        <button type="button" {...rest} className={classes}>
           {rippleNode}
           {children}
         </button>

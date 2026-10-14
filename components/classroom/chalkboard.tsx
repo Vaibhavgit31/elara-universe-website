@@ -2,6 +2,7 @@
 
 import { useId, useRef, type ReactNode } from 'react'
 import { m, useInView } from 'framer-motion'
+import { WoodFrame } from '@/components/classroom/wood-frame'
 import { cn } from '@/lib/cn'
 import { useHydrated } from '@/lib/use-hydrated'
 import { useReducedMotion } from '@/lib/use-reduced-motion'
@@ -38,22 +39,24 @@ export function Chalkboard({
   tray?: boolean
   frame?: 'wood' | 'none'
 }) {
-  const wood = frame === 'wood'
-  return (
-    <div className={cn('rounded-md shadow-lift', wood && 'bg-brass p-2', className)}>
-      <div className={cn('overflow-hidden', wood ? 'rounded-sm' : 'rounded-md')}>
-        <div className="relative isolate bg-chalkboard p-6 text-cream md:p-8">
-          <ChalkDust />
-          <div className="relative">{children}</div>
-        </div>
-        {tray && (
-          <div aria-hidden className="flex h-6 items-center gap-2 bg-cream px-4">
-            <span className="h-2 w-8 rounded-full bg-white shadow-page" />
-            <span className="h-2 w-6 rounded-full bg-hindi shadow-page" />
-          </div>
-        )}
+  const board = (
+    <>
+      <div className="relative isolate bg-chalkboard p-6 text-cream md:p-8">
+        <ChalkDust />
+        <div className="relative">{children}</div>
       </div>
-    </div>
+      {tray && (
+        <div aria-hidden className="flex h-6 items-center gap-2 bg-cream px-4">
+          <span className="h-2 w-8 rounded-full bg-white shadow-page" />
+          <span className="h-2 w-6 rounded-full bg-hindi shadow-page" />
+        </div>
+      )}
+    </>
+  )
+  return frame === 'wood' ? (
+    <WoodFrame className={className}>{board}</WoodFrame>
+  ) : (
+    <div className={cn('overflow-hidden rounded-md shadow-lift', className)}>{board}</div>
   )
 }
 
@@ -85,19 +88,23 @@ export function ChalkText({
   )
   if (reduced || !write) return <Tag className={classes}>{text}</Tag>
   const visible = inView || !hydrated
+  // Long lines write in faster so every heading is readable within a second (motion rules).
+  const step = Math.min(0.035, 0.6 / text.length)
   return (
-    <Tag ref={ref} className={classes} aria-label={text}>
-      {[...text].map((char, i) => (
-        <m.span
-          key={i}
-          aria-hidden
-          initial={false}
-          animate={{ opacity: visible ? 1 : 0 }}
-          transition={visible ? { duration: 0.3, delay: delay + i * 0.035 } : { duration: 0 }}
-        >
-          {char}
-        </m.span>
-      ))}
+    <Tag ref={ref} className={classes}>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden>
+        {[...text].map((char, i) => (
+          <m.span
+            key={i}
+            initial={false}
+            animate={{ opacity: visible ? 1 : 0 }}
+            transition={visible ? { duration: 0.3, delay: delay + i * step } : { duration: 0 }}
+          >
+            {char}
+          </m.span>
+        ))}
+      </span>
     </Tag>
   )
 }

@@ -1015,7 +1015,20 @@ reduced motion, spotlight variable, magnetic transform, ripple node, focus glow)
 **Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **367 passed / 507 skipped (full run; one width test fixed for scrollable tables and one tablet flake under load re-run 3×3 green)** ✅
 
 **Review:** two independent review agents (rules lens; accessibility and code-quality lens)
-checked the new files: findings and fixes are logged in the next entry below.
+checked the new files. Fixed from their findings (commit "Step C review fixes"):
+two must-fix accessibility bugs (the `stamp` utility's `overflow: hidden` clipped the new focus
+ring outside every button; on glass buttons the focus ring shared its pseudo-element with the
+3 % noise overlay and rendered at 3 % opacity), the phone menu `<dialog>` losing its fixed
+position to the `glass` utility, the cursor spotlight painting over card text (now behind the
+content), focus-ring colours that failed 3:1 on glass (now leaf-700 / brass / forest, added to
+the contrast test), `ChalkText` relying on `aria-label` on a `<p>` (now a visually hidden copy
+of the text), the ruled-notebook gradient duplicated with a raw colour (now a `ruled` utility),
+the wooden frame duplicated between chalkboard and notice board (now `WoodFrame`), notice
+board items as a list, the ripple skipped under reduced motion, write-in speed capped so long
+headings finish within a second, spacing off the 8 px grid in the top bar, menu sheet and
+styleguide, a 4 px focus radius, dead paper-grain CSS, a raw hex in the evening desk, and the
+Teacher login rendered twice. The `ruled` utility is used by the contact letter in Step D (the
+form file was being edited by the landing-page build at the time).
 
 **Screenshots:** `docs/screenshots/phase2-C/` (styleguide, Home, Catalog, Contact at
 360/768/1024/1440 and reduced motion; foundation shots at 1440/360).

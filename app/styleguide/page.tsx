@@ -159,7 +159,11 @@ export default function StyleguidePage() {
               ))}
             </ol>
           </div>
-          <div className="flex flex-wrap items-center gap-4" aria-label="Icon set: lucide">
+          <div
+            className="flex flex-wrap items-center gap-4"
+            role="group"
+            aria-label="Icon set: lucide"
+          >
             {[School, BookOpenText, GraduationCap, QrCode, Bell, PencilIcon, Sparkles].map(
               (Icon, i) => (
                 <Icon key={i} aria-hidden size={28} className="text-forest" />
@@ -172,7 +176,7 @@ export default function StyleguidePage() {
         <Block title="Fonts and type">
           <ul className="space-y-6">
             {fonts.map(([cls, name, sample]) => (
-              <li key={name} className="grid gap-1 sm:grid-cols-[14rem_1fr]">
+              <li key={name} className="grid gap-2 sm:grid-cols-[14rem_1fr]">
                 <p className="self-center eyebrow">{name}</p>
                 <p className={`${cls} text-h3`}>{sample}</p>
               </li>
@@ -285,7 +289,7 @@ export default function StyleguidePage() {
             accent="eight classes"
             lead="The eyebrow, the heading with a crayon-underlined accent, and a lead paragraph, all left-aligned."
           />
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4">
             {(Object.keys(subjectTag) as (keyof typeof subjectTag)[]).map((tone) => (
               <Tag key={tone} tone={tone}>
                 {tone === 'neutral' ? 'Class 3' : tone[0].toUpperCase() + tone.slice(1)}

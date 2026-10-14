@@ -26,7 +26,7 @@ export function TopBar({ today }: { today: string }) {
         scrolled ? 'h-[calc(var(--topbar-h)-0.75rem)]' : 'h-[var(--topbar-h)]',
       )}
     >
-      <div className="container-page flex h-full items-center gap-2 md:gap-3">
+      <div className="container-page flex h-full items-center gap-2 md:gap-4">
         <TurnLink href="/" aria-label={`${site.shortName} home`} className="shrink-0 rounded-sm">
           {/* Full lockup on phones and from 1280px; the mark alone where the ribbons need the room. */}
           <Image
@@ -52,8 +52,7 @@ export function TopBar({ today }: { today: string }) {
         <div className="hidden md:block">
           <StickerBookButton />
         </div>
-        <TeacherButton className="hidden md:inline-flex xl:hidden" label={false} />
-        <TeacherButton className="hidden xl:inline-flex" />
+        <TeacherButton className="hidden md:inline-flex" iconOnlyUntilXl />
         <MenuSheet />
       </div>
       <FestivalTouches buildDate={today} />

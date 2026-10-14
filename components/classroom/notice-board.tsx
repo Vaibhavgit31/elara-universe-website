@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { WoodFrame } from '@/components/classroom/wood-frame'
 import { cn } from '@/lib/cn'
 
 // Cork texture: brass dots at low alpha on the hindi tint, repeating every 10px.
@@ -30,16 +31,16 @@ export function NoticeBoard({
           <h2 className="mt-2">{title}</h2>
         </div>
       )}
-      <div className="rounded-md bg-brass p-2 shadow-lift">
-        <div className={cn('rounded-sm bg-hindi-tint p-6 md:p-8', cork)}>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+      <WoodFrame>
+        <div className={cn('bg-hindi-tint p-6 md:p-8', cork)}>
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{children}</ul>
         </div>
-      </div>
+      </WoodFrame>
     </div>
   )
 }
 
-/** One notice pinned to the board: a paper card with a push-pin and a slight tilt. */
+/** One notice pinned to the board (a list item): a paper card with a push-pin and a slight tilt. */
 export function Pinned({
   tilt = 'none',
   className,
@@ -50,7 +51,7 @@ export function Pinned({
   children: ReactNode
 }) {
   return (
-    <article
+    <li
       className={cn(
         'relative rounded-sm bg-paper p-6 pt-8 shadow-page transition-transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
         tilts[tilt].card,
@@ -68,6 +69,6 @@ export function Pinned({
         <ellipse cx="8.5" cy="7.5" rx="3" ry="2" className="fill-cream/70" />
       </svg>
       {children}
-    </article>
+    </li>
   )
 }

@@ -77,7 +77,6 @@
   body {
     @apply bg-paper font-body text-body text-evergreen antialiased;
     /* Paper grain: a 200px tile of faint fractal noise (≈ 0.5 KB, no network request). */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.14 0 0 0 0 0.07 0 0 0 0.075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   }
   h1,
   h2,
@@ -101,7 +100,7 @@
   :focus-visible {
     outline: 3px solid var(--color-leaf-700);
     outline-offset: 3px;
-    border-radius: 0.25rem;
+    border-radius: var(--radius-sm);
   }
   ::selection {
     background: var(--color-sage-100);
@@ -124,6 +123,7 @@
    near-solid cream where backdrop-filter is unsupported or the device asked for less work. */
 @utility glass {
   position: relative;
+  isolation: isolate;
   background-color: color-mix(in srgb, white 55%, transparent);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   backdrop-filter: blur(20px) saturate(160%);
@@ -139,6 +139,7 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
+    z-index: -1;
     opacity: 0.03;
     background-image: var(--noise);
     mix-blend-mode: multiply;
@@ -177,9 +178,9 @@ html[data-solid] .glass {
 /* ---- Micro-interactions (Phase 12). Transform and opacity only. ---- */
 
 /* Rubber-stamp press with a soft ink ring on tap. */
+/* Buttons press down like a stamp (see buttonClass) and give the ripple its positioning box. */
 @utility stamp {
   position: relative;
-  overflow: hidden;
 }
 
 /* Pencil-stroke underline on text links. */
@@ -253,7 +254,6 @@ html[data-solid] .glass {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stamp:active::after,
   .crayon-dot,
   .book-loader span {
     animation: none;
@@ -322,6 +322,7 @@ html[data-solid] .mesh-blob {
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
+    z-index: -1;
     opacity: 0;
     transition: opacity 0.4s ease-out;
     background: radial-gradient(
@@ -358,12 +359,15 @@ html[data-solid] .mesh-blob {
     border-radius: inherit;
     padding: 3px;
     pointer-events: none;
+    z-index: 1;
+    opacity: 1;
+    mix-blend-mode: normal;
     background: conic-gradient(
       from var(--focus-angle),
-      var(--color-leaf),
+      var(--color-leaf-700),
       var(--color-brass),
-      var(--color-mesh-sky),
-      var(--color-leaf)
+      var(--color-forest),
+      var(--color-leaf-700)
     );
     mask:
       linear-gradient(#000 0 0) content-box,
@@ -401,6 +405,14 @@ html[data-solid] .mesh-blob {
   @media (prefers-reduced-motion: reduce) {
     display: none;
   }
+}
+
+/* Ruled notebook lines every 32px; text with leading-8 sits on them. */
+@utility ruled {
+  background-image: repeating-linear-gradient(
+    transparent 0 31px,
+    color-mix(in srgb, var(--color-sage-100) 80%, transparent) 31px 32px
+  );
 }
 
 /* Crayon underline: a wobbly stroke under a word, colour from --crayon (brass by default). */
