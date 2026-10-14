@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-// Static export: metadata routes must be marked static.
+// Prerendered once at build time (no request data is read).
 export const dynamic = 'force-static'
 import { books } from '@/content/books'
 import { series } from '@/content/series'

@@ -3,7 +3,7 @@
 import { GraduationCap, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
-import { useSession } from '@/lib/session'
+import { useSignedInHint } from '@/lib/session'
 
 /** "Teacher login" for visitors, "My portal" once logged in. In the top bar the label shows
  *  from 1280px only (icon-only before that); in the phone sheet it always shows. */
@@ -14,7 +14,7 @@ export function TeacherButton({
   className?: string
   iconOnlyUntilXl?: boolean
 }) {
-  const session = useSession()
+  const session = useSignedInHint()
   const [href, text, Icon] = session
     ? ['/web-support', 'My portal', GraduationCap]
     : ['/login', 'Teacher login', LogIn]

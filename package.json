@@ -5,17 +5,22 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx serve out -l 3000",
+    "start": "next start -p 3000",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run build && playwright test",
     "test:only": "playwright test",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "db:migrate": "sh scripts/db/migrate.sh",
+    "db:test": "sh scripts/db/rls-test.sh",
+    "create-admin": "node scripts/create-admin.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "framer-motion": "^14.2.0",
@@ -26,6 +31,7 @@
     "react-dom": "19.3.0",
     "react-hook-form": "^7.90.0",
     "react-pageflip": "^2.0.3",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7"
   },
@@ -42,7 +48,6 @@
     "lighthouse": "^13.5.0",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "serve": "^14.2.6",
     "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "typescript": "^5.9.3"

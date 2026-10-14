@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { Elu } from '@/components/mascot/elu'
 import { Button } from '@/components/ui/button'
 import { buttonClass } from '@/components/ui/button-class'
+import { Field, chipClass, inputClass } from '@/components/ui/form'
 import { bookBySlug } from '@/content/books'
 import { series, subjectLabel, type Subject } from '@/content/series'
 import { site, whatsappLink } from '@/content/site'
@@ -91,36 +92,6 @@ const letterText = (d: Output) =>
   ]
     .filter(Boolean)
     .join('\n')
-
-const Field = ({
-  label,
-  error,
-  hint,
-  children,
-}: {
-  label: string
-  error?: string
-  hint?: string
-  children: React.ReactNode
-}) => (
-  <label className="block">
-    <span className="eyebrow">{label}</span>
-    {children}
-    {hint && !error && <span className="mt-1 block text-small text-forest">{hint}</span>}
-    {error && (
-      <span role="alert" className="mt-1 block text-small font-semibold text-drawing">
-        {error}
-      </span>
-    )}
-  </label>
-)
-const inputClass = (invalid?: boolean) =>
-  cn(
-    'mt-1 block w-full border-0 border-b-2 border-sage bg-transparent px-1 py-2 font-body text-body text-evergreen placeholder:text-sage focus:border-forest focus:outline-none',
-    invalid && 'border-drawing',
-  )
-const chipClass =
-  'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-sage px-4 text-small font-semibold text-forest has-checked:border-forest has-checked:bg-sage-100 has-checked:text-evergreen'
 
 async function burst() {
   const confetti = (await import('canvas-confetti')).default

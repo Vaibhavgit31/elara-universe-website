@@ -29,6 +29,9 @@ const routes = [
   '/resources/hindi/1/',
   '/styleguide/',
   '/missing-page/',
+  '/login/',
+  '/login/forgot/',
+  '/web-support/',
 ]
 
 /** Visible, non-decorative elements that poke past the viewport, as "tag.class(left,right)". */

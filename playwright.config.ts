@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test'
 
 const desktop = { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } }
 
-// Tests run against the production static export in out/ (npm run build first).
+// Tests run against the production server (npm run build, then `next start` on port 3000). Without
+// Supabase and xAI keys the server runs in mock mode, which is what the tests expect.
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -15,7 +16,7 @@ export default defineConfig({
     { name: 'reduced-motion', use: { ...desktop, contextOptions: { reducedMotion: 'reduce' } } },
   ],
   webServer: {
-    command: 'npx serve out -l 3000 --no-clipboard',
+    command: 'npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
     timeout: 30_000,

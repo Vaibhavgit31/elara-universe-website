@@ -1,11 +1,13 @@
 import type { NextConfig } from 'next'
 
+// Phase 2: a Node.js server build for Vercel (server routes, Server Actions, the proxy). The
+// static export from Phase 1 is gone; see docs/research/nextjs16-vercel.md §4 and
+// https://nextjs.org/docs/app/guides/static-exports#unsupported-features for what that unlocks.
 const nextConfig: NextConfig = {
-  // Fully static site: `next build` writes the whole site to out/ for drag-and-drop hosting.
-  output: 'export',
-  // /about/index.html instead of /about.html, so every static host serves it without rewrites.
+  // /about/ instead of /about, so every Phase 1 link and the printed QR addresses keep working.
   trailingSlash: true,
-  // Images are pre-optimised to WebP by scripts/ (Phase 2); no image server exists on a static host.
+  // Covers and samples are pre-optimised WebP files at their display sizes (scripts/), so the
+  // runtime image optimiser is not needed and its Vercel quota is never used.
   images: { unoptimized: true },
   turbopack: {
     rules: {

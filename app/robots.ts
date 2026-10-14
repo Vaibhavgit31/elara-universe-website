@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-// Static export: metadata routes must be marked static.
+// Prerendered once at build time (no request data is read).
 export const dynamic = 'force-static'
 import { site } from '@/content/site'
 
@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/styleguide/', '/demo-flip/', '/login/', '/admin/'],
+      disallow: ['/styleguide/', '/demo-flip/', '/login/', '/admin/', '/account/', '/auth/'],
     },
     sitemap: `${site.url}/sitemap.xml`,
   }

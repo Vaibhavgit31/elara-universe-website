@@ -24,6 +24,9 @@ import { cn } from '@/lib/cn'
 
 type Props = { params: Promise<{ slug: string }> }
 
+// Every book is prerendered; an unknown slug is a 404 (on a server build dynamicParams would
+// otherwise render it on demand).
+export const dynamicParams = false
 export const generateStaticParams = () => books.map(({ slug }) => ({ slug }))
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
