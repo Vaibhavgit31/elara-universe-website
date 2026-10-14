@@ -44,6 +44,22 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   and search snippets; the notes in `docs/research/` list each point that is UNCONFIRMED (xAI
   model names and prices, Supabase dashboard labels, Vercel plan limits). Please re-check those
   pages online before launch; the code comments carry the URLs.
+- (Phase 2, Step D) The home page is now "A day at Elara School". The wording on it was written
+  for this build and is marked `[PLACEHOLDER]` in the code: the chalkboard headline "Books that
+  grow curious minds." and the "Hover over the classroom to explore" hint (`content/hero.ts`), the seven
+  hotspot labels, the room leads ("Why schools choose Elara", "Scan the book, open the lesson",
+  "A test paper in minutes", "Drop a letter in the postbox") and the four "why" notes
+  (`content/home.ts`). Please read them once and change anything that does not sound like you.
+- (Phase 2, Step D) The FAQ room shows six questions from `content/faq.ts` (12 in the file). The
+  answers about ordering, prices, sample copies and QR codes that are not working are
+  `[PLACEHOLDER]` because PLAYBOOK.md does not say how schools order, how pricing works or what
+  to do when a code fails. Each answer links to `/web-support/help#<anchor>`; that page is built
+  in Step G.
+- (Phase 2, Step D) Each book room shows two report badges, "NEP 2020 · Aligned" and
+  "Classes · 1–8". PLAYBOOK.md marks the Art Journey class range and curriculum alignment as
+  "please confirm", so the Art room's badges are shown from the series data with
+  `isPlaceholder` still true. If Art Journey covers a different range, change it in
+  `content/series.ts` and the badges follow.
 
 ## Simplified
 
@@ -74,8 +90,8 @@ Every `[PLACEHOLDER]` and `isPlaceholder` on the site, with where it lives (Phas
 - **Festival dates** (`content/site-config.ts`): Diwali and Makar Sankranti windows for 2026–27
   are `[PLACEHOLDER]` to confirm each year.
 - **Copy written for this build, open for approval** (marked `[PLACEHOLDER]` in the code): the
-  hero headline "Books that grow curious minds." (`components/home/hero.tsx`); the three sticky
-  notes, the Peek-inside caption and the back-cover line on Home (`app/page.tsx`); the About
+  hero headline "Books that grow curious minds.", the hint and hotspot labels (`content/hero.ts`,
+  Phase 2); the room leads and "why" notes on Home (`content/home.ts`, Phase 2); the About
   story paragraph (needs when and why Elara Universe started), the beliefs and the chapter
   copy (`app/about/page.tsx`); the "How a book is made" step descriptions
   (`components/about/making-steps.tsx`).
@@ -1034,3 +1050,79 @@ form file was being edited by the landing-page build at the time).
 360/768/1024/1440 and reduced motion; foundation shots at 1440/360).
 
 **Placeholders added:** none.
+
+
+## Phase 2 — Step D: the new landing page, "A day at Elara School"
+
+**Built** (`app/page.tsx` assembles eleven `<Room>` bands; every key detail is in the server
+HTML, interactive parts are small client components):
+
+1. **Classroom hero** (`components/home/classroom-hero.tsx`, `classroom-scene.tsx`,
+   `content/hero.ts`): an original inline-SVG classroom (about 20 KB of markup) with a green
+   chalkboard on which the headline writes itself in chalk (`ChalkText`, real `<h1>` text), a
+   teacher's desk, six children of different skin tones and hair reading at their desks, a
+   bookshelf, a globe, a computer, an art easel, a cork notice board, a wall clock whose hands
+   follow the visitor's real time (server renders 10:10, the browser rotates the hands every
+   second), and a sunny window with a swaying tree. Every object is a real link laid over the
+   drawing with a glass label on hover/focus and a soft leaf glow on the object: bookshelf →
+   Catalog, computer → TechNova, easel → Art Journey, notice board → Events, globe → About,
+   chalkboard → Web Support, teacher's desk → Teacher login. Two-layer mouse parallax (a few px,
+   mouse only). Phones get a crop of the board end of the room and the seven links as glass
+   chips. Home-only JavaScript: 77 KB gzip / 232 KB raw across four chunks (the hero and the
+   rooms together), under the 150 KB hero budget.
+2. **Three book rooms** (`book-room.tsx`, `class-picker.tsx`): Hindi class, Computer lab and Art
+   room, each with the series name (crayon-underlined), Hindi name, tagline, blurb, "What's
+   inside" and "Comes with" from `content/books.ts`, NEP 2020 and Classes 1–8 report badges, a
+   Class 1–8 picker that swaps the cover with a page-flip (rotateY, instant with reduced motion)
+   on a tilting glass card with the price when known, "Peek inside" (a native dialog holding the
+   sample flipbook, or "Sample pages coming soon.") and "Request a sample copy".
+3. **Why schools choose Elara** (`why-stickers.tsx`, notes moved to `content/home.ts`): four
+   die-cut notebook stickers popping onto a glass panel.
+4. **Digital support and QR** (`qr-phone.tsx`): an animated phone scanning the QR in a book and
+   opening its resources (looping, still with reduced motion), with Web Support and QR Corner
+   buttons.
+5. **For teachers** (`test-paper-preview.tsx`): a test paper being drafted section by section
+   with the "AI draft — please check" chip, plus Teacher login.
+6. **Events** (`notices.tsx`): the next three events pinned to the cork notice board.
+7. **About and founders** (`staff-room.tsx`): the staff room with the founders' polaroids and the
+   company facts.
+8. **FAQ** (`faq-room.tsx`, `content/faq.ts` — 12 questions by topic, six marked top; answers
+   waiting for Vaibhav are `[PLACEHOLDER]`): six questions on notebook pages, each linking to its
+   `/web-support/help#anchor` (Step G builds that page).
+9. **Contact** (`postbox.tsx`): a school-gate postbox drawing, a short letter form (the Phase 1
+   `ContactForm` gained a `compact` prop: name, email, phone, message; same key check, honeypot,
+   cooldown and paper-plane send), WhatsApp, phone, email and the map.
+10. **Play corner** (kept from Phase 1 as the last room, still switchable in
+    `content/site-config.ts`).
+
+**Rooms** (`components/home/room.tsx`): full-width translucent bands over the mesh; two "doors"
+slide apart when a room scrolls into view (transform only, 0.7 s). Doors exist only after
+hydration and never with reduced motion, so the server HTML and the first paint show every
+room open. `LazyMount` is available for client-only widgets.
+
+**Phase 1 pieces retired** (Phase 2 wins on the home page): the opening-cover intro, the ink
+headline, drifting leaves, margin doodles, the crayon cursor trail, the subject shelf and the
+flip-pad home. Their files are deleted (`hero.tsx`, `opening-cover.tsx`, `subject-shelf.tsx`,
+`doodles.tsx`, `drifting-leaves.tsx`, `ink-text.tsx`, `use-crayon-trail.ts`, `cover-store.ts`,
+`mark-paths.ts` and its generator step). Flip pads stay on About, Events and demo-flip.
+
+**Tests:** `tests/home.spec.ts` rewritten (hero headline and the seven hotspot links with their
+targets, live clock, every room opens, every room's heading and the founders and address are
+on the page, class picker flips and opens the flipbook dialog, sample-copy links, FAQ anchors,
+contact links, phone hotspot list); polish, extras, a11y, menu and width tests updated for the
+new home; baselines refreshed.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **365 passed / 507 skipped by project** ✅ (the first full run had three
+failures: two page-dot jumps on About under full load and a catalog baseline captured before its
+filter stickers had revealed; `open()` now waits for `document.fonts.ready` and a `settled()`
+helper waits for every first-screen reveal before a baseline, after which the full suite passed)
+
+**Screenshots:** `docs/screenshots/phase2-D/` (Home at 360/768/1024/1440 and reduced motion;
+laptop sizes 1280/1366/1920/2560; hero close-ups with a hotspot hovered at 1440/1366 and the
+phone crop at 360/768).
+
+**For Vaibhav:** see the entries added at the top (hero and FAQ copy, Art Journey badges).
+
+**Placeholders added:** the hero headline/hint and hotspot hints (`content/hero.ts`), the room
+leads and section labels marked in the components, FAQ answers for ordering, prices and sample
+copies (`content/faq.ts`).

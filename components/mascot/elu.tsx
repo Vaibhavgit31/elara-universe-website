@@ -218,10 +218,3 @@ export function Elu({
     </m.svg>
   )
 }
-
-/** Elu peeking over a page corner: only the head shows, looking up at the reader. */
-export const EluPeek = ({ className }: { className?: string }) => (
-  <div className={cn('pointer-events-none absolute overflow-hidden', className)} aria-hidden>
-    <Elu pose="peek" className="w-24 translate-y-[48%]" />
-  </div>
-)

@@ -23,6 +23,14 @@ for (const route of routes) {
   for (const { name, ...options } of shots) {
     const page = await browser.newPage({ ...options, deviceScaleFactor: 1 })
     await page.goto(base + route, { waitUntil: 'networkidle' })
+    // Walk down the page so rooms open and lazy parts load, then back to the top.
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += innerHeight * 0.8) {
+        scrollTo(0, y)
+        await new Promise((r) => setTimeout(r, 120))
+      }
+      scrollTo(0, 0)
+    })
     await page.waitForTimeout(1200)
     await page.screenshot({ path: `${dir}/${slug}-${name}.png`, fullPage: true })
     await page.close()

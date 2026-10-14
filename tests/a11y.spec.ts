@@ -18,7 +18,6 @@ for (const route of routes)
   test(`no serious accessibility violations on ${route}`, async ({ page }, { project }) => {
     test.skip(project.name !== 'reduced-motion', 'audit once, with every page in normal flow')
     await open(page, route)
-    if (route === '/') await page.getByRole('button', { name: 'Skip intro' }).click()
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'])
       .analyze()

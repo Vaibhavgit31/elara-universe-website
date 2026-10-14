@@ -38,7 +38,6 @@ test('the site still works when browser storage is blocked', async ({ page }) =>
 test('play corner activities load on demand and work', async ({ page }, { project }) => {
   test.skip(project.name !== 'reduced-motion', 'pages are in normal flow only with reduced motion')
   await open(page, '/')
-  await expect(page.getByRole('region', { name: 'Page 7 of 8' })).toHaveCSS('position', 'relative')
   const binary = page.getByTestId('activity-binary')
   await binary.scrollIntoViewIfNeeded()
   await binary.getByRole('button', { name: 'Play' }).click()

@@ -12,4 +12,6 @@ for (const src of scripts) {
   raw += statSync(file).size
   gzip += gzipSync(readFileSync(file)).length
 }
-console.log(`${route}: ${scripts.length} scripts, ${(raw / 1024).toFixed(0)} KB raw, ${(gzip / 1024).toFixed(0)} KB gzip`)
+console.log(
+  `${route}: ${scripts.length} scripts, ${(raw / 1024).toFixed(0)} KB raw, ${(gzip / 1024).toFixed(0)} KB gzip`,
+)

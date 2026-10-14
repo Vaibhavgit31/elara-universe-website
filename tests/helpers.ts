@@ -13,6 +13,29 @@ export async function open(page: Page, url: string) {
   await page.goto(url)
   await expect(page.locator('body')).toHaveAttribute('data-hydrated', 'true')
   await expect(page.getByTestId('page')).toHaveCSS('transform', 'none')
+  // Web fonts change line counts and so every measured page height; wait for them once.
+  await page.evaluate(() => document.fonts.ready)
+}
+
+/** Waits (up to 5 s) until nothing in the first screen is still waiting to be revealed, i.e. no
+ *  element in the viewport has opacity 0; then screenshots are deterministic. */
+export async function settled(page: Page) {
+  await page
+    .waitForFunction(
+      () =>
+        ![...document.querySelectorAll<HTMLElement>('main *')].some((el) => {
+          const r = el.getBoundingClientRect()
+          return (
+            r.width > 0 &&
+            r.top < innerHeight &&
+            r.bottom > 0 &&
+            getComputedStyle(el).opacity === '0'
+          )
+        }),
+      undefined,
+      { timeout: 5_000 },
+    )
+    .catch(() => {})
 }
 
 /** Waits until a flip pad has measured its pages (it sets its own height, or is the stacked

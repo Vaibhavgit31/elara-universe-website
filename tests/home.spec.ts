@@ -1,77 +1,120 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { expectNoHorizontalScroll, open } from './helpers'
 
-test('the cover opens by itself and shows the hero', async ({ page }) => {
+// Phase 2, Step D: "A day at Elara School". Every key detail lives on the home page.
+const isPhone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768
+const rooms = [
+  'classroom',
+  'hindi-class',
+  'computer-lab',
+  'art-room',
+  'why',
+  'digital',
+  'teachers',
+  'events',
+  'staff-room',
+  'faq',
+  'contact',
+]
+
+test('the classroom hero chalks the headline and every object is a link', async ({ page }) => {
   await open(page, '/')
-  const cover = page.getByRole('button', { name: 'Open the book' })
-  await expect(cover).toBeVisible()
-  await expect(cover).toBeHidden({ timeout: 6000 })
   await expect(
     page.getByRole('heading', { level: 1, name: 'Books that grow curious minds.' }),
   ).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Explore the catalog' })).toHaveAttribute(
-    'href',
-    '/catalog/',
-  )
-  await expect(page.getByRole('link', { name: 'Request a sample copy' }).first()).toHaveAttribute(
-    'href',
-    '/contact/',
-  )
+  const hero = page.locator('[data-room="classroom"]')
+  const links: [string, string][] = [
+    ['Catalog', '/catalog/'],
+    ['TechNova', '/catalog/?subject=computer'],
+    ['Art Journey', '/catalog/?subject=drawing'],
+    ['Events', '/events/'],
+    ['About us', '/about/'],
+    ['Web support', '/web-support/'],
+    ['Teacher login', '/login/'],
+  ]
+  for (const [name, href] of links)
+    await expect(
+      hero.getByRole('link', { name }).filter({ visible: true }).first(),
+    ).toHaveAttribute('href', href)
+  // The wall clock shows the real time: its minute hand has been rotated by the browser.
+  await expect.poll(() => hero.locator('#minute').getAttribute('transform')).toMatch(/rotate/)
   await expectNoHorizontalScroll(page)
 })
 
-test('tapping the cover opens it at once', async ({ page }, { project }) => {
+test('home holds every room, each opening as it scrolls into view', async ({ page }) => {
   await open(page, '/')
-  // With reduced motion the pad re-mounts as a stacked layout right after hydration.
-  if (project.name === 'reduced-motion')
-    await expect(page.getByRole('region', { name: 'Page 1 of 8' })).toHaveCSS(
-      'position',
-      'relative',
-    )
-  await page.getByRole('button', { name: 'Open the book' }).click()
-  await expect(page.locator('[data-cover]')).toHaveAttribute('data-cover', 'open', { timeout: 800 })
-  await expect(page.getByRole('button', { name: 'Open the book' })).toBeHidden()
+  for (const id of rooms) {
+    const room = page.locator(`[data-room="${id}"]`)
+    await room.scrollIntoViewIfNeeded()
+    await expect(room).toHaveAttribute('data-open', 'true')
+  }
+  const main = page.getByRole('main')
+  for (const name of [
+    /Basic Hindi Reader/,
+    /TechNova/,
+    /Art Journey/,
+    /Why schools choose/,
+    /Scan the book/,
+    /A test paper/,
+    /What's happening/,
+    /The people behind the books/,
+    /Schools often/,
+    /Drop a letter in the/,
+  ])
+    await expect(main.getByRole('heading', { name }).first()).toBeVisible()
+  await expect(main.getByText('Sunil Sharma').first()).toBeVisible()
+  await expect(main.getByText('Tausif Khan').first()).toBeVisible()
+  await expect(main.getByText('D-9, Ground Floor, Block D, Vyapar Marg')).toBeVisible()
+  await expectNoHorizontalScroll(page)
 })
 
-test('home is a flip-pad of seven pages with the agreed content', async ({ page }) => {
+test('the class picker flips covers and opens the peek-inside flipbook', async ({ page }) => {
   await open(page, '/')
-  await expect(page.getByRole('region', { name: /Page \d of 8/ })).toHaveCount(8)
-  for (const text of [
-    'Basic Hindi Reader',
-    'TechNova',
-    'Art Journey',
-    'Why schools choose Elara',
-    'Every book has a QR door',
-    'Bring Elara to your school',
-  ])
-    await expect(page.getByText(text).first()).toBeAttached()
-  await expect(page.getByText('Test generator: coming soon')).toBeAttached()
-  await expect(page.getByRole('link', { name: 'Visit QR Corner' })).toHaveAttribute(
-    'href',
-    '/resources/',
+  const room = page.locator('[data-room="hindi-class"]')
+  await room.scrollIntoViewIfNeeded()
+  await room.getByRole('button', { name: '3', exact: true }).click()
+  await expect(room.getByRole('button', { name: '3', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
   )
-  await expect(
-    page.getByRole('link', { name: 'Basic Hindi Reader: see the books' }),
-  ).toHaveAttribute('href', '/catalog/?subject=hindi')
-  await expect(page.getByText('Sample', { exact: true })).toHaveCount(2)
-  const backCover = page.getByRole('region', { name: 'Page 8 of 8' })
-  await expect(backCover.getByRole('link', { name: 'Chat on WhatsApp' })).toHaveAttribute(
+  await expect(room.getByText('Class 3', { exact: false }).first()).toBeVisible()
+  await room.getByRole('button', { name: 'Peek inside' }).click()
+  const dialog = page.getByRole('dialog').filter({ visible: true }).first()
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByTestId('flipbook')).toHaveAttribute('data-ready', 'true', {
+    timeout: 15_000,
+  })
+  await page.keyboard.press('Escape')
+  await expect(dialog).toBeHidden()
+  await expect(room.getByRole('link', { name: 'Request a sample copy' })).toHaveAttribute(
+    'href',
+    '/contact/?book=hindi-3',
+  )
+})
+
+test('the FAQ links to Web Support answers and the postbox form works without a key', async ({
+  page,
+}) => {
+  await open(page, '/')
+  const faq = page.locator('[data-room="faq"]')
+  await faq.scrollIntoViewIfNeeded()
+  await expect(faq.getByRole('link', { name: /sample copy/i }).first()).toHaveAttribute(
+    'href',
+    /\/web-support\/help\/?#sample-copies/,
+  )
+  const contact = page.locator('[data-room="contact"]')
+  await contact.scrollIntoViewIfNeeded()
+  await expect(contact.getByRole('link', { name: /WhatsApp/ }).first()).toHaveAttribute(
     'href',
     /wa\.me\/919625741192/,
   )
+  await expect(contact.getByRole('link', { name: '+91 96257 41192' })).toBeVisible()
 })
 
-test('the peek-inside flipbook turns pages (reduced motion layout)', async ({ page }, {
-  project,
-}) => {
-  test.skip(project.name !== 'reduced-motion', 'pages are in normal flow only with reduced motion')
+test('phones get the simplified scene with the hotspot list', async ({ page }) => {
+  test.skip(!isPhone(page), 'phone only')
   await open(page, '/')
-  // Wait for the reduced-motion layout (pages in normal flow) before touching the flipbook.
-  await expect(page.getByRole('region', { name: 'Page 5 of 8' })).toHaveCSS('position', 'relative')
-  const flipbook = page.getByTestId('flipbook')
-  await flipbook.scrollIntoViewIfNeeded()
-  await expect(flipbook).toHaveAttribute('data-ready', 'true')
-  await expect(flipbook.getByText('1 / 8')).toBeVisible()
-  await flipbook.getByRole('button', { name: 'Next page' }).click()
-  await expect(flipbook.getByText(/^[23] \/ 8$/)).toBeVisible()
+  const hero = page.locator('[data-room="classroom"]')
+  await expect(hero.getByRole('list').getByRole('link')).toHaveCount(7)
+  await expectNoHorizontalScroll(page)
 })

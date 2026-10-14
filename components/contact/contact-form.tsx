@@ -21,31 +21,37 @@ const COOLDOWN_KEY = 'elara:contact-sent-at'
 const COOLDOWN_MS = 60_000
 const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? ''
 
-const schema = z.object({
-  name: z.string().trim().min(2, 'Please tell us your name.'),
-  school: z.string().trim(),
-  role: z.enum(roles, { error: 'Please choose your role.' }),
-  phone: z
-    .string()
-    .transform((v) => v.replace(/[\s-]/g, ''))
-    .pipe(
-      z
-        .string()
-        .regex(/^(\+91)?[6-9]\d{9}$/, 'Enter a 10-digit Indian mobile number, e.g. 96257 41192.'),
-    ),
-  email: z.email('Enter a valid email address.'),
-  city: z.string().trim().min(2, 'Which city are you in?'),
-  subjects: z.array(z.enum(subjects)).min(1, 'Pick at least one subject.'),
-  classes: z.array(z.enum(classes)),
-  message: z
-    .string()
-    .trim()
-    .min(10, 'A few words will help us help you.')
-    .max(2000, 'Please keep it under 2000 characters.'),
-  botcheck: z.boolean(),
-})
-type Input = z.input<typeof schema>
-type Output = z.output<typeof schema>
+/** The letter's fields; the compact letter (home-page postbox) only requires name, phone, email and message. */
+const schemaFor = (compact: boolean) =>
+  z.object({
+    name: z.string().trim().min(2, 'Please tell us your name.'),
+    school: z.string().trim(),
+    role: compact ? z.enum(roles).optional() : z.enum(roles, { error: 'Please choose your role.' }),
+    phone: z
+      .string()
+      .transform((v) => v.replace(/[\s-]/g, ''))
+      .pipe(
+        z
+          .string()
+          .regex(/^(\+91)?[6-9]\d{9}$/, 'Enter a 10-digit Indian mobile number, e.g. 96257 41192.'),
+      ),
+    email: z.email('Enter a valid email address.'),
+    city: compact ? z.string().trim() : z.string().trim().min(2, 'Which city are you in?'),
+    subjects: compact
+      ? z.array(z.enum(subjects))
+      : z.array(z.enum(subjects)).min(1, 'Pick at least one subject.'),
+    classes: z.array(z.enum(classes)),
+    message: z
+      .string()
+      .trim()
+      .min(10, 'A few words will help us help you.')
+      .max(2000, 'Please keep it under 2000 characters.'),
+    botcheck: z.boolean(),
+  })
+const fullSchema = schemaFor(false)
+const compactSchema = schemaFor(true)
+type Input = z.input<typeof fullSchema>
+type Output = z.output<typeof fullSchema>
 
 const subscribe = (notify: () => void) => {
   window.addEventListener('popstate', notify)
@@ -74,11 +80,11 @@ const letterText = (d: Output) =>
   [
     `Name: ${d.name}`,
     d.school && `School: ${d.school}`,
-    `Role: ${d.role}`,
+    d.role && `Role: ${d.role}`,
     `Phone: ${d.phone}`,
     `Email: ${d.email}`,
-    `City: ${d.city}`,
-    `Subjects: ${d.subjects.map((s) => subjectLabel[s]).join(', ')}`,
+    d.city && `City: ${d.city}`,
+    d.subjects.length && `Subjects: ${d.subjects.map((s) => subjectLabel[s]).join(', ')}`,
     d.classes.length && `Classes: ${d.classes.join(', ')}`,
     '',
     d.message,
@@ -130,8 +136,9 @@ async function burst() {
   })
 }
 
-/** A letter on lined paper. Sent through Web3Forms, or handed to email/WhatsApp without a key. */
-export function ContactForm() {
+/** A letter on lined paper. Sent through Web3Forms, or handed to email/WhatsApp without a key.
+ *  `compact` keeps only name, phone, email and message (the home-page postbox). */
+export function ContactForm({ compact = false }: { compact?: boolean }) {
   const book = useBookFromUrl()
   const reduced = useReducedMotion()
   const [scope, animate] = useAnimate()
@@ -141,7 +148,7 @@ export function ContactForm() {
   const [error, setError] = useState('')
   const [letter, setLetter] = useState<Output | null>(null)
   const form = useForm<Input, unknown, Output>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(compact ? compactSchema : fullSchema),
     defaultValues: {
       name: '',
       school: '',
@@ -249,7 +256,7 @@ export function ContactForm() {
       <form
         onSubmit={(e) => handleSubmit(onSubmit)(e)}
         noValidate
-        className="space-y-5 bg-cream bg-[repeating-linear-gradient(transparent_0_31px,var(--color-sage-100)_31px_32px)] p-6 shadow-page sm:p-8"
+        className="space-y-5 bg-cream ruled p-6 shadow-page sm:p-8"
         aria-label="Write to us"
       >
         <p className="font-hand text-2xl text-forest">Dear Elara Universe,</p>
@@ -262,26 +269,34 @@ export function ContactForm() {
               aria-invalid={!!errors.name}
             />
           </Field>
-          <Field label="School name" hint="Optional">
-            <input {...register('school')} autoComplete="organization" className={inputClass()} />
-          </Field>
-          <Field label="I am a" error={errors.role?.message}>
-            <select
-              {...register('role')}
-              defaultValue=""
-              className={inputClass(!!errors.role)}
-              aria-invalid={!!errors.role}
-            >
-              <option value="" disabled>
-                Choose one
-              </option>
-              {roles.map((r) => (
-                <option key={r} value={r}>
-                  {r[0].toUpperCase() + r.slice(1)}
-                </option>
-              ))}
-            </select>
-          </Field>
+          {!compact && (
+            <>
+              <Field label="School name" hint="Optional">
+                <input
+                  {...register('school')}
+                  autoComplete="organization"
+                  className={inputClass()}
+                />
+              </Field>
+              <Field label="I am a" error={errors.role?.message}>
+                <select
+                  {...register('role')}
+                  defaultValue=""
+                  className={inputClass(!!errors.role)}
+                  aria-invalid={!!errors.role}
+                >
+                  <option value="" disabled>
+                    Choose one
+                  </option>
+                  {roles.map((r) => (
+                    <option key={r} value={r}>
+                      {r[0].toUpperCase() + r.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </>
+          )}
           <Field label="Phone" error={errors.phone?.message} hint="10-digit Indian mobile number">
             <input
               {...register('phone')}
@@ -301,52 +316,58 @@ export function ContactForm() {
               aria-invalid={!!errors.email}
             />
           </Field>
-          <Field label="City" error={errors.city?.message}>
-            <input
-              {...register('city')}
-              autoComplete="address-level2"
-              className={inputClass(!!errors.city)}
-              aria-invalid={!!errors.city}
-            />
-          </Field>
-        </div>
-        <fieldset>
-          <legend className="eyebrow">Subjects of interest</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {subjects.map((s) => (
-              <label key={s} className={chipClass}>
-                <input
-                  type="checkbox"
-                  value={s}
-                  {...register('subjects')}
-                  className="accent-forest"
-                />
-                {subjectLabel[s]}
-              </label>
-            ))}
-          </div>
-          {errors.subjects && (
-            <p role="alert" className="mt-1 text-small font-semibold text-drawing">
-              {errors.subjects.message}
-            </p>
+          {!compact && (
+            <Field label="City" error={errors.city?.message}>
+              <input
+                {...register('city')}
+                autoComplete="address-level2"
+                className={inputClass(!!errors.city)}
+                aria-invalid={!!errors.city}
+              />
+            </Field>
           )}
-        </fieldset>
-        <fieldset>
-          <legend className="eyebrow">Classes</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {classes.map((c) => (
-              <label key={c} className={chipClass}>
-                <input
-                  type="checkbox"
-                  value={c}
-                  {...register('classes')}
-                  className="accent-forest"
-                />
-                {c}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        </div>
+        {!compact && (
+          <>
+            <fieldset>
+              <legend className="eyebrow">Subjects of interest</legend>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {subjects.map((s) => (
+                  <label key={s} className={chipClass}>
+                    <input
+                      type="checkbox"
+                      value={s}
+                      {...register('subjects')}
+                      className="accent-forest"
+                    />
+                    {subjectLabel[s]}
+                  </label>
+                ))}
+              </div>
+              {errors.subjects && (
+                <p role="alert" className="mt-1 text-small font-semibold text-drawing">
+                  {errors.subjects.message}
+                </p>
+              )}
+            </fieldset>
+            <fieldset>
+              <legend className="eyebrow">Classes</legend>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {classes.map((c) => (
+                  <label key={c} className={chipClass}>
+                    <input
+                      type="checkbox"
+                      value={c}
+                      {...register('classes')}
+                      className="accent-forest"
+                    />
+                    {c}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </>
+        )}
         <Field label="Message" error={errors.message?.message}>
           <textarea
             {...register('message')}

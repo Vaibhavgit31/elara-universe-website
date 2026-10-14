@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { expectNoHorizontalScroll, open, padTop } from './helpers'
+import { expectNoHorizontalScroll, open, padTop, settled } from './helpers'
 
 // Phase 2, Step A: one layout container on every page at every laptop size and zoom level.
 // Laptop sizes and phones/tablets; zoom is emulated as a smaller CSS viewport at a higher DPR.
@@ -117,7 +117,7 @@ test.describe('screenshot baselines', () => {
         test.skip(project.name !== 'reduced-motion', 'baselines are taken without motion')
         await page.setViewportSize({ width, height: width === 360 ? 740 : 900 })
         await open(page, route)
-        if (route === '/') await page.getByRole('button', { name: 'Skip intro' }).click()
+        await settled(page)
         await expect(page).toHaveScreenshot(
           `${route.replaceAll('/', '_') || 'home'}-${width}.png`,
           {

@@ -3,7 +3,7 @@ import { open, padTop } from './helpers'
 
 // Phase 2, Step B: the menu is reachable on every page of every flip pad without scrolling,
 // page dots jump to any page, back-to-top returns, and PageDown/PageUp turn pages.
-const padRoutes = ['/', '/about/', '/events/', '/demo-flip/']
+const padRoutes = ['/about/', '/events/', '/demo-flip/']
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768
 
 /** The element the visitor would hit when tapping the middle of `locator`. */
@@ -18,7 +18,6 @@ const hit = (page: Page, selector: string) =>
 for (const route of padRoutes)
   test(`the menu stays visible and clickable on every page of ${route}`, async ({ page }) => {
     await open(page, route)
-    if (route === '/') await page.getByRole('button', { name: 'Skip intro' }).click()
     const top = await padTop(page)
     const starts = (await page.getByTestId('flip-pad').getAttribute('data-starts'))!
       .split(',')
