@@ -85,19 +85,19 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   section titles (सही उत्तर चुनिए, रिक्त स्थान भरिए, सही या गलत लिखिए, सही मिलान कीजिए, एक शब्द में
   उत्तर दीजिए, संक्षेप में उत्तर दीजिए, विस्तार से उत्तर दीजिए), header labels (नाम, कक्षा, अनुक्रमांक,
   समय, पूर्णांक, दिनांक, सामान्य निर्देश, उत्तर कुंजी, सेट, खंड) and the default instruction
-  "सभी प्रश्न अनिवार्य हैं।". Please have a Hindi teacher read them once ().
+  "सभी प्रश्न अनिवार्य हैं।". Please have a Hindi teacher read them once (`lib/test-maker/paper.ts`).
 - (Phase 2, Step I) Chapter lists are needed for Basic Hindi Reader Classes 2 and 4–8 and for
-  every TechNova and Art Journey book (); until then teachers type the
+  every TechNova and Art Journey book (`content/chapters.ts`); until then teachers type the
   chapters or topics. The Class 1 and 3 Hindi lists were read from the PDFs and need checking
-  (the open points are in ).
+  (the open points are in `docs/research/hindi-chapters.md`).
 - (Phase 2, Step I) Each teacher may draft 40 sections or single questions a day
-  ( in ; about 8–10 papers). Change it as you like
+  (`testDraftsPerDay` in `content/site-config.ts`; about 8–10 papers). Change it as you like
   once you see the xAI bill.
 - (Phase 2, Step I) The Word file uses Mangal for Hindi, which ships with Windows and Office; on a
   Mac, Word substitutes a Devanagari font (Kohinoor Devanagari or Devanagari MT), so line breaks
   can move slightly. The PDF from the browser's print always looks exactly like the preview.
-- (Phase 2, Step I) Drag-and-drop in the editor uses Motion's  (already part of the
-  site) instead of , whose last release is 22 months old (the "updated in the last
+- (Phase 2, Step I) Drag-and-drop in the editor uses Motion's `Reorder` (already part of the
+  site) instead of `@dnd-kit/core`, whose last release is 22 months old (the "updated in the last
   12 months" rule). Keyboard users have Move up / Move down.
 
 ## Simplified
