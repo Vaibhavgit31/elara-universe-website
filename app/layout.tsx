@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Caveat, Cormorant_Garamond, Lora, Noto_Sans_Devanagari, Nunito } from 'next/font/google'
+import { ChatBubble } from '@/components/chat/chat-bubble'
 import { BottomBar } from '@/components/frame/bottom-bar'
 import { Footer } from '@/components/frame/footer'
 import { StickerCollector } from '@/components/extras/sticker-book'
@@ -12,6 +13,7 @@ import { WhatsAppButton } from '@/components/frame/whatsapp-button'
 import { MotionProvider } from '@/components/motion/motion-provider'
 import { MeshBackground } from '@/components/ui/mesh-background'
 import { site } from '@/content/site'
+import { aiConfigured } from '@/lib/ai/xai'
 import { isoToday } from '@/lib/events'
 import 'lenis/dist/lenis.css'
 import './globals.css'
@@ -77,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <PageTurn>{children}</PageTurn>
               <Footer />
               <WhatsAppButton />
+              <ChatBubble mock={!aiConfigured} />
               <BottomBar />
               <HydrationMarker />
               <StickerCollector />

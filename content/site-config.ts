@@ -10,6 +10,10 @@ export const siteConfig = {
   festivals: true,
   /** Speaker toggle for the flip-pad page-turn sound (off by default, choice remembered). */
   pageTurnSound: true,
+  /** Elu chatbot: questions one visitor (IP address) may ask in 10 minutes. */
+  chatPer10Minutes: 20,
+  /** Test Maker: AI drafts (one section or one question each) per teacher per day. */
+  testDraftsPerDay: 40,
   /** Evening starts at this hour (24 h, visitor's local time). */
   eveningFromHour: 18,
   /** Festival windows (inclusive ISO dates). [PLACEHOLDER] check the dates each year. */

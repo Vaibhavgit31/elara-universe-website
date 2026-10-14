@@ -1411,3 +1411,88 @@ wrap anywhere).
 
 **Placeholders added:** the step notes on the chalkboard, the lead lines on Web Support and
 Help, the e-book note ("The sample pages for now…"), all marked in the code.
+
+## Phase 2 — Step H: Grok chatbot (Elu)
+
+**Built:**
+
+- **Bubble and panel** (`components/chat/chat-bubble.tsx`, `chat-panel.tsx`): a glass bubble
+  with Elu on every page (above the WhatsApp button; it hides behind the open sheet on phones).
+  The panel loads only on the first open (`next/dynamic`), so the AI SDK client never weighs on a
+  page that does not use it. Header "Ask Elu", "AI answers can be wrong.", a **Mock mode** tag
+  while no key is set, the four suggestion chips from the brief, a 500-character box with a
+  counter (Enter sends, Shift+Enter breaks a line), answers streaming in, link buttons under
+  each answer, "Ask our team" (→ `/web-support/help/?q=<question>#ask`), a retry note on
+  errors, Escape closes and returns focus to the bubble. On phones it is a near-full-height
+  sheet above the bottom bar; on laptops a 24rem panel.
+- **Route** (`app/api/chat/route.ts`): Vercel AI SDK 7 (`ai@7.0.140`) with the official xAI
+  provider (`@ai-sdk/xai@5.0.21`, Responses API; `xai.chat()` no longer exists), streamed as a
+  UI message stream (`createUIMessageStream` + `toUIMessageStream`); doc URLs in the comments,
+  notes in `docs/research/xai.md`. Key `XAI_API_KEY`, model `XAI_MODEL`, no guessed default
+  (both needed, `lib/ai/xai.ts`). Only text parts of the last eight turns are passed on; only
+  this site's pages may call it (Origin check); questions over 500 characters are refused;
+  `maxOutputTokens` 350, temperature 0.3, `store: false` at xAI.
+- **Scope and facts** (`lib/chat/knowledge.ts`): the instructions are built from the site's
+  own content only — the three series with their facts, the known prices/pages/ISBN, events
+  (sample events are labelled "not confirmed"), every FAQ answer, contact details, addresses and
+  the page list; `[PLACEHOLDER]` parts become "not known yet". Elu answers only about Elara and
+  this website, says exactly "I don't know that yet." when the answer is not in the data and
+  points to Contact or WhatsApp, declines anything else in one sentence, writes 1–3 simple
+  sentences, never asks for personal details and never repeats them.
+- **Link buttons** (`lib/chat/links.ts`): chosen on the server by keyword rules, never written
+  by the model, so every link is a real page: "Open this answer" → `/web-support/help/#<id>`
+  for the best-matching FAQ, "Books for Class N", subject shelves, Events, sample copy →
+  Contact, Web Support, QR Corner, Test Maker help, About; "Ask our team" whenever nothing fits
+  or Elu did not know.
+- **Limits and privacy:** 20 questions per visitor per 10 minutes (`content/site-config.ts`),
+  counted with `store.bumpUsage('chat', …)` under a keyed hash of the IP and the date (memory in
+  mock mode, `ai_usage` in Supabase); nothing said in the chat is stored or logged.
+- **Mock mode:** without the xAI variables the same route answers from the same content with
+  the same rules (books for a class, the next event, the matching FAQ answer, or "I don't know
+  that yet."), streamed word by word like a real reply.
+
+**Verified by hand:** `curl` against the built server for the four suggestions and an
+off-topic question; 20 allowed then 429 for one IP; 403 for a foreign Origin; 400 over 500
+characters. The non-mock composition (Grok's stream merged, then the links, then `finish`) was
+run once with the AI SDK's own `MockLanguageModelV4` in a scratch script: text deltas, then the
+`data-links` part, then `finish`, in that order. The generated instructions were printed and
+read: every fact in them comes from `content/`.
+
+**Requirements**
+
+- ✅ Glass chat bubble with Elu on every page, panel with the four suggestion chips
+- ✅ Server route streaming from xAI Grok through the Vercel AI SDK xAI provider; `XAI_API_KEY`,
+  `XAI_MODEL`, no guessed default (suggestion documented in `.env.example`)
+- ✅ Scope only Elara's books and website, prompt built from the site's data, no invented
+  prices/dates/facts, off-topic declined
+- ✅ Link buttons to the right page; "Ask our team" → `/web-support/help/?q=…#ask`
+- ✅ Friendly simple language, no personal details asked, 500-character input, 20 per IP per
+  10 minutes, short answers, no chat logs (anonymous counts only), "AI answers can be wrong"
+- ✅ Mock mode without the key
+
+**Tests:** `tests/chat.spec.ts` — 9 tests (bubble opens the panel with note, mock tag, the four
+chips and focus in the box, no sideways scroll, on all projects; a chip streams an answer whose
+button opens `/catalog/?class=3` and closes the panel; an off-topic question gets "I don't know
+that yet." and "Ask our team" with the question in the address; the FAQ answer button; keyboard
+open/Escape/focus return; 500-character cap; axe on the open panel; the endpoint's 20-per-10-
+minutes limit, the 501-character refusal and the foreign-Origin refusal).
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **488 passed /
+764 skipped by project**, 0 failed ✅
+
+**Screenshots:** `docs/screenshots/phase2-H/` — the catalog with the chat closed, open (chips)
+and with two answers (the sample-copy FAQ and an off-topic question) at 360/768/1024/1440 and
+reduced motion. Looked at, two fixes: the header note wrapped into three lines beside the Mock
+mode tag (→ tag moved next to the title) and on phones the translucent sheet let page text show
+through (→ the sheet is 95 % paper).
+
+**Libraries added** (all checked on npm on 2026-10-14: updated this week, Apache-2.0/MIT):
+`ai@7.0.140` (streaming, structured output; server, and the chat client inside the lazily loaded
+panel), `@ai-sdk/xai@5.0.21` (the official xAI provider), `@ai-sdk/react@4.0.143` (`useChat`
+for the panel), `docx@9.11.0` (Word download in Step I, loaded only when clicked).
+
+**Mock-mode features:** the chatbot (answers from the site's content, no AI).
+
+**Simplified:** nothing.
+
+**Placeholders added:** none (the panel's two sentences of copy are plain instructions).
