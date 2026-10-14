@@ -1,6 +1,6 @@
 import { Mail, MessageCircle, Phone } from 'lucide-react'
-import { ContactForm } from '@/components/contact/contact-form'
 import { LazyMap } from '@/components/contact/lazy-map'
+import { LazyLetter } from '@/components/home/lazy-letter'
 import { buttonClass } from '@/components/ui/button-class'
 import { Glass } from '@/components/ui/glass'
 import { SectionHeading } from '@/components/ui/section-heading'
@@ -82,7 +82,7 @@ export function Postbox() {
         </div>
       </div>
       <Glass radius="lg" className="p-4 sm:p-6 md:p-8">
-        <ContactForm compact />
+        <LazyLetter />
         {/* [PLACEHOLDER] wording of the label and the WhatsApp opening line */}
         <p className="mt-6 eyebrow">Or reach us directly</p>
         <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3">

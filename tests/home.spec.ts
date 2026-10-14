@@ -109,6 +109,8 @@ test('the FAQ links to Web Support answers and the postbox form works without a 
     /wa\.me\/919625741192/,
   )
   await expect(contact.getByRole('link', { name: '+91 96257 41192' })).toBeVisible()
+  // The letter's code loads when the postbox comes near, then the form is there to fill in.
+  await expect(contact.getByLabel('Your name')).toBeVisible({ timeout: 10_000 })
 })
 
 test('phones get the simplified scene with the hotspot list', async ({ page }) => {

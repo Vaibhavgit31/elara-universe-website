@@ -27,6 +27,7 @@ const organization = {
 export const OrganizationJsonLd = () => (
   <script
     type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }}
+    // `<` escaped as in the Next.js JSON-LD guide (node_modules/next/dist/docs/01-app/02-guides/json-ld.md).
+    dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, '\\u003c') }}
   />
 )

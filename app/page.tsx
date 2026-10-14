@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <Main>
-      <Room id="classroom" className="py-0 md:py-0">
+      <Room id="classroom" eager className="py-0 md:py-0">
         <ClassroomHero />
       </Room>
 

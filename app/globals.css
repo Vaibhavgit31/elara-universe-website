@@ -21,6 +21,8 @@
   --color-computer-tint: #e1eef7;
   --color-drawing: #e07a5f;
   --color-drawing-tint: #fbe4dd;
+  /* The drawing colour deepened for small text (error messages): readable like gold-ink. */
+  --color-drawing-ink: #a8452b;
   /* Phase 2 acrylic classroom (PLAYBOOK.md → Phase 2, Step C) */
   --color-leaf: #34a56f;
   --color-leaf-700: #23794b;
@@ -58,13 +60,24 @@
   --shadow-lift: 0 2px 4px rgb(27 36 29 / 0.08), 0 24px 48px -16px rgb(27 36 29 / 0.35);
 }
 
+/* The rupee sign from a font already on the device: in the web fonts it sits in a separate
+   "latin-ext" file (20–35 KB) that would otherwise be downloaded for this one character. If no
+   listed font is installed the next family takes over as before. */
+@font-face {
+  font-family: 'Elara Rupee';
+  src:
+    local('Roboto'), local('Segoe UI'), local('Arial'), local('Helvetica Neue'), local('Noto Sans'),
+    local('DejaVu Sans');
+  unicode-range: U+20B9;
+}
+
 /* Font families come from next/font variables set on <html> (app/layout.tsx). */
 @theme inline {
-  --font-body: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-lora), Georgia, serif;
+  --font-body: 'Elara Rupee', var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Elara Rupee', var(--font-lora), Georgia, serif;
   --font-display: var(--font-cormorant), Georgia, serif;
   --font-hand: var(--font-caveat), cursive;
-  --font-devanagari: var(--font-devanagari), var(--font-nunito), sans-serif;
+  --font-devanagari: 'Elara Rupee', var(--font-nunito), var(--font-devanagari), sans-serif;
 }
 
 @layer base {

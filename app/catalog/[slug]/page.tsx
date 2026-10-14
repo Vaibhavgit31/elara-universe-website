@@ -86,7 +86,8 @@ export default async function BookPage({ params }: Props) {
       <Section className="grid gap-10 py-12 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:items-start md:gap-12 md:py-16">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          // `<` escaped as in the Next.js JSON-LD guide (node_modules/next/dist/docs/01-app/02-guides/json-ld.md).
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
         <Glass radius="lg" className="max-w-sm p-6 md:p-8">
           <TiltCover book={book} />

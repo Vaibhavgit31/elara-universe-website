@@ -9,6 +9,21 @@ const nextConfig: NextConfig = {
   // Covers and samples are pre-optimised WebP files at their display sizes (scripts/), so the
   // runtime image optimiser is not needed and its Vercel quota is never used.
   images: { unoptimized: true },
+  // Baseline security headers on every response, as in the Next.js docs' own example
+  // (node_modules/next/dist/docs/01-app/02-guides/progressive-web-apps.md, "Security headers").
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ]
+  },
   turbopack: {
     rules: {
       '*.css': { loaders: ['@tailwindcss/turbopack'], as: '*.css' },

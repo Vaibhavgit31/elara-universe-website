@@ -1,12 +1,15 @@
 # Elara Universe Publishers — website
 
 The website of Elara Universe Publishers Private Limited: Hindi, Computer and Drawing textbooks
-for Classes 1–8. It is built as "The Living Book" (a storybook open on a desk, with pages that
-lift and turn as you scroll) from the brief in `PLAYBOOK.md`. The build diary, open questions
+for Classes 1–8. Phase 1 built it as "The Living Book"; Phase 2 ("Classroom upgrade") turned it
+into a bright acrylic classroom with "A day at Elara School" as the home page, and added the
+teacher portal (Web Support), teacher accounts made by admins, the Elu chatbot (xAI Grok) and the
+AI Test Maker — all from the brief in `PLAYBOOK.md`. The build diary, open questions
 and every remaining placeholder are in `BUILD_LOG.md`; deployment is in `DEPLOY.md`.
 
 Stack: Next.js 16 (App Router, TypeScript), Tailwind CSS 4, Motion (`framer-motion`), Lenis,
-react-pageflip, react-hook-form + zod, Supabase (teacher accounts), Playwright. Since Phase 2
+react-pageflip, react-hook-form + zod, Supabase (`@supabase/ssr`), the Vercel AI SDK with the xAI
+provider, `docx`, Playwright. Since Phase 2
 the site is a Node.js server build that runs on Vercel (logins, the admin page, Web Support and
 the chatbot need server routes); it is no longer a static `out/` folder. Without the keys in
 `.env.example` those features run in a clearly labelled **mock mode**.
@@ -36,6 +39,27 @@ Playwright needs a Chromium build: on your own machine run `npx playwright insta
 once. The test suite covers every page at phone, tablet and desktop widths plus reduced
 motion, and includes an accessibility audit (axe) and the SEO files.
 
+## The teacher side (Phase 2)
+
+| Address | What it is | Who |
+| --- | --- | --- |
+| `/web-support/` | How Web Support works, Request access, sign in; signed in: My books by subject and series | everyone / teachers |
+| `/web-support/books/<book>/` | Learning resources tabs (e-book, videos, worksheets, quizzes, downloads) from `content/resources.ts` | teachers of that book |
+| `/web-support/test-maker/` | The Test Maker: chapters from `content/chapters.ts`, Grok drafts, editor, A4 print / PDF and Word | teachers |
+| `/web-support/tests/` | My tests: saved papers, duplicate, delete | the paper's owner only |
+| `/web-support/help/` | Help & Doubts: the FAQ from `content/faq.ts` by topic, Ask a doubt (`?q=` pre-fills) | everyone |
+| `/web-support/profile/` | Own name, school, phone; change password | teachers |
+| `/login/`, `/login/forgot/` | Sign in, password reset | everyone |
+| `/admin/` | Teachers (create, edit, deactivate, reset), access requests, doubts | `ADMIN_EMAILS` only |
+| the chat bubble | Elu answers about the books and the site, with buttons to the right page | everyone |
+
+Mock mode (no keys): the demo sign-ins `admin@example.com` / `elara-admin-demo`,
+`teacher@example.com` / `elara-teacher-demo` and `other@example.com` / `elara-other-demo` work,
+data lives in the server's memory, the chatbot answers from the site's content and the Test
+Maker drafts sample questions. Limits live in `content/site-config.ts` (`chatPer10Minutes`,
+`testDraftsPerDay`). Database schema and Row Level Security: `supabase/migrations/`, checked by
+`npm run db:test`; setup in `SETUP-SUPABASE.md`; deployment in `DEPLOY.md`.
+
 ## Where things live
 
 | Folder | What is in it |
@@ -46,6 +70,7 @@ motion, and includes an accessibility audit (axe) and the SEO files.
 | `public/brand/`, `public/books/` | Logo files, icons, link-preview image; cover and sample images |
 | `vercel.json` | Future QR Corner redirects (examples in `vercel.redirects.example.json`) |
 | `lib/`, `proxy.ts`, `supabase/` | Accounts, data store (Supabase or mock), migrations with RLS |
+| `lib/chat/`, `lib/test-maker/`, `app/api/` | Elu's knowledge and links, the Test Maker's paper, drafts and Word file, the two AI routes |
 | `scripts/` | Image preparation, screenshots, Lighthouse |
 | `tests/` | Playwright tests, one file per page or feature |
 | `docs/` | Phase screenshots, Lighthouse summaries, the list of QR addresses |

@@ -1,5 +1,5 @@
-import { type EmailOtpType } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { mockMode, safeNext } from '@/lib/auth/config'
 import { PORTAL_HINT_COOKIE } from '@/lib/auth/cookie-names'
 import { createClient } from '@/lib/supabase/server'
@@ -11,7 +11,10 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
   const token_hash = searchParams.get('token_hash')
-  const type = searchParams.get('type') as EmailOtpType | null
+  // Only the email-link kinds Supabase defines (EmailOtpType in @supabase/auth-js).
+  const type = z
+    .enum(['signup', 'invite', 'magiclink', 'recovery', 'email_change', 'email'])
+    .safeParse(searchParams.get('type')).data
   const next = new URL(safeNext(searchParams.get('next'), '/account/update-password'), request.url)
   if (mockMode) {
     // No emails exist in mock mode; the page itself asks for a sign-in.

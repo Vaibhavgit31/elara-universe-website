@@ -134,6 +134,20 @@ Every `[PLACEHOLDER]` and `isPlaceholder` on the site, with where it lives (Phas
   story paragraph (needs when and why Elara Universe started), the beliefs and the chapter
   copy (`app/about/page.tsx`); the "How a book is made" step descriptions
   (`components/about/making-steps.tsx`).
+- **Phase 2 additions** (all marked in the code):
+  - Learning resources (`content/resources.ts`): every video, worksheet, quiz and download is a
+    `[PLACEHOLDER]` entry with an empty link, so each tab says "Coming soon" and lists what is
+    expected; the e-book tab shows the sample pages until the full e-book exists.
+  - FAQ answers (`content/faq.ts`): ordering, prices and sample copies are partly
+    `[PLACEHOLDER]` (also answered that way by Elu: "not known yet").
+  - Chapter lists (`content/chapters.ts`): Basic Hindi Reader 2 and 4–8, all TechNova and all Art
+    Journey books are six `[PLACEHOLDER]` chapters; Hindi 1 and 3 are typed and need checking.
+  - Test paper wording in Hindi (`lib/test-maker/paper.ts`, `defaults.ts`): section titles,
+    header labels and the default instruction, to be read once by a Hindi teacher.
+  - Copy written for Phase 2 pages: the four step notes on the Web Support chalkboard
+    (`components/portal/access-steps.tsx`), the lead lines on Web Support, Help, Login and Admin,
+    the e-book note on the resources page, the home-page leads listed under Step D.
+  - `DEPLOY.md`: which registrar holds elarauniversepublications.com.
 
 ---
 

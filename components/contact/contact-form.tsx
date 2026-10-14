@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { m, useAnimate } from 'framer-motion'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import * as z from 'zod/mini'
 import { Elu } from '@/components/mascot/elu'
 import { Button } from '@/components/ui/button'
 import { buttonClass } from '@/components/ui/button-class'
@@ -22,31 +22,33 @@ const COOLDOWN_KEY = 'elara:contact-sent-at'
 const COOLDOWN_MS = 60_000
 const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? ''
 
-/** The letter's fields; the compact letter (home-page postbox) only requires name, phone, email and message. */
+/** The letter's fields; the compact letter (home-page postbox) only requires name, phone, email and
+ *  message. Written with zod's tree-shakable `zod/mini` build (same validation, a fraction of the
+ *  size in the browser): https://zod.dev/packages/mini */
+const text = () => z.string().check(z.trim())
 const schemaFor = (compact: boolean) =>
   z.object({
-    name: z.string().trim().min(2, 'Please tell us your name.'),
-    school: z.string().trim(),
-    role: compact ? z.enum(roles).optional() : z.enum(roles, { error: 'Please choose your role.' }),
+    name: text().check(z.minLength(2, 'Please tell us your name.')),
+    school: text(),
+    role: compact
+      ? z.optional(z.enum(roles))
+      : z.enum(roles, { error: 'Please choose your role.' }),
     phone: z
       .string()
-      .transform((v) => v.replace(/[\s-]/g, ''))
-      .pipe(
-        z
-          .string()
-          .regex(/^(\+91)?[6-9]\d{9}$/, 'Enter a 10-digit Indian mobile number, e.g. 96257 41192.'),
+      .check(
+        z.overwrite((v) => v.replace(/[\s-]/g, '')),
+        z.regex(/^(\+91)?[6-9]\d{9}$/, 'Enter a 10-digit Indian mobile number, e.g. 96257 41192.'),
       ),
     email: z.email('Enter a valid email address.'),
-    city: compact ? z.string().trim() : z.string().trim().min(2, 'Which city are you in?'),
+    city: compact ? text() : text().check(z.minLength(2, 'Which city are you in?')),
     subjects: compact
       ? z.array(z.enum(subjects))
-      : z.array(z.enum(subjects)).min(1, 'Pick at least one subject.'),
+      : z.array(z.enum(subjects)).check(z.minLength(1, 'Pick at least one subject.')),
     classes: z.array(z.enum(classes)),
-    message: z
-      .string()
-      .trim()
-      .min(10, 'A few words will help us help you.')
-      .max(2000, 'Please keep it under 2000 characters.'),
+    message: text().check(
+      z.minLength(10, 'A few words will help us help you.'),
+      z.maxLength(2000, 'Please keep it under 2000 characters.'),
+    ),
     botcheck: z.boolean(),
   })
 const fullSchema = schemaFor(false)
@@ -316,7 +318,7 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
                 ))}
               </div>
               {errors.subjects && (
-                <p role="alert" className="mt-1 text-small font-semibold text-drawing">
+                <p role="alert" className="mt-1 text-small font-semibold text-drawing-ink">
                   {errors.subjects.message}
                 </p>
               )}

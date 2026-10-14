@@ -20,6 +20,8 @@ const pairs: Pair[] = [
   ['evergreen', 'hindi-tint', 4.5, 'Hindi tags'],
   ['evergreen', 'computer-tint', 4.5, 'Computer tags'],
   ['evergreen', 'drawing-tint', 4.5, 'Drawing tags'],
+  ['drawing-ink', 'glass', 4.5, 'error messages on glass'],
+  ['drawing-ink', 'drawing-tint', 4.5, 'error notes on the drawing tint'],
   ['leaf-700', 'glass', 3, 'leaf icons, focus ring and large accents on glass'],
   ['brass', 'glass', 3, 'brass stop of the focus ring on glass'],
   ['forest', 'cream', 3, 'forest stop of the focus ring on cream'],

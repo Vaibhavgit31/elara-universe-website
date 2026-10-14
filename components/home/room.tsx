@@ -23,11 +23,15 @@ const tones = {
 export function Room({
   id,
   tone = 'none',
+  eager = false,
   className,
   children,
 }: {
   id: string
   tone?: keyof typeof tones
+  /** The first room renders at once; the others are laid out only when they near the screen
+   *  (content-visibility), so their fonts and pictures are not fetched before the first paint. */
+  eager?: boolean
   /** Classes for the inner container (padding, grid). */
   className?: string
   children: ReactNode
@@ -44,7 +48,11 @@ export function Room({
       id={id}
       data-room={id}
       data-open={open}
-      className={cn('relative w-full scroll-mt-[var(--topbar-h)] overflow-x-clip', tones[tone])}
+      className={cn(
+        'relative w-full scroll-mt-[var(--topbar-h)] overflow-x-clip',
+        !eager && '[contain-intrinsic-size:auto_960px] [content-visibility:auto]',
+        tones[tone],
+      )}
     >
       <div className={cn('container-page py-16 md:py-24', className)}>{children}</div>
       {doors &&

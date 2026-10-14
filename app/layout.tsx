@@ -18,7 +18,7 @@ import { isoToday } from '@/lib/events'
 import 'lenis/dist/lenis.css'
 import './globals.css'
 
-const lora = Lora({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-lora' })
+const lora = Lora({ subsets: ['latin'], weight: '700', variable: '--font-lora' })
 // The display and handwriting fonts are accents: fetched when first used, not preloaded, so the
 // first paint waits only for the body and heading fonts.
 const cormorant = Cormorant_Garamond({
@@ -40,7 +40,7 @@ const caveat = Caveat({
 })
 const devanagari = Noto_Sans_Devanagari({
   subsets: ['devanagari'],
-  weight: ['400', '600'],
+  weight: '400',
   variable: '--font-devanagari',
   preload: false,
 })

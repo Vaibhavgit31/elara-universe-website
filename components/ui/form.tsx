@@ -18,7 +18,7 @@ export const Field = ({
     {children}
     {hint && !error && <span className="mt-1 block text-small text-forest">{hint}</span>}
     {error && (
-      <span role="alert" className="mt-1 block text-small font-semibold text-drawing">
+      <span role="alert" className="mt-1 block text-small font-semibold text-drawing-ink">
         {error}
       </span>
     )}

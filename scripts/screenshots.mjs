@@ -1,5 +1,6 @@
 // Phase-gate screenshots: node scripts/screenshots.mjs <phase> <route> [route...]
 // Saves docs/screenshots/<phase>/<route>-{360,768,1024,1440,reduced-motion}.png from http://localhost:3000.
+// SIZES="360,1440" takes only those widths.
 // Signed-in pages: LOGIN="email:password" signs in once through /login first (mock-mode demo
 // accounts, see lib/data/memory-store.ts); SUFFIX="-signed-in" is added to the file names.
 import { mkdir } from 'node:fs/promises'
@@ -19,6 +20,9 @@ const shots = [
   { name: 'reduced-motion', viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' },
 ]
 
+// SIZES="360,1440" limits the run to those shots (the final before/after set uses two).
+const wanted = process.env.SIZES?.split(',')
+const sizes = wanted ? shots.filter((s) => wanted.includes(s.name)) : shots
 const browser = await chromium.launch()
 const suffix = process.env.SUFFIX ?? ''
 let storageState
@@ -37,7 +41,7 @@ if (process.env.LOGIN) {
 }
 for (const route of routes) {
   const slug = route === '/' ? 'home' : route.replace(/^\/|\/$/g, '').replace(/[/?=&]/g, '-')
-  for (const { name, ...options } of shots) {
+  for (const { name, ...options } of sizes) {
     const page = await browser.newPage({ ...options, deviceScaleFactor: 1, storageState })
     await page.goto(base + route, { waitUntil: 'networkidle' })
     // Walk down the page so rooms open and lazy parts load, then back to the top.

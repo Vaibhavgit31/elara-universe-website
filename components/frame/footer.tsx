@@ -23,7 +23,9 @@ const direct = [
  *  rule along its top edge, the logo and a hand-written tagline beside a pencil on the desk. */
 export function Footer() {
   return (
-    <footer className="glass mt-16 rounded-none border-x-0 border-t-2 border-b-0 border-t-brass pb-24 md:pb-0">
+    // Rendering of the footer waits until it nears the screen (content-visibility), so its
+    // handwriting font is not fetched before the page's first paint.
+    <footer className="glass mt-16 rounded-none border-x-0 border-t-2 border-b-0 border-t-brass pb-24 [contain-intrinsic-size:auto_640px] [content-visibility:auto] md:pb-0">
       <div className="container-page grid gap-10 py-12 md:grid-cols-[1.2fr_1fr_1fr_1fr] md:gap-8 lg:gap-12">
         <div>
           <Image
