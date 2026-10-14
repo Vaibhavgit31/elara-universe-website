@@ -22,7 +22,7 @@ export function BottomBar() {
             href={href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-t-lg border-t-4 text-[11px] font-bold',
+              'flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-t-sm border-t-4 text-[11px] font-bold',
               active
                 ? 'border-brass bg-hindi-tint/40 text-evergreen'
                 : 'border-transparent text-forest',

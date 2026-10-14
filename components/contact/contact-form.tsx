@@ -6,7 +6,8 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Elu } from '@/components/mascot/elu'
-import { Button, buttonClass } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
+import { buttonClass } from '@/components/ui/button-class'
 import { bookBySlug } from '@/content/books'
 import { series, subjectLabel, type Subject } from '@/content/series'
 import { site, whatsappLink } from '@/content/site'
@@ -369,7 +370,7 @@ export function ContactForm() {
           <span className="font-hand text-xl text-forest">Yours sincerely</span>
         </div>
         {status === 'error' && (
-          <p role="alert" className="rounded-lg bg-drawing-tint p-4 text-small">
+          <p role="alert" className="rounded-sm bg-drawing-tint p-4 text-small">
             Sorry, the letter could not be sent ({error}). Your words are still here — try again, or
             write to{' '}
             <a className="link" href={`mailto:${site.email}`}>
@@ -379,7 +380,7 @@ export function ContactForm() {
           </p>
         )}
         {status === 'cooldown' && (
-          <p role="alert" className="rounded-lg bg-hindi-tint p-4 text-small">
+          <p role="alert" className="rounded-sm bg-hindi-tint p-4 text-small">
             Thank you — your last letter went a moment ago. Please wait a minute before sending
             another.
           </p>

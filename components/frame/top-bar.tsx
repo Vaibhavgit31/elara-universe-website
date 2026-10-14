@@ -27,7 +27,7 @@ export function TopBar({ today }: { today: string }) {
       )}
     >
       <div className="container-page flex h-full items-center gap-2 md:gap-3">
-        <TurnLink href="/" aria-label={`${site.shortName} home`} className="shrink-0 rounded">
+        <TurnLink href="/" aria-label={`${site.shortName} home`} className="shrink-0 rounded-sm">
           {/* Full lockup on phones and from 1280px; the mark alone where the ribbons need the room. */}
           <Image
             src="/brand/logo-horizontal.svg"

@@ -59,7 +59,7 @@ export default function DemoFlipPage() {
                     alt={`${name} cover`}
                     width={309}
                     height={400}
-                    className="w-full rounded shadow-page"
+                    className="w-full rounded-sm shadow-page"
                   />
                 </li>
               ),

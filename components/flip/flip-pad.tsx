@@ -272,7 +272,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
     >
       <div
         ref={stageRef}
-        className="sticky top-[var(--topbar-h)] h-[calc(100svh-var(--topbar-h))] overflow-hidden bg-mist"
+        className="sticky top-[var(--topbar-h)] h-[calc(100svh-var(--topbar-h))] overflow-hidden"
         style={{ perspective: '1400px' }}
       >
         {pages.map((page, i) => (
@@ -338,7 +338,7 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }
       data-testid="flip-pad"
       data-stacked=""
       data-starts={starts.join(',')}
-      className="relative bg-mist"
+      className="relative"
     >
       <div className="sticky top-[40svh] z-50 float-right h-0">
         <PageDots current={current} count={pages.length} jump={jump} />

@@ -968,3 +968,56 @@ refreshed.
 
 **Placeholders added:** `/web-support/` and `/login/` are temporary pages (replaced in Steps F
 and G).
+
+## Phase 2 — Step C: acrylic classroom design system
+
+**Built** (all shown on `/styleguide`):
+
+- **Background:** `components/ui/mesh-background.tsx` + the `mesh`/`mesh-blob` utilities: a
+  lime-cream base with mint, sky and sage radial washes and four large blurred blobs that drift
+  on a 46-second cycle (transform only), plus a faint chalk-dust noise layer. Still with reduced
+  motion and on slow devices (`<html data-solid>`). It sits fixed behind every page; section
+  bands (`<Section tone>`) are now translucent (`none`, `paper`, `cream`, `mint`, `chalk`) so the
+  classroom shows through.
+- **Glass:** `components/ui/glass.tsx` wraps the `glass` utility (Step B recipe: white 55 %,
+  blur 20 px + saturate 160 %, 1 px white/70 % border, top-edge highlight, green-tinted layered
+  shadows, 3 % noise; near-solid cream fallback). Props: radius (`sm`/`md`/`lg`), `spotlight`
+  (cursor glow through `--mx/--my`), `tilt` (gentle 6° 3D lean through the shared `useTilt`
+  hook, which `TiltCover` now uses too).
+- **Colours:** leaf `#34A56F`, leaf-700 `#23794B`, mint `#E3F6EA`, chalkboard `#2C4A3B` and the
+  four mesh colours added to the tokens; the logo colours stay. `tests/contrast.spec.ts` reads
+  the built tokens and checks 16 text/background pairs against WCAG AA (glass measured over the
+  lightest mesh colour): all pass.
+- **Interactions:** buttons (`components/ui/button.tsx`, primary now leaf-700 with white text)
+  pull up to 8 px toward the cursor on a spring, ripple from the tap point, press like a stamp,
+  and every focusable control gets the `focus-glow` animated conic-gradient border on keyboard
+  focus (`@property --focus-angle`). The Phase 1 ink ring was replaced by the ripple. Everything
+  stops with reduced motion (hooks check `useReducedMotion`; CSS uses `prefers-reduced-motion`).
+- **Classroom motifs** (`components/classroom/`): `Chalkboard` (chalkboard panel in a brass
+  frame with chalk dust and a chalk tray) with `ChalkText` (Caveat chalk headings that write
+  themselves in when scrolled into view; plain text with reduced motion) and `ChalkLine`;
+  `NotebookCard` (32 px ruled lines, red margin, punched holes); `StickyNote` (kept from
+  Phase 1); `Pencil` and `SchoolBell` (original inline SVGs; the bell rings on hover/tap);
+  `ReportBadge` (report-card label/value with a stamped tick); `NoticeBoard` + `Pinned` (cork
+  board in a wooden frame with push-pinned notes); `Timetable` (a real `<table>` with caption
+  and scoped headers styled as a school timetable); `SectionHeading` (eyebrow, heading with a
+  crayon-underlined accent word via the `crayon` utility, lead).
+- **Not-vibe-coded rules, enforced where possible:** the Tailwind radius scale is overridden to
+  exactly 8/16/24/pill (`--radius-*: initial`), so no other `rounded-*` class compiles; every
+  earlier use was migrated. One icon set (lucide), no emoji, no purple or AI gradients, tokens
+  only, two shadows plus the glass recipe, left-aligned editorial layouts. The rules are printed
+  on `/styleguide`.
+
+**Tests:** `tests/styleguide.spec.ts` (tokens, fonts, every motif, mesh animation on/off with
+reduced motion, spotlight variable, magnetic transform, ripple node, focus glow),
+`tests/contrast.spec.ts`, axe on `/styleguide` (zero violations). Baselines refreshed.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **367 passed / 507 skipped (full run; one width test fixed for scrollable tables and one tablet flake under load re-run 3×3 green)** ✅
+
+**Review:** two independent review agents (rules lens; accessibility and code-quality lens)
+checked the new files: findings and fixes are logged in the next entry below.
+
+**Screenshots:** `docs/screenshots/phase2-C/` (styleguide, Home, Catalog, Contact at
+360/768/1024/1440 and reduced motion; foundation shots at 1440/360).
+
+**Placeholders added:** none.

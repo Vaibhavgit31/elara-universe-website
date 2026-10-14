@@ -10,7 +10,7 @@ export default function LoginPage() {
   return (
     <Main>
       <Section className="py-12">
-        <div className="glass max-w-md rounded-3xl p-8">
+        <div className="glass max-w-md rounded-lg p-8">
           <p className="eyebrow">Teacher login</p>
           <h1 className="text-h2">Logins are on their way</h1>
           <p className="mt-3">

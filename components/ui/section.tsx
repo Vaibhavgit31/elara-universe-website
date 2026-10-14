@@ -1,11 +1,18 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-const tones = { paper: 'bg-paper', cream: 'bg-cream', mist: 'bg-mist' }
+// Bands sit on the moving mesh background: translucent so the classroom shows through.
+const tones = {
+  none: '',
+  paper: 'bg-paper/70',
+  cream: 'bg-cream/80',
+  mint: 'bg-mint/60',
+  chalk: 'bg-chalkboard text-cream',
+}
 
 /** A full-width band with the page container inside, so no side of the screen is ever blank. */
 export const Section = ({
-  tone = 'paper',
+  tone = 'none',
   id,
   className,
   children,

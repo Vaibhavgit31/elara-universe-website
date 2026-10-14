@@ -5,7 +5,8 @@ import { Flipbook } from '@/components/book/flipbook'
 import { TiltCover } from '@/components/book/tilt-cover'
 import { Main } from '@/components/frame/main'
 import { Section } from '@/components/ui/section'
-import { Button, buttonClass } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
+import { buttonClass } from '@/components/ui/button-class'
 import { Tag } from '@/components/ui/tag'
 import { bookBySlug, books, formatMrp } from '@/content/books'
 import { subjectLabel } from '@/content/series'
@@ -106,7 +107,7 @@ export default async function BookPage({ params }: Props) {
               {book.samples.length ? (
                 <Flipbook pages={book.samples} title={book.title} className="mt-4" />
               ) : (
-                <p className="mt-3 rounded-xl bg-mist p-6 font-hand text-2xl text-forest">
+                <p className="mt-3 rounded-md bg-mist p-6 font-hand text-2xl text-forest">
                   Sample pages coming soon.
                 </p>
               )}

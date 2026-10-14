@@ -79,7 +79,7 @@ function Tabs<T extends string>({
 }
 
 const EmptyShelf = () => (
-  <div className="rounded-xl bg-mist p-10 text-center">
+  <div className="rounded-md bg-mist p-10 text-center">
     <svg viewBox="0 0 200 90" className="mx-auto w-48" aria-hidden>
       <rect x="10" y="60" width="180" height="10" rx="2" fill="#B68235" />
       <rect x="16" y="70" width="168" height="5" rx="2" fill="#8A9A74" />
@@ -133,7 +133,7 @@ export function Catalog() {
 
   return (
     <div className="space-y-10">
-      <div className="space-y-5 rounded-xl bg-cream p-5 shadow-page sm:p-6" aria-label="Filters">
+      <div className="space-y-5 rounded-md bg-cream p-5 shadow-page sm:p-6" aria-label="Filters">
         <Tabs
           label="Subject"
           options={subjects}

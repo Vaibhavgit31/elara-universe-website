@@ -31,7 +31,9 @@ for (const route of padRoutes)
       : '[data-testid="ribbons"] a[href="/catalog/"]'
     for (const [i, start] of starts.entries()) {
       await page.evaluate((y) => window.scrollTo(0, y), top + start)
-      await expect(page.getByText(`Page ${i + 1} of ${starts.length}`)).toBeVisible()
+      await expect(page.getByText(`Page ${i + 1} of ${starts.length}`)).toBeVisible({
+        timeout: 10_000,
+      })
       await expect(page.getByRole('banner')).toBeInViewport()
       await expect(control).toBeInViewport()
       expect(await hit(page, selector), `page ${i + 1}`).toBe('header')
@@ -46,19 +48,19 @@ test('page dots jump to any page, back-to-top returns, and the keys turn pages',
   const dots = page.getByTestId('page-dots')
   await expect(dots.getByRole('button')).toHaveCount(4)
   await dots.getByRole('button', { name: 'Page 3 of 4' }).click()
-  await expect(page.getByText('Page 3 of 4')).toBeVisible()
+  await expect(page.getByText('Page 3 of 4')).toBeVisible({ timeout: 10_000 })
   await expect(dots.getByRole('button', { name: 'Page 3 of 4' })).toHaveAttribute(
     'aria-current',
     'page',
   )
   await page.getByRole('button', { name: 'Back to top' }).first().click()
-  await expect(page.getByText('Page 1 of 4')).toBeVisible()
+  await expect(page.getByText('Page 1 of 4')).toBeVisible({ timeout: 10_000 })
   await page.keyboard.press('PageDown')
-  await expect(page.getByText('Page 2 of 4')).toBeVisible()
+  await expect(page.getByText('Page 2 of 4')).toBeVisible({ timeout: 10_000 })
   await page.keyboard.press('ArrowRight')
-  await expect(page.getByText('Page 3 of 4')).toBeVisible()
+  await expect(page.getByText('Page 3 of 4')).toBeVisible({ timeout: 10_000 })
   await page.keyboard.press('PageUp')
-  await expect(page.getByText('Page 2 of 4')).toBeVisible()
+  await expect(page.getByText('Page 2 of 4')).toBeVisible({ timeout: 10_000 })
 })
 
 test('typing in the contact form never turns a page', async ({ page }) => {

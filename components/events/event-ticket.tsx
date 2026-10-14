@@ -2,7 +2,7 @@
 
 import { m } from 'framer-motion'
 import { Tag } from '@/components/ui/tag'
-import { buttonClass } from '@/components/ui/button'
+import { buttonClass } from '@/components/ui/button-class'
 import { eventTypeLabel, type Event, type EventType } from '@/content/events'
 import { monthShort } from '@/lib/events'
 import { cn } from '@/lib/cn'

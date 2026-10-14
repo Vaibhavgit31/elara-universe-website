@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { m, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { useEffect, type PointerEvent } from 'react'
+import { m } from 'framer-motion'
+import { useEffect } from 'react'
 import { CoverPlaceholder, coverBoxClass } from '@/components/book/cover-placeholder'
 import type { Book } from '@/content/books'
-import { useReducedMotion } from '@/lib/use-reduced-motion'
+import { useTilt } from '@/lib/use-tilt'
 
 const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
 
@@ -15,14 +15,8 @@ const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v))
  * still. Nothing moves with reduced m.
  */
 export function TiltCover({ book }: { book: Book }) {
-  const reduced = useReducedMotion()
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const spring = { stiffness: 160, damping: 18 }
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [12, -12]), spring)
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-14, 14]), spring)
-  const shineX = useSpring(useTransform(x, [-0.5, 0.5], ['-35%', '35%']), spring)
-  const shineY = useSpring(useTransform(y, [-0.5, 0.5], ['-35%', '35%']), spring)
+  const { x, y, rotateX, rotateY, shineX, shineY, onPointerMove, onPointerLeave, reduced } =
+    useTilt(13)
 
   useEffect(() => {
     if (
@@ -40,23 +34,12 @@ export function TiltCover({ book }: { book: Book }) {
     return () => window.removeEventListener('deviceorientation', onTilt)
   }, [reduced, x, y])
 
-  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (reduced || e.pointerType !== 'mouse') return
-    const rect = e.currentTarget.getBoundingClientRect()
-    x.set((e.clientX - rect.left) / rect.width - 0.5)
-    y.set((e.clientY - rect.top) / rect.height - 0.5)
-  }
-  const reset = () => {
-    x.set(0)
-    y.set(0)
-  }
-
   return (
     <div
       className="mx-auto w-full max-w-xs"
       style={{ perspective: '1000px' }}
       onPointerMove={onPointerMove}
-      onPointerLeave={reset}
+      onPointerLeave={onPointerLeave}
       data-testid="tilt-cover"
     >
       <m.div

@@ -52,7 +52,7 @@ export default function TraceLetter() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative aspect-square w-full max-w-[300px] rounded-xl bg-paper shadow-page">
+      <div className="relative aspect-square w-full max-w-[300px] rounded-md bg-paper shadow-page">
         <span
           aria-hidden
           className="absolute inset-0 flex items-center justify-center font-devanagari text-[200px] leading-none text-sage-100 select-none"
@@ -64,7 +64,7 @@ export default function TraceLetter() {
           width={300}
           height={300}
           aria-label="Drawing area: trace the letter अ"
-          className="absolute inset-0 h-full w-full touch-none rounded-xl"
+          className="absolute inset-0 h-full w-full touch-none rounded-md"
           onPointerDown={start}
           onPointerMove={move}
           onPointerUp={end}

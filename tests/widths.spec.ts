@@ -35,8 +35,14 @@ const routes = [
 const outsideViewport = (page: Page) =>
   page.evaluate(() => {
     const out: string[] = []
+    const scrolls = (el: HTMLElement) =>
+      /auto|scroll/.test(getComputedStyle(el).overflowX) && el.scrollWidth > el.clientWidth
     for (const el of document.querySelectorAll<HTMLElement>('body *')) {
       if (el.closest('[aria-hidden="true"], dialog, [data-testid="flip-pad"] section')) continue
+      // Content inside a horizontally scrollable wrapper (a wide table) is reachable, not cut off.
+      let parent = el.parentElement
+      while (parent && parent !== document.body && !scrolls(parent)) parent = parent.parentElement
+      if (parent && parent !== document.body) continue
       const r = el.getBoundingClientRect()
       if (r.width === 0 || r.height === 0) continue
       if (r.left < -1 || r.right > innerWidth + 1)

@@ -38,7 +38,7 @@ export function PlayCorner() {
   return (
     <ul className="mt-8 grid gap-6 md:grid-cols-3">
       {activities.map(({ id, subject, title, text, Component }) => (
-        <li key={id} className="rounded-xl bg-paper p-5 shadow-page" data-testid={`activity-${id}`}>
+        <li key={id} className="rounded-md bg-paper p-5 shadow-page" data-testid={`activity-${id}`}>
           <Tag tone={subject}>{title}</Tag>
           <p className="mt-3 text-small">{text}</p>
           {open === id ? (

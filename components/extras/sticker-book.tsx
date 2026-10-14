@@ -129,7 +129,7 @@ export function StickerBookButton() {
           ))}
         </ul>
         {all && (
-          <div className="mt-5 flex items-center gap-3 rounded-xl bg-hindi-tint p-4">
+          <div className="mt-5 flex items-center gap-3 rounded-md bg-hindi-tint p-4">
             <Elu pose="cheer" label="Elu cheering" className="w-16" />
             <p className="font-hand text-2xl">Bookworm badge earned!</p>
           </div>

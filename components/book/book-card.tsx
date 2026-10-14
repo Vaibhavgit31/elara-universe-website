@@ -39,7 +39,7 @@ export function BookCard({ book }: { book: Book }) {
         </TurnLink>
       </m.div>
       <div aria-hidden className="h-3 bg-gradient-to-b from-brass to-gold-ink" />
-      <div aria-hidden className="mx-1 h-1.5 rounded-b bg-sage" />
+      <div aria-hidden className="mx-1 h-1.5 rounded-b-sm bg-sage" />
       <div className="flex flex-1 flex-col gap-2 px-2 pt-4 pb-2 sm:px-3">
         <Tag tone={book.subject} className="self-start">
           {subjectLabel[book.subject]}

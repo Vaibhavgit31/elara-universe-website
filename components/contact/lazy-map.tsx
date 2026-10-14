@@ -8,7 +8,7 @@ export function LazyMap({ query, title }: { query: string; title: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '160px' })
   return (
-    <div ref={ref} className="aspect-[4/3] overflow-hidden rounded-lg bg-mist" data-testid="map">
+    <div ref={ref} className="aspect-[4/3] overflow-hidden rounded-sm bg-mist" data-testid="map">
       {inView && (
         <iframe
           title={title}

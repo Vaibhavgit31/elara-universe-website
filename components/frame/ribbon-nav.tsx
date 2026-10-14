@@ -23,7 +23,7 @@ export function RibbonNav({ compact, className }: { compact?: boolean; className
             key={href}
             href={href}
             aria-current={active ? 'page' : undefined}
-            className="rounded-b-md focus-visible:outline-offset-4"
+            className="rounded-b-sm focus-visible:outline-offset-4"
           >
             <m.span
               className={cn(

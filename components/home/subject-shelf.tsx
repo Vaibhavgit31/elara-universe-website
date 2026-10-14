@@ -12,7 +12,7 @@ const Peek = ({ pages, name }: { pages: string[]; name: string }) => (
   <m.div
     role="dialog"
     aria-label={`Peek inside ${name}`}
-    className="absolute bottom-full left-1/2 z-30 mb-3 flex w-44 origin-bottom -translate-x-1/2 gap-0.5 rounded bg-paper p-1.5 shadow-lift sm:w-56"
+    className="absolute bottom-full left-1/2 z-30 mb-3 flex w-44 origin-bottom -translate-x-1/2 gap-0.5 rounded-sm bg-paper p-1.5 shadow-lift sm:w-56"
     initial={{ opacity: 0, scale: 0.6, y: 12 }}
     animate={{ opacity: 1, scale: 1, y: 0 }}
     exit={{ opacity: 0, scale: 0.8, y: 8 }}
@@ -78,7 +78,7 @@ export function SubjectShelf() {
         aria-hidden
         className="mx-2 h-4 rounded-sm bg-gradient-to-b from-brass to-gold-ink shadow-page sm:mx-8"
       />
-      <div aria-hidden className="mx-4 h-2 rounded-b bg-sage sm:mx-10" />
+      <div aria-hidden className="mx-4 h-2 rounded-b-sm bg-sage sm:mx-10" />
       <ul className="mt-8 grid gap-6 sm:grid-cols-3">
         {series.map((s) => (
           <li key={s.id}>

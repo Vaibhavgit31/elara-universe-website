@@ -28,7 +28,7 @@ export function MenuSheet() {
         ref={dialog}
         aria-label="Menu"
         onClick={(e) => e.target === e.currentTarget && close()}
-        className="glass m-0 mt-[var(--topbar-h)] w-full max-w-none rounded-t-none rounded-b-3xl border-x-0 border-t-0 p-0 backdrop:bg-evergreen/40 open:animate-sheet motion-reduce:animate-none"
+        className="glass m-0 mt-[var(--topbar-h)] w-full max-w-none rounded-t-none rounded-b-lg border-x-0 border-t-0 p-0 backdrop:bg-evergreen/40 open:animate-sheet motion-reduce:animate-none"
       >
         <nav
           aria-label="Main"
@@ -44,7 +44,7 @@ export function MenuSheet() {
                 onClick={close}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex min-h-12 items-center gap-3 rounded-2xl px-4 font-semibold',
+                  'flex min-h-12 items-center gap-3 rounded-md px-4 font-semibold',
                   active ? 'bg-hindi-tint text-evergreen' : 'text-forest hover:bg-sage-100/60',
                 )}
               >

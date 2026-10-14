@@ -62,7 +62,7 @@ export function Flipbook({ pages, title, ratio = 612 / 792, className }: Props) 
         tabIndex={0}
         onKeyDown={onKeyDown}
         aria-label={`${title} sample pages. Use the arrow keys to turn pages.`}
-        className="relative mx-auto rounded"
+        className="relative mx-auto rounded-sm"
         style={{ maxWidth: 2 * 420, aspectRatio: `${2 * ratio}` }}
         data-near={near}
       >

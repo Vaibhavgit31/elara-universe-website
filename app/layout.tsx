@@ -10,6 +10,7 @@ import { SmoothScroll } from '@/components/frame/smooth-scroll'
 import { TopBar } from '@/components/frame/top-bar'
 import { WhatsAppButton } from '@/components/frame/whatsapp-button'
 import { MotionProvider } from '@/components/motion/motion-provider'
+import { MeshBackground } from '@/components/ui/mesh-background'
 import { site } from '@/content/site'
 import { isoToday } from '@/lib/events'
 import 'lenis/dist/lenis.css'
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OrganizationJsonLd />
       </head>
       <body className="flex min-h-svh flex-col">
+        <MeshBackground />
         <MotionProvider>
           <SmoothScroll>
             <PageTurnProvider>

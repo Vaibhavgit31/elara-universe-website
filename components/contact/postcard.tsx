@@ -1,6 +1,6 @@
 import { MessageCircle } from 'lucide-react'
 import { LazyMap } from '@/components/contact/lazy-map'
-import { buttonClass } from '@/components/ui/button'
+import { buttonClass } from '@/components/ui/button-class'
 import { site, whatsappLink } from '@/content/site'
 
 /** A postcard with both addresses, phone, email, WhatsApp and a map of the registered office. */
