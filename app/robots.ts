@@ -6,7 +6,11 @@ import { site } from '@/content/site'
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: '*', allow: '/', disallow: ['/styleguide/', '/demo-flip/'] },
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/styleguide/', '/demo-flip/', '/login/', '/admin/'],
+    },
     sitemap: `${site.url}/sitemap.xml`,
   }
 }

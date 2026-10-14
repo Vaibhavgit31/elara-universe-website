@@ -1,6 +1,8 @@
 'use client'
 
+import { ArrowUp } from 'lucide-react'
 import { m, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { useLenis } from 'lenis/react'
 import {
   Children,
   createContext,
@@ -31,6 +33,13 @@ const useFlipProgress = (local: MotionValue<number>, start: number, extra: numbe
 
 const contentClass = (bare?: boolean) => (bare ? 'relative' : 'relative container-page pt-16 pb-14')
 
+/** Keys that turn pages: PageUp/PageDown and the left/right arrows. Up/Down keep scrolling. */
+const keyStep: Record<string, number> = { PageDown: 1, ArrowRight: 1, PageUp: -1, ArrowLeft: -1 }
+const inField = (el: EventTarget | null) =>
+  el instanceof HTMLElement &&
+  (el.isContentEditable ||
+    !!el.closest('input, textarea, select, dialog, [data-testid="flipbook"]'))
+
 /** The pad's binding: a board across the top with rings holding every page. */
 const Binding = () => (
   <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-50 h-9 bg-sage-100">
@@ -52,7 +61,9 @@ const Binding = () => (
   </div>
 )
 
-const PageNumber = ({ current, count }: { current: number; count: number }) => (
+type Jump = (index: number) => void
+
+const PageNumber = ({ current, count, jump }: { current: number; count: number; jump: Jump }) => (
   <div className="absolute top-0.5 right-2 z-[60] flex items-center gap-2 md:top-auto md:right-auto md:bottom-4 md:left-[max(1.25rem,calc((100vw-var(--container-page))/2))]">
     <p
       aria-live="polite"
@@ -61,25 +72,69 @@ const PageNumber = ({ current, count }: { current: number; count: number }) => (
       Page {current + 1} of {count}
     </p>
     {siteConfig.pageTurnSound && <SoundToggle className="size-8 md:size-9" />}
+    {current > 0 && (
+      <button
+        type="button"
+        onClick={() => jump(0)}
+        aria-label="Back to top"
+        className="flex size-8 items-center justify-center rounded-full bg-sage-100 text-forest hover:bg-sage md:size-9"
+      >
+        <ArrowUp aria-hidden size={18} />
+      </button>
+    )}
   </div>
 )
 
-/** Page-stack progress: thin page edges on the right that thin out as pages are read. */
-const Stack = ({ current, count }: { current: number; count: number }) => (
-  <ol
-    aria-hidden
-    className="absolute top-1/2 right-2 z-50 flex -translate-y-1/2 flex-col gap-1.5 md:right-4"
+/** Page dots on the right: one per page, the ones already read thin out; each jumps to its page. */
+const PageDots = ({ current, count, jump }: { current: number; count: number; jump: Jump }) => (
+  <nav
+    aria-label="Pages"
+    className="absolute top-1/2 right-0 z-50 -translate-y-1/2 md:right-1"
+    data-testid="page-dots"
   >
-    {Array.from({ length: count }, (_, i) => (
-      <m.li
-        key={i}
-        className="h-1 w-5 origin-right rounded-full bg-forest"
-        initial={false}
-        animate={{ opacity: i < current ? 0.15 : 1, scaleX: i < current ? 0.4 : 1 }}
-      />
-    ))}
-  </ol>
+    <ol className="flex flex-col">
+      {Array.from({ length: count }, (_, i) => (
+        <li key={i}>
+          <button
+            type="button"
+            onClick={() => jump(i)}
+            aria-label={`Page ${i + 1} of ${count}`}
+            aria-current={i === current ? 'page' : undefined}
+            className="flex h-6 w-11 items-center justify-end pr-2 md:h-7"
+          >
+            <m.span
+              className="block h-1.5 w-5 origin-right rounded-full bg-forest"
+              initial={false}
+              animate={{ opacity: i < current ? 0.25 : 1, scaleX: i < current ? 0.45 : 1 }}
+            />
+          </button>
+        </li>
+      ))}
+    </ol>
+  </nav>
 )
+
+/** PageUp/PageDown and left/right arrows turn pages while the pad is on screen. */
+function usePageKeys(
+  wrapper: React.RefObject<HTMLDivElement | null>,
+  current: number,
+  count: number,
+  jump: Jump,
+) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const step = keyStep[e.key]
+      const rect = wrapper.current?.getBoundingClientRect()
+      if (!step || !rect || rect.bottom < 0 || rect.top > innerHeight || inField(e.target)) return
+      const next = current + step
+      if (next < 0 || next >= count) return
+      e.preventDefault()
+      jump(next)
+    }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [wrapper, current, count, jump])
+}
 
 type SheetProps = FlipPageProps & {
   index: number
@@ -158,7 +213,8 @@ function slotsFor({ stageH, heights }: Layout, count: number) {
   return { extras, starts, range, indexAt }
 }
 
-/** Scroll-driven flip pad: a sticky stage where each page lifts over the top binding. */
+/** Scroll-driven flip pad: a sticky stage (below the fixed top bar) where each page lifts over
+ *  the top binding. Page dots, a back-to-top button and PageUp/PageDown jump between pages. */
 function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
   const count = pages.length
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -166,6 +222,8 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([])
   const [layout, setLayout] = useState<Layout>({ top: 0, stageH: 0, heights: [] })
   const [current, setCurrent] = useState(0)
+  const reduced = useReducedMotion()
+  const lenis = useLenis()
 
   useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -195,6 +253,15 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
     if (sound && current > 0) playFlipSound()
   }, [current, sound])
 
+  // Scroll to where page i lies flat. Lenis (docs: lenis/react useLenis) animates it; without
+  // Lenis (reduced motion) the browser jumps.
+  const jump: Jump = (i) => {
+    const y = layout.top + starts[i]
+    if (lenis) lenis.scrollTo(y, { immediate: reduced })
+    else window.scrollTo({ top: y, behavior: 'auto' })
+  }
+  usePageKeys(wrapperRef, current, count, jump)
+
   return (
     <div
       ref={wrapperRef}
@@ -205,7 +272,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
     >
       <div
         ref={stageRef}
-        className="sticky top-0 h-svh overflow-hidden bg-mist"
+        className="sticky top-[var(--topbar-h)] h-[calc(100svh-var(--topbar-h))] overflow-hidden bg-mist"
         style={{ perspective: '1400px' }}
       >
         {pages.map((page, i) => (
@@ -230,22 +297,63 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
         ))}
         <DeskMood />
         <Binding />
-        <Stack current={current} count={count} />
-        <PageNumber current={current} count={count} />
+        <PageDots current={current} count={count} jump={jump} />
+        <PageNumber current={current} count={count} jump={jump} />
       </div>
     </div>
   )
 }
 
-/** Reduced motion: no 3D. Pages stack in normal flow and fade in as they arrive. */
+/** Reduced motion: no 3D. Pages stack in normal flow and fade in as they arrive; the dots
+ *  follow the page in view and jump between sections. */
 function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const sections = useRef<(HTMLElement | null)[]>([])
+  const [current, setCurrent] = useState(0)
+  const [starts, setStarts] = useState<number[]>([])
+  useEffect(() => {
+    // Where each page starts, relative to the pad (used by the tests and the dots).
+    const measure = new ResizeObserver(() =>
+      setStarts(sections.current.map((el) => el?.offsetTop ?? 0)),
+    )
+    for (const el of sections.current) if (el) measure.observe(el)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.find((e) => e.isIntersecting)
+        if (hit) setCurrent(sections.current.indexOf(hit.target as HTMLElement))
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    )
+    for (const el of sections.current) if (el) observer.observe(el)
+    return () => {
+      measure.disconnect()
+      observer.disconnect()
+    }
+  }, [])
+  const jump: Jump = (i) => sections.current[i]?.scrollIntoView()
+  usePageKeys(wrapperRef, current, pages.length, jump)
   return (
-    <div className="bg-mist">
+    <div
+      ref={wrapperRef}
+      data-testid="flip-pad"
+      data-stacked=""
+      data-starts={starts.join(',')}
+      className="relative bg-mist"
+    >
+      <div className="sticky top-[40svh] z-50 float-right h-0">
+        <PageDots current={current} count={pages.length} jump={jump} />
+      </div>
       {pages.map((page, i) => (
         <m.section
           key={i}
+          ref={(el) => {
+            sections.current[i] = el
+          }}
           aria-label={`Page ${i + 1} of ${pages.length}`}
-          className={cn('relative min-h-svh bg-cream', page.props.className)}
+          className={cn(
+            'relative min-h-[calc(100svh-var(--topbar-h))] scroll-mt-[var(--topbar-h)] bg-cream',
+            page.props.className,
+          )}
           initial={i ? { opacity: 0 } : false}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.15 }}
@@ -254,7 +362,7 @@ function StackedPages({ pages }: { pages: ReactElement<FlipPageElementProps>[] }
           <div className={contentClass(page.props['data-bare'] ?? page.props.bare)}>
             {page.props.children}
           </div>
-          <PageNumber current={i} count={pages.length} />
+          <PageNumber current={i} count={pages.length} jump={jump} />
         </m.section>
       ))}
     </div>

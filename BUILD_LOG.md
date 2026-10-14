@@ -922,3 +922,49 @@ background, as the brief asks.
 
 **Screenshots:** `docs/screenshots/phase2-A/` (Home, Catalog, About, Contact at 1280, 1366, 1920
 and 2560) and the baselines above.
+
+## Phase 2 — Step B: menu always reachable
+
+**Built:**
+
+- **Glass top bar** (`components/frame/top-bar.tsx`, replaces `header.tsx`): fixed on every page,
+  outside the page-turn and flip-pad containers, `z-index` 100 (above sheets, toasts and the
+  WhatsApp button; native dialogs sit in the top layer). It shrinks from 64 to 52 px once the
+  page has scrolled 24 px (ribbons and logo shorten with it). The `glass` utility in
+  `app/globals.css` is the Step C acrylic recipe (white 55 %, blur 20 px + saturate 160 %, 1 px
+  white/70 % border, top-edge highlight, green-tinted layered shadows, 3 % noise) with the
+  near-solid cream fallback for browsers without `backdrop-filter` and for slow devices
+  (`<html data-solid>` is set when the device has ≤ 2 cores or data saver on).
+- **Links:** Home, Books, About, Events, Web Support, QR Corner, Contact as bookmark ribbons from
+  768 px, plus **Teacher login** (icon-only until 1280 px); it reads **My portal** once a session
+  exists (`lib/session.ts`, replaced by the real session in Step F). Two temporary pages back
+  the new links until Steps F/G: `/web-support/` (public intro with "Request access" and
+  "Teacher login") and `/login/` (glass card, no form yet, hidden from search engines).
+- **Phones:** logo + menu button in the bar; the button opens a glass sheet (native `<dialog>`,
+  `components/frame/menu-sheet.tsx`) with every link, Teacher login and the sticker book; the
+  bottom bar keeps all seven tabs and **never hides** now.
+- **Flip pads** (`components/flip/flip-pad.tsx`): the stage sits below the bar
+  (`top: var(--topbar-h)`, height `100svh − bar`), so the binding and page numbers are never
+  covered. **Page dots** on the right (`nav "Pages"`, one 44 px button per page, read pages
+  thin out, current page marked) jump to any page through Lenis (instant with reduced motion);
+  a **back-to-top** button joins the page number; **PageDown/PageUp and ←/→** turn pages while
+  the pad is on screen (↑/↓ keep scrolling inside a page; keys are ignored inside form fields,
+  dialogs and the flipbook). The reduced-motion stacked pages get the same dots, following the
+  section in view.
+
+**Tests:** `tests/menu.spec.ts` — on every page of `/`, `/about/`, `/events/` and `/demo-flip/`
+(desktop, tablet, phone, reduced motion) the bar is in the viewport and the "Books" ribbon
+(laptops) or the menu button (phones) is the element actually hit at its centre, i.e. visible
+and clickable without scrolling; dots, back-to-top and the keys turn pages; typing in the
+contact form never turns a page. `tests/frame.spec.ts`: 7 links, bar fixed and shrinking, phone
+sheet opens and closes, bottom bar stays while scrolling. Sitemap now lists 55 URLs. Baselines
+refreshed.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **362 passed / 502 skipped (full run; the three tests updated for the new menu labels and the sticker button in the phone sheet were re-run green)** ✅
+
+**Screenshots:** `docs/screenshots/phase2-B/` (Home, About, Catalog, Web Support, Login at
+360/768/1024/1440 and reduced motion; the open phone menu sheet; the About pad scrolled to page
+3/4 at 360 and 1440 with dots and back-to-top).
+
+**Placeholders added:** `/web-support/` and `/login/` are temporary pages (replaced in Steps F
+and G).

@@ -1,13 +1,19 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { open } from './helpers'
+
+/** The sticker-book button lives in the top bar on laptops and inside the phone menu sheet. */
+const stickerButton = async (page: Page, name: RegExp) => {
+  if ((page.viewportSize()?.width ?? 1440) < 768)
+    await page.getByRole('button', { name: 'Open menu' }).click()
+  return page.getByRole('button', { name })
+}
 
 test('visiting pages earns stickers and the sticker book shows them', async ({ page }) => {
   await open(page, '/')
-  const button = page.getByRole('button', { name: /Sticker book: 1 of 6/ })
-  await expect(button).toBeVisible()
   await expect(page.getByRole('status').filter({ hasText: 'leaf sticker' })).toBeVisible()
+  await expect(await stickerButton(page, /Sticker book: 1 of 6/)).toBeVisible()
   await open(page, '/catalog/')
-  await page.getByRole('button', { name: /Sticker book: 2 of 6/ }).click()
+  await (await stickerButton(page, /Sticker book: 2 of 6/)).click()
   const book = page.getByRole('dialog', { name: 'Your sticker book' })
   await expect(book).toBeVisible()
   await expect(book.getByRole('img', { name: 'Book sticker' })).toBeVisible()
@@ -26,7 +32,7 @@ test('the site still works when browser storage is blocked', async ({ page }) =>
   })
   await open(page, '/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-  await expect(page.getByRole('button', { name: /Sticker book: 1 of 6/ })).toBeVisible()
+  await expect(await stickerButton(page, /Sticker book: 1 of 6/)).toBeVisible()
 })
 
 test('play corner activities load on demand and work', async ({ page }, { project }) => {

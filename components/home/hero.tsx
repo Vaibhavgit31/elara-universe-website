@@ -21,7 +21,7 @@ export function Hero() {
   return (
     <section
       ref={ref}
-      className="relative flex min-h-svh flex-col justify-center overflow-hidden pt-16 pb-24"
+      className="relative flex min-h-[calc(100svh-var(--topbar-h))] flex-col justify-center overflow-hidden pt-16 pb-24"
       style={{ perspective: '1200px' }}
     >
       <DriftingLeaves />

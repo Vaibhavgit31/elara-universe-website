@@ -38,7 +38,7 @@ test('micro-interactions are wired: stamp buttons, pencil-stroke links, corner-l
 }) => {
   await open(page, '/')
   await expect(page.getByRole('link', { name: 'Explore the catalog' })).toHaveClass(/stamp/)
-  const link = page.getByRole('contentinfo').getByRole('link', { name: 'Catalog' })
+  const link = page.getByRole('contentinfo').getByRole('link', { name: 'Books' })
   await expect(link).toHaveCSS('background-image', /svg/)
   await expect(page.locator('.lift-corner').first()).toBeAttached()
 })

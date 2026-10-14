@@ -6,7 +6,7 @@ import { books } from '@/content/books'
 import { series } from '@/content/series'
 import { site } from '@/content/site'
 
-const pages = ['/', '/catalog/', '/about/', '/events/', '/contact/', '/resources/']
+const pages = ['/', '/catalog/', '/about/', '/events/', '/contact/', '/resources/', '/web-support/']
 const classes = [1, 2, 3, 4, 5, 6, 7, 8]
 
 export default function sitemap(): MetadataRoute.Sitemap {

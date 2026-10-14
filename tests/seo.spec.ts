@@ -10,7 +10,7 @@ test.beforeEach(({}, { project }) => {
 test('the sitemap lists every page, book and QR address', async ({ request }) => {
   const xml = await (await request.get('/sitemap.xml')).text()
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
-  expect(urls).toHaveLength(6 + 24 + 24)
+  expect(urls).toHaveLength(7 + 24 + 24)
   for (const path of ['/', '/catalog/hindi-1/', '/resources/technova/8/'])
     expect(urls).toContain(`${origin}${path}`)
 })

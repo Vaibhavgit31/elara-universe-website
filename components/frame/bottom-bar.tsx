@@ -1,30 +1,18 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { m, useMotionValueEvent, useScroll } from 'framer-motion'
-import { useState } from 'react'
 import { NAV, isActive } from '@/components/frame/nav'
 import { TurnLink } from '@/components/ui/turn-link'
 import { cn } from '@/lib/cn'
 
-// Phone menu: a bottom bar of bookmark tabs. Hides while scrolling down, returns on scroll up.
+// Phone menu: a bottom bar of bookmark tabs that stays put while scrolling (Phase 2, Step B).
 export function BottomBar() {
   const pathname = usePathname()
-  const { scrollY } = useScroll()
-  const [hidden, setHidden] = useState(false)
-  useMotionValueEvent(scrollY, 'change', (y) => {
-    const previous = scrollY.getPrevious() ?? 0
-    if (Math.abs(y - previous) > 4) setHidden(y > previous && y > 80)
-  })
-
   return (
-    <m.nav
+    <nav
       aria-label="Main"
       data-testid="bottom-bar"
-      className="fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-sage-100 bg-cream pb-[env(safe-area-inset-bottom)] md:hidden"
-      initial={false}
-      animate={{ y: hidden ? '100%' : 0 }}
-      transition={{ duration: 0.3 }}
+      className="glass fixed inset-x-0 bottom-0 z-[90] flex min-h-14 rounded-none border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       {NAV.map(({ href, short, icon: Icon }) => {
         const active = isActive(pathname, href)
@@ -34,7 +22,7 @@ export function BottomBar() {
             href={href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-t-lg border-t-4 text-[11px] font-bold',
+              'flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-t-lg border-t-4 text-[11px] font-bold',
               active
                 ? 'border-brass bg-hindi-tint/40 text-evergreen'
                 : 'border-transparent text-forest',
@@ -45,6 +33,6 @@ export function BottomBar() {
           </TurnLink>
         )
       })}
-    </m.nav>
+    </nav>
   )
 }

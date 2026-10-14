@@ -2,15 +2,16 @@ import type { Metadata, Viewport } from 'next'
 import { Caveat, Cormorant_Garamond, Lora, Noto_Sans_Devanagari, Nunito } from 'next/font/google'
 import { BottomBar } from '@/components/frame/bottom-bar'
 import { Footer } from '@/components/frame/footer'
-import { Header } from '@/components/frame/header'
 import { StickerCollector } from '@/components/extras/sticker-book'
 import { HydrationMarker } from '@/components/frame/hydration-marker'
 import { OrganizationJsonLd } from '@/components/frame/organization-jsonld'
 import { PageTurn, PageTurnProvider } from '@/components/frame/page-turn'
 import { SmoothScroll } from '@/components/frame/smooth-scroll'
+import { TopBar } from '@/components/frame/top-bar'
 import { WhatsAppButton } from '@/components/frame/whatsapp-button'
 import { MotionProvider } from '@/components/motion/motion-provider'
 import { site } from '@/content/site'
+import { isoToday } from '@/lib/events'
 import 'lenis/dist/lenis.css'
 import './globals.css'
 
@@ -64,11 +65,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <PageTurnProvider>
               <a
                 href="#main"
-                className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-brass focus:px-5 focus:py-3 focus:font-bold focus:text-evergreen"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[110] focus:rounded-full focus:bg-brass focus:px-5 focus:py-3 focus:font-bold focus:text-evergreen"
               >
                 Skip to content
               </a>
-              <Header />
+              <TopBar today={isoToday()} />
+              {/* Keeps the page below the fixed bar; the bar itself is out of the flow. */}
+              <div aria-hidden className="h-[var(--topbar-h)] shrink-0" />
               <PageTurn>{children}</PageTurn>
               <Footer />
               <WhatsAppButton />
