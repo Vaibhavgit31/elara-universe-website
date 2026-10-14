@@ -844,3 +844,11 @@ addresses checked on the build (live check listed in DEPLOY.md) · ✅ README
 Contact, a QR address at 360/768/1024/1440 and reduced motion).
 
 **Placeholders added:** none (the registrar of the domain is noted in `DEPLOY.md`).
+
+---
+
+# Phase 2 — Classroom upgrade
+
+One-go run of the "Phase 2: Classroom upgrade" prompt in `PLAYBOOK.md`. Same gate after every
+step; one section per step below. "For Vaibhav", "Simplified" and "Placeholders" at the top of
+this file keep collecting entries, prefixed "(Phase 2, Step X)".

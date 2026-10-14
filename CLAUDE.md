@@ -71,6 +71,115 @@ If Claude Code skips the gate, paste this:
 Stop. Run the full phase gate from PLAYBOOK.md "Rules for Claude Code" on the phase you just finished: re-check every requirement, run tsc, lint, build and all Playwright tests, take screenshots at 360/768/1440 and reduced motion, review your diff, and report in the agreed format. Do not start the next phase.
 ```
 
+## Phase 2 rules (Classroom upgrade) — these win over Phase 1 where they conflict
+
+Phase 2 is the "Phase 2: Classroom upgrade" section of `PLAYBOOK.md`, run in one autonomous go
+like Phase 1: same gate after every step (requirement checklist, `tsc`, lint, build, ALL
+Playwright tests including Phase 1 tests, screenshots that are actually looked at, self-review),
+auto-continue only when everything passes, report per step in `BUILD_LOG.md`, commit after every
+step. Questions go under "For Vaibhav" in `BUILD_LOG.md`; never stop to ask.
+
+- **Phase 2 wins** over Phase 1 on the theme (acrylic classroom replaces plain cream), the home
+  page ("A day at Elara School" replaces the flip-pad home) and hosting (Vercel with server
+  routes replaces the static export). Everything else from Phase 1 still applies.
+- **Never invent facts. Never hard-code secrets.** Keys only in environment variables listed in
+  `.env.example`. **Never guess an API:** read the official docs for xAI, Supabase and Vercel
+  (and the installed Next.js docs in `node_modules/next/dist/docs/`) before using them and put
+  the doc URL in a code comment next to the use. Notes from that reading live in
+  `docs/research/`.
+- **Mock mode** wherever a key is missing (xAI, Supabase, Web3Forms, Vercel token), so the UI,
+  tests and screenshots work without secrets; say clearly in the UI and the report which
+  features run in mock mode.
+
+### Layout (Step A)
+
+One layout container: `max-width: 1280px`, centred, side padding `clamp(16px, 4vw, 48px)`
+(`<Container>`). Section backgrounds run full width; no side is ever blank. No `100vh`
+(use `svh`/`dvh`), no fixed pixel widths for layout, no absolutely positioned page content that
+can escape the viewport, every image with width/height or `aspect-ratio`, no empty grid columns,
+text always wraps. Body text left-aligned, at most 70 characters per line, consistent heading
+spacing. Every page is tested at 1280×720, 1366×768, 1440×900, 1536×864, 1920×1080, 2560×1440,
+zoom 90/110/125 %, and 360/768: no horizontal scroll, nothing outside the viewport, left and right
+margins equal within 2 px, screenshot baselines.
+
+### Menu (Step B)
+
+A glass top bar fixed on every page, outside any flip container, highest z-index, always visible,
+shrinking slightly after scrolling: Home, Books, About, Events, Web Support, QR Corner, Contact,
+plus "Teacher login" (shows "My portal" when logged in). Phones: top bar with logo and a glass
+menu sheet, plus a bottom bar that never hides. Every flip-page section has page dots
+("Page 3 of 6") to jump to any page, a back-to-top button, and arrow / PageUp / PageDown keys.
+
+### Acrylic classroom design system (Step C)
+
+- Background: a slowly moving mesh gradient of mint `#DFF5E6`, sage `#CFE3C8`, lime-cream
+  `#F3F8DC` and a hint of sky `#DCEFF5`, large blurred blobs, faint paper/chalk-dust texture.
+- Glass ("acrylic"): white at 55 % opacity, `backdrop-filter: blur(20px) saturate(160%)`, 1 px
+  white/70 % border, a thin highlight along the top edge, soft green-tinted layered shadows, 3 %
+  noise. Fallback: solid cream at 92 % where `backdrop-filter` is unsupported or the device is
+  slow.
+- Colours: keep the logo colours (evergreen text, forest, sage, brass). Add leaf `#34A56F`
+  (decorative), leaf-700 `#23794B` (primary buttons, white text), mint `#E3F6EA`, chalkboard
+  `#2C4A3B`. Every text/background pair passes WCAG AA.
+- Interactions: cursor spotlight glow on glass cards, gentle 3D tilt, primary buttons that pull
+  slightly toward the cursor, a ripple on tap, an animated gradient border on focus; all off with
+  reduced motion.
+- Classroom motifs: chalkboard panels with chalk-written headings (Caveat, chalk texture), ruled
+  notebook lines, sticky notes, pencils, a school bell, crayon underlines, report-card badges, a
+  notice board, timetable layouts.
+- **Not-vibe-coded rules:** one radius scale (8/16/24/999), an 8 px spacing grid, one icon set
+  (lucide), no emoji in the UI, no purple or AI-style gradients, no generic stock illustrations,
+  no centring everything (editorial, asymmetric layouts), real content only, consistent shadows,
+  every element on the grid. Only the shared `<Glass>`, `<Chalkboard>`, `<StickyNote>`,
+  `<NotebookCard>` and `<SectionHeading>` components are used for those surfaces. `/styleguide`
+  shows all of it.
+
+### Landing page (Step D)
+
+Home is "A day at Elara School" and holds every key detail: (1) an interactive original SVG
+classroom hero (chalkboard headline written in chalk, teacher's desk, student desks with diverse
+children reading, bookshelf, globe, computer, art easel, notice board, real-time wall clock, sunny
+window with a swaying tree; objects glow on hover and link: bookshelf → books, computer →
+TechNova, easel → Art Journey, notice board → events, globe → about, chalkboard → Web Support,
+teacher's desk → Teacher login; gentle mouse parallax; phones get a simplified scene plus a
+hotspot list), (2) three book rooms with a Class 1–8 picker, key features, "Peek inside" flipbook
+modal and "Request a sample copy", (3) why schools choose Elara, (4) digital support and QR,
+(5) for teachers, (6) events notice board, (7) staff room with polaroids, (8) top 6 FAQ,
+(9) school-gate postbox contact. Rooms are lazy-loaded; the hero stays under 150 KB of JS.
+
+### Server, accounts, portal, chatbot, Test Maker (Steps F–I)
+
+- Vercel with server routes; `output: 'export'` is gone. Supabase via `@supabase/ssr` following
+  the official Next.js App Router guide; tables `profiles`, `access_requests`, `doubts`, `tests`,
+  `ai_usage`, all with Row Level Security; migrations in `supabase/migrations`.
+- Accounts are created only by admins (`ADMIN_EMAILS`); public sign-up is off; there are no
+  student accounts. The service role key is used only on the server. Teachers see only their own
+  tests. Login attempts are rate-limited. Every portal page except the public intro and Help is
+  protected on the server, with tests for the redirect and for teacher/admin separation.
+- Web Support copies only the FLOW of a publisher portal (subject → series → books by class →
+  Learning Resources / Generate Test Paper), in our design: no emoji, no dashed borders, no rainbow
+  gradients. Subject and series live in the URL. Resources come from `content/resources.ts`, FAQ
+  from `content/faq.ts` (answers `[PLACEHOLDER]` until Vaibhav sends them).
+- Chatbot: xAI Grok through the Vercel AI SDK provider if it exists, else the OpenAI-compatible
+  API; key `XAI_API_KEY`, model `XAI_MODEL` (no guessed default). Scope is only Elara's books and
+  website, built from the site's own data; it never invents prices, dates or facts; link buttons
+  to the right page; "Ask our team" fallback; friendly simple language, never asks for personal
+  details, 500-character input, per-IP rate limit, short answers, no chat logs stored (anonymous
+  counts only), "AI answers can be wrong" note.
+- Test Maker: chapters in `content/chapters.ts` (Hindi typed from the PDFs and marked "needs
+  checking"; TechNova and Art Journey `[PLACEHOLDER]`), section-by-section generation with zod-
+  validated JSON and retries, every question labelled "AI draft — please check", editor with drag
+  reorder, A4 print preview with answer key and Set A/B, PDF through the browser's print
+  (never a PDF library that breaks Devanagari), Word through the `docx` library, daily limit per
+  teacher in config.
+
+### Targets (Step J) and delivery (Step K)
+
+Lighthouse mobile: Home ≥ 85 Performance, every other page ≥ 90, Accessibility ≥ 95, SEO ≥ 95.
+`DEPLOY.md` covers Vercel CLI without GitHub, every env var, Supabase setup, first admin and
+teachers, and the domain. Deploy a preview only if `VERCEL_TOKEN` is set. Deliver
+`elara-website-phase2-source.zip` (no node_modules, no .env) and the final report.
+
 ## Project rules added for this build
 
 - **All editable content lives in `/content`** (`books.ts`, `events.ts`, `team.ts`, `site.ts`,

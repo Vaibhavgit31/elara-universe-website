@@ -611,3 +611,144 @@ The site is ready to go live when every item below is ticked.
 - [ ] The domain works with HTTPS, with and without "www".
 - [ ] The site is submitted to Google Search Console, with the sitemap added.
 - [ ] Link previews show the logo when the site is shared on WhatsApp.
+
+## Phase 2: Classroom upgrade
+
+Phase 2 changes the look from plain cream to a bright frosted-glass classroom and rebuilds the home page as one complete landing page. It also fixes the menu and the laptop alignment, and adds Web Support, a Grok chatbot, teacher logins and an AI Test Maker. Run it with the single prompt at the end of this section.
+
+### What changes
+
+| Your request | What Claude Code will build |
+| --- | --- |
+| Theme looks dull and "vibe coded" | A bright, frosted-glass ("acrylic") look: see-through panels over a soft, moving green background, plus cursor glow, 3D tilt and buttons that pull toward the cursor. A strict list of "not vibe-coded" rules keeps it looking professionally designed. |
+| Classroom theme | Chalkboard-green panels with chalk-style headings, ruled notebook lines, sticky notes, a school bell, a notice board and timetable-style layouts. The home page is a walk through a school day. |
+| Menu disappears on page 3 of 6 | The glass menu stays fixed at the top of every page, outside the flipping pages. On phones, the bottom bar never hides. Each flip section gets page dots to jump to any page. |
+| Landing page should have everything and be unique | Home becomes "A day at Elara School". It starts in an interactive classroom where each object leads somewhere, then moves through rooms that cover books, support, teachers, events, about, FAQ and contact. Visitors don't need to open other pages. |
+| Web Support page | A login portal like the publisher portal you showed: a sidebar, then pick subject → series → that series' books by class. Each book card has "Learning Resources" (e-book, videos, worksheets, quizzes, downloads) and "Generate Test Paper". Logins are for teachers only. Logged-out visitors see how it works and a request-access form. Help & Doubts (searchable FAQ and "ask a doubt") is public, so the chatbot can link to exact answers. |
+| Grok AI chatbot | A glass chat bubble with Elu on every page. It answers only about Elara's books and website, using the site's own data. When it can't answer, it opens the matching Web Support answer or the doubt form. |
+| Teacher login | Only you create teacher accounts, from a private admin page. Teachers can't sign themselves up. Access requests from Web Support appear on the admin page, and you create the account with one click. |
+| Test Maker | A logged-in teacher picks class, book, chapters, question types and marks. Grok drafts the questions, the teacher edits them, then prints or downloads the paper as PDF or Word, with an answer key and Sets A and B. |
+| Laptop alignment and blank sides | One shared layout container, with backgrounds that run edge to edge. Every page is checked at 6 laptop sizes and 3 zoom levels, with automatic tests for blank sides and sideways scrolling. |
+
+### Important change to hosting
+
+The chatbot, logins and Test Maker need a server. So the site can no longer be dragged onto Netlify as plain files. It will run on **Vercel**, which is free to start. Claude Code can deploy it from the command line, so GitHub is still not needed.
+
+### Set these up before you paste the prompt
+
+You can paste the prompt before all of these are ready. Claude Code builds everything with a safe test mode wherever a key is missing, and you add the real keys later in Vercel's settings.
+
+- [ ] **xAI API key** for Grok, from console.x.ai
+- [ ] **Supabase** free project, from supabase.com: Project URL, publishable (anon) key and secret (service role) key. It stores teacher accounts, saved tests and doubts.
+- [ ] **Vercel** free account, from vercel.com
+- [ ] **Web3Forms key**, if not already set, for the contact form
+- [ ] **Admin emails:** the email addresses allowed to open the admin page and create teacher accounts (for example yours and the co-founders')
+
+Keep your keys out of the chat message. If Claude Code's environment settings (the "Default" button) or a `.env.local` file let you add them, put them there, and add them in Vercel → Project → Settings → Environment Variables for the live site. If a key ever ends up in a chat, regenerate it before launch.
+
+### How to run it
+
+1. Continue in the same Claude Code session as Phase 1 if it's still open. If not, start a new one and attach `elara-website-source.zip` from Phase 1 together with `PLAYBOOK.md`, re-exported so it includes this section.
+2. Keep the mode on **Auto**.
+3. Paste the Phase 2 prompt below and leave it running.
+
+### Phase 2 prompt
+
+```text
+PHASE 2 of the Elara Universe website. Work in ONE uninterrupted run, exactly like Phase 1: same CLAUDE.md rules, same phase gate after every step (requirement checklist, tsc, lint, build, ALL Playwright tests incl. Phase 1 tests, screenshots you actually look at, self-review), auto-continue only when everything passes, log to BUILD_LOG.md, commit after every step. Do not stop to ask me: write questions under "For Vaibhav" in BUILD_LOG.md and use the defaults below.
+
+START
+1. If the Phase 1 project is not in this folder, unzip elara-website-source.zip first and run the full Phase 1 test suite to confirm it is green before changing anything.
+2. Read PLAYBOOK.md, especially "Phase 2: Classroom upgrade". Add a "Phase 2 rules" section to CLAUDE.md with everything below. Where Phase 2 conflicts with Phase 1 (theme, home page, hosting), Phase 2 wins.
+3. Never invent facts. Never hard-code secrets. Never guess an API: read the official docs for xAI, Supabase and Vercel before using them and note the doc URL in a code comment.
+
+STEP A — Laptop alignment and blank sides (fix first)
+- Audit every page at 1280x720, 1366x768, 1440x900, 1536x864, 1920x1080 and 2560x1440, and at browser zoom 90%, 110% and 125%. Also check 360px and 768px.
+- Find and fix the causes: 100vh (use svh/dvh), fixed widths, absolutely positioned flip pages, missing max-width, overflow clipping, images without aspect-ratio, empty grid columns, text that doesn't wrap.
+- Use ONE layout container (max-width 1280px, centred, side padding clamp(16px, 4vw, 48px)). Section backgrounds run full width, so no side is ever blank. Body text left-aligned, max 70 characters per line, consistent heading spacing.
+- Add Playwright tests for every page and size: no horizontal scroll, no element outside the viewport, left and right margins equal within 2px, plus screenshot baselines.
+
+STEP B — Menu always reachable
+- A glass top bar fixed on EVERY page, always visible, outside any flip container, highest z-index. It shrinks slightly after scrolling. Links: Home, Books, About, Events, Web Support, QR Corner, Contact, plus a "Teacher login" button (shows "My portal" when logged in).
+- Phones: top bar with logo and menu button (glass sheet), plus the bottom bar, which never hides now.
+- Every flip-page section gets clickable page dots ("Page 3 of 6") to jump to any page, and a back-to-top button. Arrow keys and PageUp/PageDown work.
+- Test: on every flip page of every page, the menu is visible and clickable without scrolling.
+
+STEP C — Acrylic classroom design system
+- Background: a soft, slowly moving mesh gradient of mint #DFF5E6, sage #CFE3C8, lime-cream #F3F8DC and a hint of sky #DCEFF5, with large blurred blobs and a faint paper/chalk-dust texture.
+- Glass surfaces ("acrylic"): white at 55% opacity, backdrop-filter blur(20px) saturate(160%), a 1px white/70% border, a thin highlight along the top edge, soft green-tinted layered shadows, 3% noise. Fallback to solid cream at 92% where backdrop-filter is unsupported or the device is slow.
+- Colours: keep the logo colours (evergreen text, forest, sage, brass). Add leaf #34A56F (decorative), leaf-700 #23794B (primary buttons, white text), mint #E3F6EA, chalkboard #2C4A3B. Check every text/background pair passes WCAG AA.
+- Interactions: cursor spotlight glow on glass cards, gentle 3D tilt, primary buttons that pull slightly toward the cursor, a ripple on tap, an animated gradient border on focus. All turned off with reduced motion.
+- Classroom motifs: chalkboard panels with chalk-written headings (Caveat, chalk texture), ruled notebook lines, sticky notes, pencils, a school bell, crayon underlines, report-card badges, a notice board, timetable layouts.
+- NOT-VIBE-CODED RULES: one radius scale (8/16/24/999), an 8px spacing grid, one icon set (lucide), no emoji in the UI, no purple or AI-style gradients, no generic stock illustrations, no centring everything (use editorial, asymmetric layouts), real content only, consistent shadows, every element aligned to the grid. Build reusable <Glass>, <Chalkboard>, <StickyNote>, <NotebookCard>, <SectionHeading> components and use only them.
+- Update /styleguide to show all of it.
+
+STEP D — New landing page: "A day at Elara School"
+Home must hold EVERY key detail, so visitors never need another page, and must look unlike every other page. Sections:
+1. Interactive classroom hero: an original illustrated classroom (SVG). It has a green chalkboard where the headline writes itself in chalk, a teacher's desk, student desks with children reading, a bookshelf, a globe, a computer, an art easel, a notice board, a wall clock showing the real time, and a sunny window with a swaying tree. Objects glow on hover and work as links: bookshelf → books, computer → TechNova, easel → Art Journey, notice board → events, globe → about, chalkboard → Web Support, teacher's desk → Teacher login. Gentle mouse parallax. On phones, a simplified scene plus a list of hotspots. All children are diverse, original and respectful.
+2. Our books: three rooms (Hindi class, Computer lab, Art room). Each has the series card, a Class 1–8 picker that swaps the cover with a page-flip, key features, a "Peek inside" flipbook modal and "Request a sample copy".
+3. Why schools choose Elara: notebook stickers on glass.
+4. Digital support and QR: an animated phone scanning a book and opening resources, linking to Web Support and QR Corner.
+5. For teachers: an animated preview of a test paper being built, plus the login button.
+6. Events: a notice board with pinned notices.
+7. About and founders: a staff room with polaroids.
+8. FAQ: the top 6 questions, linking to Web Support.
+9. Contact: a school-gate postbox with a short form, WhatsApp, phone, email and map.
+Smooth transitions between rooms (a page turn or a door opening). Keep it fast: lazy-load each room, and keep the hero under 150 KB of JS.
+
+STEP E — Restyle every other page to the new system so the whole site matches, then repeat Step A's checks.
+
+STEP F — Server, database and teacher accounts
+- Remove `output: 'export'`. The site now runs on Vercel with server routes.
+- Supabase (follow the current official Next.js App Router + @supabase/ssr guide). Tables, all with Row Level Security: profiles (name, school, phone, role teacher|admin, classes[], subjects[], active), access_requests, doubts, tests (teacher_id, title, class, subject, book_slug, chapters[], settings json, questions json, timestamps), ai_usage (for rate limits). Put migrations in supabase/migrations. Apply them with SUPABASE_DB_URL if it is set; otherwise write SETUP-SUPABASE.md with copy-paste SQL and dashboard steps.
+- Accounts are created ONLY by admins. Turn off public sign-up. Admins = the emails in ADMIN_EMAILS.
+- /admin (admins only): create a teacher account with assigned classes and subjects (sends an invite email or shows a one-time temporary password), edit, deactivate, reset password. See access requests (create the account from a request in one click) and see doubts.
+- /login (glass card on a classroom background), forgot password, and after login everyone lands in the Web Support portal (Step G). The top bar's "Teacher login" button becomes "My portal".
+- The service role key is used only on the server. Teachers can only see their own tests. Rate-limit login attempts.
+
+STEP G — Web Support portal (/web-support)
+Copy the FLOW of a typical publisher web-support portal: log in → pick a subject → pick a series → see that series' books, one per class → open Learning Resources or Generate Test Paper. Copy ONLY the flow. Use our acrylic classroom design (no emoji, no dashed borders, no rainbow gradients).
+- Logged out (/web-support): a public page with the 4 steps from the Hindi Reader back cover (visit website → Web Support → request access → get approval → use the content), a glass login card, and a "Request access" form (name, school, role teacher | principal | coordinator, email, phone, book, class). Requests are saved to access_requests and emailed to the admins, who create the account in one click (Step F).
+- Logged in: a portal layout with a glass sidebar showing the school name and user name, and links to My books, My tests, Help & Doubts, Profile and Sign out. On phones it collapses to a top menu.
+- "Select your title": Step 1 is a Subject dropdown (Hindi, Computer, Drawing). Step 2 is a Series dropdown filtered by subject (Basic Hindi Reader, TechNova, Art Journey). Both are saved in the URL (?subject=hindi&series=basic-hindi-reader), so links can be shared and the back button works. Show only the user's assigned classes; admins see all.
+- Book grid: one glass card per class with the cover, "<Series> (Class n)", and two buttons. Teachers get both. "Learning Resources" opens the book's resources. "Generate Test Paper" opens Step I with class and book pre-filled. Cards lift on hover; covers swap with a page-flip when the series changes.
+- Learning Resources (/web-support/books/[slug]): tabs for E-book (flipbook of the sample pages for now), Animated videos (embedded player), Worksheets (PDF view and download), Interactive quizzes, and Downloads. Content comes from content/resources.ts. Empty tabs show "Coming soon", and [PLACEHOLDER] entries are easy to swap for real links and files.
+- Help & Doubts (/web-support/help): searchable FAQ grouped by topic (books, ordering, sample copies, digital access, login, QR codes, Test Maker), with each answer at its own #anchor. FAQ content lives in content/faq.ts, with my answers marked [PLACEHOLDER] until I send them. An "Ask a doubt" form saved to doubts and emailed to the admins. It accepts ?q= to pre-fill the question. This page is public, so the chatbot can link to it.
+- Every portal page except the public intro and Help is protected on the server. Tests must confirm that a logged-out visitor is redirected to login and that a teacher cannot open /admin or another teacher's tests. Logins are for teachers and admins only: there are no student accounts.
+
+STEP H — Grok chatbot
+- A glass chat bubble with Elu on every page, opening a chat panel with suggestion chips ("Which books are for Class 3?", "How do I get a sample copy?", "How does Web Support work?", "Upcoming events").
+- A server route that streams answers from xAI Grok. Read docs.x.ai for the current SDK and model names. Use the Vercel AI SDK xAI provider if it exists, otherwise xAI's OpenAI-compatible API. Key in XAI_API_KEY, model in XAI_MODEL (no guessed default; document it).
+- Scope: ONLY Elara's books and website. Build the system prompt from the site's own data (content/books.ts, events, faq, contact details, the page list). Never invent prices, dates or facts: if it's not in the data, say so and offer Contact or WhatsApp. Politely decline anything off-topic.
+- It answers with link buttons to the right page, e.g. "Open this answer" → /web-support/help#sample-copies. If it can't answer, it offers "Ask our team" → /web-support/help?q=<question>#ask.
+- Safety (children use this site): friendly simple language, never ask for personal details, input max 500 characters, rate limit per IP (e.g. 20 messages / 10 min), short answers, no chat logs stored (only anonymous counts), and a small note "AI answers can be wrong".
+- Mock mode when XAI_API_KEY is missing, so the UI and tests work.
+
+STEP I — Test Maker (/web-support/test-maker, teachers only; opened from a book card's "Generate Test Paper" with class and book pre-filled, or from My tests)
+- Chapter data in content/chapters.ts for every book and class. Read the Hindi Reader contents pages (विषय-सूची) from the page images in the PDFs and type the chapter names in Unicode Hindi; mark them "needs checking". Leave TechNova and Art Journey chapters as [PLACEHOLDER] lists that are easy to fill in.
+- Form: class (limited to the teacher's classes) → book → chapters (multi-select) → question types with count and marks each (MCQ, fill in the blanks, true/false, match the following, one word, short answer, long answer; picture/drawing tasks for Art Journey) → difficulty mix → total marks and time (warns if the totals don't add up) → exam name, school name, optional school logo, date, instructions. The Hindi paper is in Devanagari; Computer and Drawing papers are in English.
+- Generation: Grok drafts one section at a time, with structured JSON output validated by zod, and retries on invalid output. The prompt includes the book, class level, chapter names and NEP 2020 / NCF 2023 competency focus, and stays within those chapters. Each question is labelled "AI draft — please check".
+- Editor: edit, reorder (drag), delete, regenerate one question, add your own question, change marks; live totals.
+- Output: A4 print preview with school header, sections, marks and a separate answer key; Set A / Set B (shuffled order and options). Download as PDF through the browser's print-to-PDF with a print stylesheet (Chrome shapes Devanagari correctly; do NOT use a PDF library that breaks Hindi conjuncts), and as Word (.docx, using the docx library) so teachers can edit it. Check that Hindi text renders correctly in both, using screenshots.
+- Save, duplicate and delete tests; list them under My tests in the portal sidebar. Daily generation limit per teacher, set in config.
+- Mock mode when XAI_API_KEY is missing.
+
+STEP J — Security, accessibility, speed and full regression
+- Security: secrets only in env vars, .env.example lists every variable, RLS tested (one teacher cannot read another's tests), admin routes blocked for teachers, all inputs validated with zod, no XSS.
+- Accessibility: WCAG AA contrast on glass, keyboard access for chat, Test Maker and admin, reduced motion everywhere.
+- Lighthouse mobile: Home ≥ 85 Performance (glass + illustration allowance), every other page ≥ 90; Accessibility ≥ 95; SEO ≥ 95.
+- Run every test from Phase 1 and Phase 2.
+
+STEP K — Deploy prep and report
+- Update DEPLOY.md: deploy to Vercel with the CLI and no GitHub (vercel login, vercel link, vercel --prod), every env var to add (XAI_API_KEY, XAI_MODEL, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL optional, ADMIN_EMAILS, NEXT_PUBLIC_WEB3FORMS_KEY), Supabase setup, how to create the first admin and teachers, and connecting elarauniversepublications.com.
+- If VERCEL_TOKEN is set, deploy a preview and test the live URL with Playwright. Otherwise skip deploying.
+- Zip the source (no node_modules, no .env) as elara-website-phase2-source.zip.
+- Final report: what changed, before/after screenshots of every page at 1440px and 360px, Lighthouse scores, test counts, everything under "Simplified" and "For Vaibhav", remaining [PLACEHOLDER]s, and which features are running in mock mode until keys are added.
+```
+
+### Content needed for Phase 2
+
+- [ ] Chapter list for each book and class. Claude Code will read the Hindi Reader contents pages from the page images, but someone must check them. TechNova and Art Journey chapters are needed from your team.
+- [ ] Answers to the 15–20 questions schools ask most (ordering, sample copies, delivery, digital access, login, QR codes)
+- [ ] Links or files for digital resources (animated videos, worksheets, quizzes, downloads) for each book
+- [ ] The first list of teachers to create (name, school, email, classes, subjects)
