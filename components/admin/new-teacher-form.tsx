@@ -3,10 +3,10 @@
 import { UserPlus } from 'lucide-react'
 import { useActionState } from 'react'
 import { createTeacher, type CreateState } from '@/app/admin/actions'
-import { Chips, TeacherFields, type TeacherDefaults } from '@/components/admin/teacher-fields'
+import { TeacherFields, type TeacherDefaults } from '@/components/admin/teacher-fields'
 import { TemporaryPassword } from '@/components/admin/temporary-password'
 import { Button } from '@/components/ui/button'
-import { Notice } from '@/components/ui/form'
+import { Chips, Notice } from '@/components/ui/form'
 import { Glass } from '@/components/ui/glass'
 
 const handover = [

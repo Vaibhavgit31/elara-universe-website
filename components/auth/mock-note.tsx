@@ -1,4 +1,4 @@
-import { mockMode } from '@/lib/auth/config'
+import { demoLogins, mockMode } from '@/lib/auth/config'
 import { demoAccounts } from '@/lib/data/memory-store'
 
 /** Shown wherever accounts are involved while Supabase is not configured. */
@@ -15,7 +15,10 @@ export function MockNote({ accounts = false }: { accounts?: boolean }) {
         Accounts live in this server&apos;s memory and reset on restart; no emails are sent. See
         SETUP-SUPABASE.md to connect a real project.
       </p>
-      {accounts && (
+      {accounts && !demoLogins && (
+        <p className="mt-1">Demo sign-ins are switched off on the live site.</p>
+      )}
+      {accounts && demoLogins && (
         <ul className="mt-2 space-y-1">
           {demoAccounts.map((a) => (
             <li key={a.email}>

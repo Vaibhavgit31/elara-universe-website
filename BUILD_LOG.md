@@ -65,6 +65,22 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   ("Hindi shelf" …), the "Sample pages" / "Report card" eyebrows and the "Turn the pages" note on
   a book page, the "Your school" note on the events board and the two badge labels on QR Corner.
   Change any of them freely; no facts are stated in them.
+- (Phase 2, Step F) Supabase is set up by hand once (`SETUP-SUPABASE.md`). The dashboard
+  labels in that file were taken from Supabase's documentation sources, because this build
+  environment cannot open supabase.com; if a label has moved, the setting names stay the same.
+- (Phase 2, Step F) `images.unoptimized` is kept on purpose: covers and sample pages are already
+  WebP files at their display sizes, so Vercel's image optimiser (and its monthly quota) is not
+  needed.
+- (Phase 2, Step F) The sign-in limit (5 tries per account, 100 per IP in 15 minutes) is kept
+  in the server's memory. On Vercel every function instance keeps its own count, so Supabase's
+  own per-IP limits (Authentication → Rate Limits) stay switched on as the backstop.
+- (Phase 2, Step F) The demo accounts (admin@example.com, teacher@example.com,
+  other@example.com) exist only in mock mode, i.e. while the Supabase keys are missing, and the
+  login page lists them so the portal can be tried. On a Vercel *production* deployment without
+  Supabase, demo sign-in is switched off, so the published demo passwords never open a live site.
+- (Phase 2, Step F) This session pushes to the branch it was given,
+  `claude/stoic-clarke-ihq1sb`, instead of `claude/elara-publishers-website-waf1o4` named in the
+  handover prompt. Both start from the same history; merge or rename whichever you prefer.
 
 ## Simplified
 
@@ -1210,3 +1226,107 @@ eyebrows ("Hindi shelf" …, `catalog.tsx`), the "Sample pages" eyebrow and the 
 sticky note and the "Report card" eyebrow (`app/catalog/[slug]/page.tsx`), the "Your school"
 note on the events board (`upcoming-events.tsx`), the QR Corner badge labels
 (`qr-corner.tsx`).
+
+## Phase 2 — Step F: server, database and teacher accounts
+
+**Built:**
+
+- **Server mode:** `next.config.ts` without `output: 'export'` (`trailingSlash` kept,
+  `images.unoptimized` kept on purpose), `npm run start` = `next start -p 3000`, Playwright's
+  `webServer` uses it, `serve` removed; `dynamicParams = false` on book pages. `proxy.ts` (the
+  Next 16 proxy) covers `/web-support/*`, `/admin/*` and `/account/*` with the public intro and
+  Help exempt; every protected page and Server Action checks the session again
+  (`lib/auth/session.ts`).
+- **Supabase** via `@supabase/ssr` 0.12 + `@supabase/supabase-js` 2.117 from the official
+  Next.js guide (`lib/supabase/*`, doc URLs in comments); the secret key only in
+  `lib/supabase/admin.ts` (`server-only`). Migration
+  `supabase/migrations/20261014120000_phase2_schema.sql`: `profiles`, `access_requests`,
+  `doubts`, `tests`, `ai_usage`, the `handle_new_user` trigger, `private.is_admin()`,
+  `bump_ai_usage()`, explicit grants + RLS on every table. `npm run db:test` proves the rules on a
+  local PostgreSQL 16 with 24 assertions (see below); `npm run db:migrate` applies the
+  migration with `SUPABASE_DB_URL`; `SETUP-SUPABASE.md` has the copy-paste route.
+- **Accounts only from admins:** sign-up off in the dashboard (documented), admins = the emails
+  in `ADMIN_EMAILS`, synced on every sign-in (added → active admin, removed → teacher again).
+  `npm run create-admin` for the first admin.
+- **One `DataStore`** (`lib/data/store.ts`) with a Supabase backend and a mock memory backend
+  with demo accounts; pages never touch a database client.
+- **Pages:** `/login` (glass card in front of the faded classroom, honeypot, 5 tries per account
+  and 100 per IP in 15 minutes, `?next=` limited to this site, "link expired" note),
+  `/login/forgot` (same answer for every email), `/auth/confirm` (token hash → session),
+  `/account/update-password`, everyone lands in `/web-support`; the top bar shows "My portal"
+  from the `elara_portal` hint cookie. `/admin`: teachers table, new teacher (invite email or
+  one-time password, classes and subjects as chips, pre-filled from an access request which is
+  then marked approved), edit, deactivate/reactivate, email a reset link or show a one-time
+  password; access requests with one-click "Create account" and "Decline"; doubts with answers.
+- Shared `components/ui/form.tsx` (Field, inputClass, Chips, Notice); `.env.example` complete;
+  `lib/notify.ts` (Web3Forms email to the team when the key exists).
+
+**Security review (done by hand on the whole auth layer; findings fixed):**
+
+1. **Open redirect** — `?next=/\evil.example` passed the old `startsWith('/')` check and
+   browsers read `/\` as `//`. New `safeNext()` in `lib/auth/config.ts` resolves the value
+   against a dummy origin and keeps it only if it stays on that origin; used by sign-in,
+   `/auth/confirm` and the doubt form. Test added.
+2. **Profiles trusted user metadata** — the trigger copied `role`, `classes` and `subjects`
+   from `raw_user_meta_data`, which whoever signs up controls; with sign-up switched on by
+   mistake anyone could have made themselves an admin. The trigger now copies only name, school
+   and phone and creates an **inactive** teacher with no classes; the server sets classes,
+   subjects and `active` with the secret key after an admin creates the account. Proved in the
+   RLS test.
+3. **`bump_ai_usage` not executable by the server** — the migration revoked it from `public`
+   without granting it back to `service_role`, so the AI rate limits would have failed in
+   production. Explicit grant added; the RLS test now calls it as the service role.
+4. **Demo passwords on a live site** — mock mode on a Vercel production deployment would have
+   let anyone in as the demo admin (and see real access requests). Demo sign-in is now off when
+   `VERCEL_ENV=production`; the login page says so.
+5. **Admin role never revoked** — removing an email from `ADMIN_EMAILS` left the account an
+   admin; the role is now synced both ways on every lookup.
+6. **Mock session cookie** — now `Secure` in production as well as `httpOnly`/`SameSite=Lax`
+   (test checks the flags); signed with HMAC and accepted only in mock mode.
+7. **Client bundle** — the browser bundle carried the server config module (variable names
+   only, no values). Cookie names moved to `lib/auth/cookie-names.ts`; a grep of `.next/static`
+   finds no `ADMIN_EMAILS`, `SUPABASE_SERVICE_ROLE_KEY` or demo password.
+8. **Rate limiter** — with no proxy in front every visitor shared one "local" IP bucket (100
+   sign-ins for everyone); unknown IPs now skip the IP window (the account window remains), and
+   the map is swept so it cannot grow without bound. Admins can no longer deactivate their own
+   account through the action (the button was already hidden). Honeypots now answer like a
+   success instead of returning a validation error.
+
+Checked and fine: proxy matcher and the public-path pattern (`/web-support/help-x` is
+protected); pages that read cookies are dynamic (`ƒ` in the build output) so nothing personal
+is cached; deactivated accounts are refused by both stores (Supabase also bans the user);
+errors never reveal whether an email has an account; reset and invite links go through
+`/auth/confirm` (templates in `SETUP-SUPABASE.md`); admin inputs have length limits.
+
+**RLS test (`npm run db:test`, local PostgreSQL 16):** 24 checks pass — trigger makes inactive
+teachers whatever the metadata says; teacher A sees only their own test and profile and cannot
+insert a test for B; B cannot read, change or delete A's test, cannot read requests, doubts or
+usage counters, cannot call the counter, cannot promote themselves or change their classes,
+can change only their own phone; visitors read nothing; the server counts usage; the admin
+reads every profile and request but no tests.
+
+**Also fixed:** the About page dots sometimes landed one page short under heavy load (pages
+still growing while Lenis scrolled); `jump()` now re-reads the layout when the scroll ends and
+corrects the position. Reproduced with a 4-worker stress run (1 failure in 135) and gone after
+the fix (135/135).
+
+**Tests:** `tests/auth.spec.ts` — 15 tests (login page + mock note + wrong password; teacher
+sign-in → portal → "My portal" → sign out, also on the phone; protected pages redirect and come
+back; open-redirect and cookie flags; teacher → `/admin` → portal; admin creates a teacher with
+a one-time password who then signs in; deactivate → "deactivated"; rate limit after five
+attempts; forgot password; set a new password; admin lists teachers/requests/doubts; answers a
+doubt; approves a request with one click).
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · `npm run db:test` ✅ ·
+Playwright **423 passed / 661 skipped by project**, 0 failed ✅ (the earlier run had one About page-dots failure under load; fixed as described above, then the full suite passed)
+
+**Screenshots:** `docs/screenshots/phase2-F/` — `/login/`, `/login/forgot/`, `/web-support/`
+(signed out and signed in), `/account/update-password/`, `/admin/`, `/admin/teachers/new/`, a
+teacher edit page, at 360/768/1024/1440 and reduced motion. Looked at: the admin table, request and doubt cards, the new-teacher form with its chips and the account panel read cleanly at every width; the login card and the mock-mode note fit the phone (the long demo passwords wrap inside the note). No defects found.
+
+**Mock-mode features:** accounts, access requests, doubts and saved tests live in memory with
+the three demo accounts; no emails are sent (no Web3Forms key, no Supabase SMTP).
+
+**Simplified:** nothing.
+
+**Placeholders added:** the lead lines on the admin pages (marked in the code).

@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { mockMode } from '@/lib/auth/config'
 import { memoryStore } from '@/lib/data/memory-store'
 import type {
@@ -14,7 +16,7 @@ import type {
   TeacherChanges,
 } from '@/lib/data/types'
 
-export type SignInError = 'invalid_credentials' | 'inactive' | 'error'
+export type SignInError = 'invalid_credentials' | 'inactive' | 'error' | 'unavailable'
 export type SignInResult = { ok: true; profile: Profile } | { ok: false; code: SignInError }
 export type ResetMode = 'email' | 'password'
 

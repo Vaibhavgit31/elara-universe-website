@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { MOCK_SESSION_COOKIE, mockMode } from '@/lib/auth/config'
+import { mockMode } from '@/lib/auth/config'
+import { MOCK_SESSION_COOKIE } from '@/lib/auth/cookie-names'
 import { openMockSession } from '@/lib/auth/mock-cookie'
 import { updateSession } from '@/lib/supabase/proxy'
 

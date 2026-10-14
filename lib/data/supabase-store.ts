@@ -74,16 +74,25 @@ const fail = (error: { message: string } | null) => {
   if (error) throw new Error(error.message)
 }
 
-/** The signed-in user's profile. Admin emails (ADMIN_EMAILS) are promoted on first sight so the
- *  database's own admin check (private.is_admin) agrees with the environment. */
+/** The signed-in user's profile. ADMIN_EMAILS decides who is an admin, so the stored role (and
+ *  with it the database's own private.is_admin check) is brought in line on every lookup: listed
+ *  emails become active admins, an email removed from the list goes back to being a teacher. */
 async function profileFor(userId: string, email: string): Promise<Profile | null> {
   const supabase = await createClient()
   const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
   if (!data) return null
   const profile = toProfile(data)
-  if (isAdminEmail(email) && profile.role !== 'admin') {
-    await createAdminClient().from('profiles').update({ role: 'admin' }).eq('id', userId)
-    profile.role = 'admin'
+  const admin = isAdminEmail(email)
+  const changes = admin
+    ? profile.role !== 'admin' || !profile.active
+      ? { role: 'admin' as const, active: true }
+      : null
+    : profile.role === 'admin'
+      ? { role: 'teacher' as const }
+      : null
+  if (changes) {
+    await createAdminClient().from('profiles').update(changes).eq('id', userId)
+    Object.assign(profile, changes)
   }
   return profile
 }
@@ -156,12 +165,13 @@ export const supabaseStore: DataStore = {
       .maybeSingle()
     return data ? toProfile(data) : null
   },
-  async createTeacher(data, mode) {
+  async createTeacher({ classes, subjects, ...contact }, mode) {
     const admin = createAdminClient()
-    const email = data.email.trim().toLowerCase()
-    const metadata = { ...data, email, role: 'teacher' }
+    const email = contact.email.trim().toLowerCase()
+    // user_metadata carries only the contact details (the handle_new_user trigger copies them);
+    // classes, subjects and active are set below with the secret key, never from metadata.
+    const metadata = { name: contact.name, school: contact.school, phone: contact.phone }
     const password = temporaryPassword()
-    // The handle_new_user trigger turns user_metadata into the profile row (migration).
     const { data: created, error } =
       mode === 'invite'
         ? await admin.auth.admin.inviteUserByEmail(email, {
@@ -175,8 +185,11 @@ export const supabaseStore: DataStore = {
             user_metadata: metadata,
           })
     fail(error)
-    const profile = await supabaseStore.getProfile(created.user!.id)
-    if (!profile) throw new Error('The account was created but its profile is missing.')
+    const profile = await supabaseStore.updateTeacher(created.user!.id, {
+      classes,
+      subjects,
+      active: true,
+    })
     return mode === 'password' ? { profile, temporaryPassword: password } : { profile }
   },
   async updateTeacher(id, changes) {

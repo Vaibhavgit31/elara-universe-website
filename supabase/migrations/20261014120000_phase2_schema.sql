@@ -20,7 +20,7 @@ create table public.profiles (
   role        text not null default 'teacher' check (role in ('teacher', 'admin')),
   classes     smallint[] not null default '{}' check (classes <@ '{1,2,3,4,5,6,7,8}'::smallint[]),
   subjects    text[] not null default '{}' check (subjects <@ '{hindi,computer,drawing}'::text[]),
-  active      boolean not null default true,
+  active      boolean not null default false,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
@@ -118,9 +118,12 @@ create trigger tests_set_updated_at before update on public.tests
   for each row execute procedure public.set_updated_at();
 
 -- ---------------------------------------------------------------------------------------------
--- Profile row for every new auth user. Admins create users with
--- auth.admin.createUser({ email, password, email_confirm: true, user_metadata: {...} }) and the
--- metadata lands here. (Official pattern: managing-user-data guide.)
+-- Profile row for every new auth user (official pattern: managing-user-data guide). Only the
+-- contact details come from user_metadata, because whoever signs up controls that field. The row
+-- starts as an inactive teacher with no classes or subjects; the server (with the secret key)
+-- then sets classes, subjects and active = true for accounts an admin created, and promotes the
+-- emails in ADMIN_EMAILS. So even if public sign-up were switched on by mistake, a self-made
+-- account could not sign in, let alone become an admin.
 -- ---------------------------------------------------------------------------------------------
 create function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = ''
@@ -128,16 +131,14 @@ as $$
 declare
   meta jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
 begin
-  insert into public.profiles (id, email, name, school, phone, role, classes, subjects)
+  insert into public.profiles (id, email, name, school, phone, active)
   values (
     new.id,
     new.email,
-    coalesce(meta ->> 'name', ''),
-    coalesce(meta ->> 'school', ''),
-    coalesce(meta ->> 'phone', ''),
-    case when meta ->> 'role' = 'admin' then 'admin' else 'teacher' end,
-    coalesce((select array_agg(value::smallint) from jsonb_array_elements_text(coalesce(meta -> 'classes', '[]'::jsonb))), '{}'),
-    coalesce((select array_agg(value) from jsonb_array_elements_text(coalesce(meta -> 'subjects', '[]'::jsonb))), '{}')
+    left(coalesce(meta ->> 'name', ''), 120),
+    left(coalesce(meta ->> 'school', ''), 160),
+    left(coalesce(meta ->> 'phone', ''), 30),
+    false
   );
   return new;
 end;
@@ -224,3 +225,4 @@ as $$
   returning count;
 $$;
 revoke execute on function public.bump_ai_usage(text, text, timestamptz, uuid) from public, anon, authenticated;
+grant execute on function public.bump_ai_usage(text, text, timestamptz, uuid) to service_role;

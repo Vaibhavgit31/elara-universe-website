@@ -22,15 +22,15 @@ export type ResetState = FormState & { temporaryPassword?: string }
 
 const id = z.string().min(1)
 const teacherFields = {
-  name: z.string().trim().min(2, 'Enter the teacher’s name.'),
-  school: z.string().trim().default(''),
-  phone: z.string().trim().default(''),
+  name: z.string().trim().min(2, 'Enter the teacher’s name.').max(120, 'Keep the name shorter.'),
+  school: z.string().trim().max(160, 'Keep the school name shorter.').default(''),
+  phone: z.string().trim().max(30, 'Keep the phone number shorter.').default(''),
   classes: z.array(z.coerce.number().pipe(z.literal([1, 2, 3, 4, 5, 6, 7, 8]))),
   subjects: z.array(z.enum(['hindi', 'computer', 'drawing'])),
 }
 const newTeacher = z.object({
   ...teacherFields,
-  email: z.email('Enter a valid email address.'),
+  email: z.email('Enter a valid email address.').max(254),
   mode: z.enum(['invite', 'password']),
   request: z.string().optional(),
 })
@@ -104,10 +104,11 @@ export async function updateTeacher(_prev: FormState, formData: FormData): Promi
 }
 
 export async function setTeacherActive(_prev: FormState, formData: FormData): Promise<FormState> {
-  await requireAdmin()
+  const admin = await requireAdmin()
   const parsed = activeChange.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { error: firstIssue(parsed.error) }
   const { id, active } = parsed.data
+  if (id === admin.id) return { error: 'You cannot deactivate your own account.' }
   try {
     await (await getStore()).updateTeacher(id, { active })
   } catch (e) {

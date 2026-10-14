@@ -10,6 +10,8 @@ export const subjectLabel: Record<Subject, string> = {
 export const series = [
   {
     id: 'hindi',
+    /** In Web Support links: ?subject=hindi&series=basic-hindi-reader */
+    slug: 'basic-hindi-reader',
     subject: 'hindi' as Subject,
     name: 'Basic Hindi Reader',
     nameHindi: 'बेसिक हिंदी रीडर',
@@ -22,6 +24,7 @@ export const series = [
   },
   {
     id: 'technova',
+    slug: 'technova',
     subject: 'computer' as Subject,
     name: 'TechNova',
     nameHindi: null,
@@ -34,6 +37,7 @@ export const series = [
   },
   {
     id: 'art-journey',
+    slug: 'art-journey',
     subject: 'drawing' as Subject,
     name: 'Art Journey',
     nameHindi: null,

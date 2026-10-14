@@ -1,7 +1,7 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
-import { PORTAL_HINT_COOKIE } from '@/lib/auth/config'
+import { PORTAL_HINT_COOKIE } from '@/lib/auth/cookie-names'
 
 // The top bar only needs to know whether someone is signed in, so it reads the hint cookie set
 // at sign-in (no secret in it; the real session is verified on the server). Server render says

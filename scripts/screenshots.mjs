@@ -1,5 +1,7 @@
 // Phase-gate screenshots: node scripts/screenshots.mjs <phase> <route> [route...]
 // Saves docs/screenshots/<phase>/<route>-{360,768,1024,1440,reduced-motion}.png from http://localhost:3000.
+// Signed-in pages: LOGIN="email:password" signs in once through /login first (mock-mode demo
+// accounts, see lib/data/memory-store.ts); SUFFIX="-signed-in" is added to the file names.
 import { mkdir } from 'node:fs/promises'
 import { chromium } from '@playwright/test'
 
@@ -18,10 +20,25 @@ const shots = [
 ]
 
 const browser = await chromium.launch()
+const suffix = process.env.SUFFIX ?? ''
+let storageState
+if (process.env.LOGIN) {
+  const [email, ...rest] = process.env.LOGIN.split(':')
+  const context = await browser.newContext()
+  const page = await context.newPage()
+  await page.goto(`${base}/login/`)
+  const form = page.getByRole('form', { name: 'Sign in' })
+  await form.getByLabel('Email').fill(email)
+  await form.getByLabel('Password').fill(rest.join(':'))
+  await form.getByRole('button', { name: 'Sign in' }).click()
+  await page.waitForURL(/\/web-support\//)
+  storageState = await context.storageState()
+  await context.close()
+}
 for (const route of routes) {
   const slug = route === '/' ? 'home' : route.replace(/^\/|\/$/g, '').replace(/[/?=&]/g, '-')
   for (const { name, ...options } of shots) {
-    const page = await browser.newPage({ ...options, deviceScaleFactor: 1 })
+    const page = await browser.newPage({ ...options, deviceScaleFactor: 1, storageState })
     await page.goto(base + route, { waitUntil: 'networkidle' })
     // Walk down the page so rooms open and lazy parts load, then back to the top.
     await page.evaluate(async () => {
@@ -32,9 +49,10 @@ for (const route of routes) {
       scrollTo(0, 0)
     })
     await page.waitForTimeout(1200)
-    await page.screenshot({ path: `${dir}/${slug}-${name}.png`, fullPage: true })
+    const file = `${dir}/${slug}${suffix}-${name}.png`
+    await page.screenshot({ path: file, fullPage: true })
     await page.close()
-    console.log(`${dir}/${slug}-${name}.png`)
+    console.log(file)
   }
 }
 await browser.close()

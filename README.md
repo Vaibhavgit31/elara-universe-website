@@ -5,17 +5,19 @@ for Classes 1–8. It is built as "The Living Book" (a storybook open on a desk,
 lift and turn as you scroll) from the brief in `PLAYBOOK.md`. The build diary, open questions
 and every remaining placeholder are in `BUILD_LOG.md`; deployment is in `DEPLOY.md`.
 
-Stack: Next.js 16 (App Router, TypeScript, fully static export), Tailwind CSS 4, Motion
-(`framer-motion`), Lenis, react-pageflip, react-hook-form + zod, Playwright. No server: the
-`out/` folder is the whole website.
+Stack: Next.js 16 (App Router, TypeScript), Tailwind CSS 4, Motion (`framer-motion`), Lenis,
+react-pageflip, react-hook-form + zod, Supabase (teacher accounts), Playwright. Since Phase 2
+the site is a Node.js server build that runs on Vercel (logins, the admin page, Web Support and
+the chatbot need server routes); it is no longer a static `out/` folder. Without the keys in
+`.env.example` those features run in a clearly labelled **mock mode**.
 
 ## Run it on your computer
 
 ```bash
 npm install            # once (Node.js 20 or newer)
 npm run dev            # http://localhost:3000 with live reload
-npm run build          # writes the website to out/
-npm start              # serves out/ on http://localhost:3000, exactly as a host would
+npm run build          # production build into .next/
+npm start              # runs the production server on http://localhost:3000
 ```
 
 Checks (the same ones every change should pass):
@@ -23,8 +25,9 @@ Checks (the same ones every change should pass):
 ```bash
 npm run typecheck      # TypeScript
 npm run lint           # ESLint
-npm test               # builds, then runs the Playwright suite against out/
-npm run test:only      # Playwright only (needs a built out/)
+npm test               # builds, then runs the Playwright suite against the production server
+npm run test:only      # Playwright only (needs a build; reuses a server already on port 3000)
+npm run db:test        # Row Level Security checks on a local PostgreSQL (scripts/db/README.md)
 node scripts/lighthouse.mjs <label>   # Lighthouse (mobile) on 4 pages while `npm start` runs
 npm run screenshots <folder> /route…  # screenshots at 360/768/1024/1440 + reduced motion
 ```
@@ -41,7 +44,8 @@ motion, and includes an accessibility audit (axe) and the SEO files.
 | `app/` | One folder per page (`catalog/`, `about/`, `events/`, `contact/`, `resources/`) |
 | `components/` | The building blocks: frame (menu, footer), flip pad, book, mascot Elu, extras |
 | `public/brand/`, `public/books/` | Logo files, icons, link-preview image; cover and sample images |
-| `public/_redirects`, `vercel.json` | Future QR Corner redirects (Netlify / Vercel) |
+| `vercel.json` | Future QR Corner redirects (examples in `vercel.redirects.example.json`) |
+| `lib/`, `proxy.ts`, `supabase/` | Accounts, data store (Supabase or mock), migrations with RLS |
 | `scripts/` | Image preparation, screenshots, Lighthouse |
 | `tests/` | Playwright tests, one file per page or feature |
 | `docs/` | Phase screenshots, Lighthouse summaries, the list of QR addresses |
@@ -136,13 +140,14 @@ between sends, and Web3Forms' own filters.
 
 The QR codes printed in the books open `/resources/<series>/<class>/` (24 addresses, listed
 in `docs/qr-addresses.md`). They show a friendly "coming soon" page until the learning
-resources exist. To send one of them elsewhere later, add a line to `public/_redirects`
-(Netlify) or an entry to `vercel.json` (Vercel, examples in `vercel.redirects.example.json`).
+resources exist. To send one of them elsewhere later, add an entry to `vercel.json` (examples
+in `vercel.redirects.example.json`). `public/_redirects` is the Netlify equivalent from Phase 1,
+kept only in case the site ever moves back to a static host.
 
 ## Redeploy
 
-`npm run build`, then drag the new `out` folder to Netlify, or `git push` if the host is
-connected to the repository. Full steps, domain and HTTPS: `DEPLOY.md`.
+`vercel --prod` from the project folder (or `git push` if Vercel is connected to the
+repository). Full steps, environment variables, Supabase, domain and HTTPS: `DEPLOY.md`.
 
 Two pages are for development only and are hidden from search engines: `/styleguide/`
 (colours, fonts, components) and `/demo-flip/` (the flip pad on its own).

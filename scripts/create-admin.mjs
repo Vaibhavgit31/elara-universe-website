@@ -41,9 +41,16 @@ const { data, error } = await supabase.auth.admin.createUser({
   email,
   password,
   email_confirm: true,
-  user_metadata: { name: 'Admin', role: 'admin' },
+  user_metadata: { name: 'Admin' },
 })
 if (error) throw error
+// The trigger creates an inactive teacher profile; the site promotes ADMIN_EMAILS on sign-in,
+// and this makes the account usable straight away as well.
+const { error: profileError } = await supabase
+  .from('profiles')
+  .update({ role: 'admin', active: true })
+  .eq('id', data.user.id)
+if (profileError) throw profileError
 console.log(
   `Created ${data.user.email} (${data.user.id}). Sign in at /login and change the password.`,
 )

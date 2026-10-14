@@ -3,7 +3,8 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
-import { PORTAL_HINT_COOKIE, PORTAL_HOME } from '@/lib/auth/config'
+import { PORTAL_HOME, safeNext } from '@/lib/auth/config'
+import { PORTAL_HINT_COOKIE } from '@/lib/auth/cookie-names'
 import { allowAttempt, clearAttempts, clientIp } from '@/lib/auth/rate-limit'
 import { getSession } from '@/lib/auth/session'
 import { getStore } from '@/lib/data/store'
@@ -19,16 +20,12 @@ const credentials = z.object({
   email: z.email('Enter the email address of your account.'),
   password: z.string().min(1, 'Enter your password.'),
   next: z.string().optional(),
-  website: z.string().max(0).optional(), // honeypot: real people never fill it in
+  website: z.string().optional(), // honeypot: real people never fill it in
 })
 const newPassword = z
   .string()
   .min(8, 'Use at least 8 characters.')
   .max(72, 'Keep it under 72 characters.')
-
-/** Only same-site paths may follow a sign-in; anything else lands in the portal. */
-const safeNext = (value?: string) =>
-  value?.startsWith('/') && !value.startsWith('//') ? value : PORTAL_HOME
 
 const hint = async (on: boolean) => {
   const jar = await cookies()
@@ -36,10 +33,12 @@ const hint = async (on: boolean) => {
   else jar.delete(PORTAL_HINT_COOKIE)
 }
 
+const resetSent = 'If that account exists, an email with a reset link is on its way.'
 const messages = {
   invalid_credentials: 'That email and password do not match. Please try again.',
   inactive: 'This account has been deactivated. Please write to us if that is a mistake.',
   error: 'We could not sign you in just now. Please try again in a moment.',
+  unavailable: 'Teacher accounts are not switched on yet. Please write to us for access.',
 }
 
 export async function signIn(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -70,12 +69,12 @@ export async function requestPasswordReset(
     .email('Enter the email address of your account.')
     .safeParse(formData.get('email'))
   if (!parsed.success) return { error: parsed.error.issues[0].message }
-  if (formData.get('website')) return { message: 'If that account exists, an email is on its way.' }
+  if (formData.get('website')) return { message: resetSent }
   if (!allowAttempt(await clientIp(), parsed.data))
     return { error: 'Too many attempts. Please wait 15 minutes and try again.' }
   await (await getStore()).requestPasswordReset(parsed.data)
   // The same answer whether or not the account exists (never reveal which emails have accounts).
-  return { message: 'If that account exists, an email with a reset link is on its way.' }
+  return { message: resetSent }
 }
 
 export async function updatePassword(_prev: FormState, formData: FormData): Promise<FormState> {

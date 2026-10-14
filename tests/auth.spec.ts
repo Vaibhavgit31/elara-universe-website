@@ -122,6 +122,22 @@ test.describe('desktop only', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Set a new password' })).toBeVisible()
   })
 
+  test('sign-in and email links never send anyone off the site', async ({ page, baseURL }) => {
+    await open(page, `/login/?next=${encodeURIComponent('/\\evil.example/x')}`)
+    await submitLogin(page, teacher.email, teacher.password)
+    await page.waitForURL((url) => url.pathname !== '/login/', nav)
+    expect(new URL(page.url()).origin).toBe(baseURL)
+    const session = (await page.context().cookies()).find((c) => c.name === 'elara_mock_session')
+    expect(session, 'the session cookie').toMatchObject({ httpOnly: true, sameSite: 'Lax' })
+    for (const next of ['//evil.example', 'https://evil.example', '/\\evil.example']) {
+      await page.goto(`/auth/confirm/?next=${encodeURIComponent(next)}`)
+      expect(new URL(page.url()).origin).toBe(baseURL)
+    }
+    await forget(page)
+    await open(page, '/login/?expired=1')
+    await expect(page.getByRole('status')).toContainText('expired or was already used')
+  })
+
   test('a teacher who opens the admin page is sent to the portal', async ({ page }) => {
     await signIn(page, teacher.email, teacher.password)
     await page.goto('/admin/')
@@ -265,7 +281,7 @@ test.describe('desktop only', () => {
       test.skip(await status(doubt, 'answered').isVisible(), `demo doubt ${seedUsed}`)
       await expect(status(doubt, 'open')).toBeVisible()
       const answer = 'Thank you for asking. We will point you to them in Web Support.'
-      await doubt.getByLabel('Answer').fill(answer)
+      await doubt.getByRole('textbox', { name: 'Answer' }).fill(answer)
       await doubt.getByRole('button', { name: 'Send answer' }).click()
       await expect(status(doubt, 'answered')).toBeVisible(nav)
       await expect(doubt).toContainText(answer)

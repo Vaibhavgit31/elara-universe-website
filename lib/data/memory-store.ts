@@ -1,6 +1,9 @@
+import 'server-only'
+
 import { randomBytes, randomUUID } from 'node:crypto'
 import { cookies } from 'next/headers'
-import { MOCK_SESSION_COOKIE, isAdminEmail } from '@/lib/auth/config'
+import { demoLogins, isAdminEmail } from '@/lib/auth/config'
+import { MOCK_SESSION_COOKIE } from '@/lib/auth/cookie-names'
 import { openMockSession, sealMockSession } from '@/lib/auth/mock-cookie'
 import type { DataStore } from '@/lib/data/store'
 import type { AccessRequest, Doubt, Profile, SavedTest } from '@/lib/data/types'
@@ -125,6 +128,7 @@ const newest = <T extends { createdAt: string }>(items: Iterable<T>) =>
 
 export const memoryStore: DataStore = {
   async signIn(email, password) {
+    if (!demoLogins) return { ok: false, code: 'unavailable' }
     const found = byEmail(email)
     if (!found || passwords.get(found.email) !== password)
       return { ok: false, code: 'invalid_credentials' }
@@ -132,6 +136,7 @@ export const memoryStore: DataStore = {
     if (isAdminEmail(found.email)) found.role = 'admin'
     ;(await cookies()).set(MOCK_SESSION_COOKIE, sealMockSession(found.id), {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
@@ -142,6 +147,7 @@ export const memoryStore: DataStore = {
     ;(await cookies()).delete(MOCK_SESSION_COOKIE)
   },
   async currentProfile() {
+    if (!demoLogins) return null
     const id = openMockSession((await cookies()).get(MOCK_SESSION_COOKIE)?.value)
     const found = id ? profiles.get(id) : undefined
     return found?.active ? found : null

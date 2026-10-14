@@ -15,18 +15,21 @@ simplified under "Simplified" in `BUILD_LOG.md`, and continue. Wherever PLAYBOOK
 
 Defaults agreed for this run:
 
-- Stack: Next.js (App Router, TypeScript) with `output: 'export'` (fully static, drag-and-drop
-  deployable) and `images.unoptimized: true` (images are pre-optimised in Phase 2); Tailwind;
-  Motion; Lenis; react-pageflip; react-hook-form + zod; Playwright.
+- Stack: Next.js (App Router, TypeScript) and `images.unoptimized: true` (images are
+  pre-optimised in Phase 2); Tailwind; Motion; Lenis; react-pageflip; react-hook-form + zod;
+  Playwright. *Superseded in Phase 2 Step F:* the `output: 'export'` static build is gone; the
+  site is a Node.js server build for Vercel (`next build` + `next start`), see the Phase 2 rules.
 - Contact form: sent client-side through Web3Forms with the key in `NEXT_PUBLIC_WEB3FORMS_KEY`.
   If the key is missing, the form shows a friendly message with the email and WhatsApp buttons
   instead. Honeypot field + a simple client-side submit cooldown (no server rate limit).
-- QR Corner future redirects: commented examples in `public/_redirects` (Netlify) and `vercel.json`.
+- QR Corner future redirects: commented examples in `public/_redirects` (Netlify) and `vercel.json`
+  (Phase 2: Vercel hosting, so `vercel.json` is the one that counts).
 - Company name "Elara Universe Publishers Private Limited"; show both addresses as in the brief;
   prices only where PLAYBOOK.md gives them, otherwise "Request a sample copy"; Art Journey uses
   illustrated placeholder covers; all unknown text = `[PLACEHOLDER]`.
 - Phase 14: do not deploy. Run the full checks, then write `DEPLOY.md` (Netlify Drop + Vercel +
-  connecting elarauniversepublications.com).
+  connecting elarauniversepublications.com). *Superseded in Phase 2:* `DEPLOY.md` covers the
+  Vercel CLI deployment with server routes (Step K).
 
 ## Rules for Claude Code
 

@@ -50,7 +50,10 @@ Either way works:
   ```
   or with the Supabase CLI: `supabase link` → `supabase db push`.
 
-Afterwards **Table Editor** lists the five tables, each with the RLS shield on. The policies
+Afterwards **Table Editor** lists the five tables, each with the RLS shield on. Every new account
+gets a profile row from the trigger, but it starts *inactive, with no classes or subjects*: only
+the site's `/admin` page (with the secret key) switches a teacher on and assigns their classes,
+so an account made any other way cannot sign in. The policies
 themselves are proven by `npm run db:test` against any local PostgreSQL (see `scripts/db/README.md`).
 
 ## 4. Switch public sign-up OFF and set the URLs
@@ -77,14 +80,16 @@ themselves are proven by `npm run db:test` against any local PostgreSQL (see `sc
 Admins are the emails in `ADMIN_EMAILS`. The account itself is created once, by hand:
 
 - **Dashboard:** **Authentication → Users → Add user → Create new user**, email = one of the
-  `ADMIN_EMAILS`, a temporary password, *Auto Confirm User* on. Sign in at `/login`, then change the
-  password under **Profile**.
+  `ADMIN_EMAILS`, a temporary password, *Auto Confirm User* on. Sign in at `/login`: the site sees
+  the email in `ADMIN_EMAILS` and turns the profile into an active admin. Then change the password
+  under **Profile**.
 - **Or from the command line** (needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`):
   ```bash
   npm run create-admin -- admin@elarauniversepublications.com 'temporary-password'
   ```
 
-From then on everything happens in the site's own `/admin`: create teacher accounts with their
+Taking an email out of `ADMIN_EMAILS` (and redeploying) makes that account a teacher again at its
+next page load. From then on everything happens in the site's own `/admin`: create teacher accounts with their
 classes and subjects (invite email or one-time password), edit, deactivate, reset passwords,
 approve access requests in one click and answer doubts.
 
@@ -103,3 +108,5 @@ approve access requests in one click and answer doubts.
 - Never change the schema in the SQL editor afterwards; add a new file to
   `supabase/migrations/` so the database and the repository stay in step.
 - Review **Advisors → Security Advisor** after launch.
+- Keep **"Allow new users to sign up"** off. Even if it were switched on, a self-made account
+  starts inactive and cannot sign in, but there is no reason to collect such accounts.

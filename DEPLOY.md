@@ -1,5 +1,10 @@
 # Deploying the Elara Universe website
 
+> **Phase 2 note:** this page still describes the Phase 1 static site. Since Phase 2 Step F the
+> site needs a server (logins, admin, Web Support, chatbot), so Netlify Drop and the `out/`
+> folder no longer apply; deploy to Vercel. Step K rewrites this page for the Vercel CLI, the
+> environment variables and Supabase (`SETUP-SUPABASE.md` already has the Supabase part).
+
 The site is a fully static export: `npm run build` writes the whole website into the `out/`
 folder (HTML, CSS, JavaScript, images). Any static host can serve that folder. Two easy
 options are described here: **Netlify Drop** (drag and drop, no Git needed) and **Vercel**

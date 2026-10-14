@@ -6,6 +6,7 @@ import { MockNote } from '@/components/auth/mock-note'
 import { Main } from '@/components/frame/main'
 import { ClassroomScene } from '@/components/home/classroom-scene'
 import { Button } from '@/components/ui/button'
+import { Notice } from '@/components/ui/form'
 import { Glass } from '@/components/ui/glass'
 import { Section } from '@/components/ui/section'
 import { SectionHeading } from '@/components/ui/section-heading'
@@ -14,12 +15,12 @@ import { getSession } from '@/lib/auth/session'
 
 export const metadata: Metadata = { title: 'Teacher login', robots: { index: false } }
 
-type Props = { searchParams: Promise<{ next?: string }> }
+type Props = { searchParams: Promise<{ next?: string; expired?: string }> }
 
 /** The glass login card in front of the classroom; signed-in visitors go straight to the portal. */
 export default async function LoginPage({ searchParams }: Props) {
   if (await getSession()) redirect(PORTAL_HOME)
-  const { next } = await searchParams
+  const { next, expired } = await searchParams
   return (
     <Main className="relative overflow-x-clip">
       {/* The classroom behind the card, faded so the form stays readable (decorative). */}
@@ -45,6 +46,14 @@ export default async function LoginPage({ searchParams }: Props) {
         </div>
         <Glass radius="lg" className="w-full max-w-md p-6 sm:p-8 md:justify-self-end">
           <Image src="/brand/mark.svg" alt="" width={324} height={220} className="h-14 w-auto" />
+          {expired && (
+            <div className="mt-4">
+              <Notice tone="note">
+                That email link has expired or was already used. Sign in, or ask for a new reset
+                link.
+              </Notice>
+            </div>
+          )}
           <LoginForm next={next} />
         </Glass>
       </Section>

@@ -253,12 +253,23 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
     if (sound && current > 0) playFlipSound()
   }, [current, sound])
 
-  // Scroll to where page i lies flat. Lenis (docs: lenis/react useLenis) animates it; without
-  // Lenis (reduced motion) the browser jumps.
+  // Scroll to where page i lies flat. Lenis (docs: lenis/react useLenis, scrollTo onComplete)
+  // animates it; without Lenis (reduced motion) the browser jumps. Pages can still grow while the
+  // scroll runs (late images and fonts on a slow phone), so the target is read again from the
+  // latest layout when the animation ends and corrected if it moved.
+  const latest = useRef({ top: 0, starts: [] as number[] })
+  useEffect(() => {
+    latest.current = { top: layout.top, starts }
+  })
   const jump: Jump = (i) => {
-    const y = layout.top + starts[i]
-    if (lenis) lenis.scrollTo(y, { immediate: reduced })
-    else window.scrollTo({ top: y, behavior: 'auto' })
+    const target = () => latest.current.top + latest.current.starts[i]
+    if (!lenis) return window.scrollTo({ top: target(), behavior: 'auto' })
+    lenis.scrollTo(target(), {
+      immediate: reduced,
+      onComplete: () => {
+        if (Math.abs(window.scrollY - target()) > 1) lenis.scrollTo(target(), { immediate: true })
+      },
+    })
   }
   usePageKeys(wrapperRef, current, count, jump)
 

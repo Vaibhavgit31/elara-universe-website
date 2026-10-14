@@ -54,3 +54,39 @@ export const Notice = ({
     {children}
   </p>
 )
+
+/** A row of pill chips, each holding a checkbox or radio (a fieldset with the legend as label). */
+export function Chips({
+  legend,
+  name,
+  type = 'checkbox',
+  options,
+  checked = [],
+}: {
+  legend: string
+  name: string
+  type?: 'checkbox' | 'radio'
+  /** [value, label] pairs. */
+  options: string[][]
+  checked?: string[]
+}) {
+  return (
+    <fieldset>
+      <legend className="eyebrow">{legend}</legend>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {options.map(([value, label]) => (
+          <label key={value} className={chipClass}>
+            <input
+              type={type}
+              name={name}
+              value={value}
+              defaultChecked={checked.includes(value)}
+              className="accent-forest"
+            />
+            {label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  )
+}
