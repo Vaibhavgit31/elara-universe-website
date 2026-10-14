@@ -2,6 +2,7 @@
 
 /* ---- Design tokens: "The Living Book" (PLAYBOOK.md → Design system) ---- */
 @theme {
+  --container-page: 80rem;
   --color-paper: #fbf9f4;
   --color-cream: #f5f0e8;
   --color-mist: #eef3ea;
@@ -86,6 +87,16 @@
 }
 
 /* Small uppercase label in gold ink (e.g. "Class 3", "Hindi"). */
+/* One layout container for the header, footer, flip pages and every plain page (Phase 2, Step A):
+   1280px wide, centred, side padding that grows with the viewport. Section backgrounds sit outside
+   it and run edge to edge. */
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+}
+
 @utility eyebrow {
   @apply font-body text-label text-gold-ink uppercase;
 }

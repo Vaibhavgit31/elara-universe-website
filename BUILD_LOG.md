@@ -38,6 +38,12 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
 - (Phase 14) `DEPLOY.md` walks through Netlify Drop and Vercel. The DNS record values shown
   there are the hosts' documented defaults; copy the exact values from the host's panel when
   you add the domain. Which registrar holds elarauniversepublications.com is a placeholder.
+- (Phase 2, START) The sandbox cannot open docs.x.ai, supabase.com, vercel.com, docx.js.org or
+  playwright.dev (proxy policy). Every API used in Phase 2 was read from the packages' own
+  shipped documentation and type definitions, the documentation source repositories on GitHub
+  and search snippets; the notes in `docs/research/` list each point that is UNCONFIRMED (xAI
+  model names and prices, Supabase dashboard labels, Vercel plan limits). Please re-check those
+  pages online before launch; the code comments carry the URLs.
 
 ## Simplified
 
@@ -852,3 +858,67 @@ Contact, a QR address at 360/768/1024/1440 and reduced motion).
 One-go run of the "Phase 2: Classroom upgrade" prompt in `PLAYBOOK.md`. Same gate after every
 step; one section per step below. "For Vaibhav", "Simplified" and "Placeholders" at the top of
 this file keep collecting entries, prefixed "(Phase 2, Step X)".
+
+## Phase 2 — START and research
+
+- `PLAYBOOK.md` replaced by the re-exported file (first 614 lines identical, Phase 2 section added).
+  CLAUDE.md gained the "Phase 2 rules" section. The Phase 1 suite was run first on the untouched
+  build: **192 passed**.
+- No keys are set in this environment (`XAI_API_KEY`, Supabase, `VERCEL_TOKEN`, `ADMIN_EMAILS`,
+  Web3Forms), so every server feature will be built with a mock mode and documented.
+- Six research agents read the official sources and wrote `docs/research/`: `xai.md` (AI SDK 7 +
+  `@ai-sdk/xai` 5, Responses API, model ids as listed), `supabase.md` (`@supabase/ssr` for the
+  Next 16 `proxy.ts`, admin API, RLS, migrations), `nextjs16-vercel.md` (route handlers, proxy,
+  server actions, what changes without `output: 'export'`, Vercel CLI), `docx-print.md` (`docx`
+  9.11, A4 print CSS, Playwright PDF, `@dnd-kit`), `hindi-chapters.md` (both Hindi Reader
+  contents pages transcribed by eye, every row marked "needs checking") and `layout-audit.md`
+  (Step A findings with screenshots). The sandbox proxy blocks docs.x.ai, supabase.com,
+  vercel.com, docx.js.org and playwright.dev, so facts came from the packages' own shipped docs
+  and type definitions, the docs' source repositories on GitHub and search snippets; every
+  unconfirmed point is listed as UNCONFIRMED in the notes and must be re-checked online before
+  launch (see "For Vaibhav").
+
+## Phase 2 — Step A: laptop alignment and blank sides
+
+**Audit result** (`docs/research/layout-audit.md`, 12 routes × 14 viewport/zoom configs): no
+horizontal scroll and no static element outside the viewport anywhere; no `100vh`, every image
+sized. The real problems were four different page containers (1024/1152/1280 px with 16/24/32 px
+paddings) so the text edge jumped between header, flip pages and plain pages by 72–128 px on
+laptops; plain pages floated as an island with no full-width backgrounds; intro paragraphs ran to
+81 characters; the footer email used `break-all`; decorations sat on the padding edge.
+
+**Fixed:**
+
+- One container: `container-page` in `app/globals.css` (`max-width: 80rem`, centred,
+  `padding-inline: clamp(16px, 4vw, 48px)`) used by the header, footer, flip-pad pages, the hero
+  and every plain page; `max-w-5xl/6xl/7xl` wrappers are gone and `components/frame/page-stub.tsx`
+  (unused) was deleted.
+- Full-width bands: new `components/ui/section.tsx` (`<Section tone>`: full-bleed background with
+  the container inside). Catalog, book, contact, QR Corner, styleguide and 404 use it; `<Main>`
+  no longer carries width or padding. Tones are paper for now; the acrylic background of Step C
+  makes the bands visible.
+- Reading measure: intro paragraphs `max-w-2xl` → `max-w-prose` (65ch) on catalog, book, contact,
+  about, events, demo-flip, styleguide and the hero tagline. Body text is left-aligned everywhere;
+  the 404 page is now a two-column editorial layout instead of centred text.
+- Footer email `break-words`; the flip-pad page number sits in the gutter
+  (`left: max(1.25rem, (100vw − 80rem)/2)`) so it never collides with content at 125 % zoom.
+- Flip pads expose `data-starts` (the scroll position where each page lies flat), used by the
+  tests and by the page dots in Step B.
+
+**Tests:** `tests/widths.spec.ts` rewritten: 10 routes × 13 configs (360, 768, 1024, 1280, 1366,
+1440, 1536, 1920, 2560, and 1440×900 at 90/110/125 % plus 1366×768 at 125 %, emulated as a
+smaller CSS viewport at the zoom's device pixel ratio). Each checks: no horizontal scroll, no
+visible non-decorative element outside the viewport, header text edge = page container edge
+within 2 px, left gutter = right gutter within 2 px; on flip pads the checks repeat at the rest
+position of every page. 12 screenshot baselines (6 routes × 1440/360, reduced motion) in
+`tests/widths.spec.ts-snapshots/`, refreshed with `--update-snapshots` whenever a step changes
+the look. `padTop()` now waits for the pad's measured height instead of guessing.
+
+**Not changed (by design):** mid-flip the rotating sheet projects a little past the viewport
+(clipped, cosmetic); the 2560 px layout is the 1280 px container centred on a full-width
+background, as the brief asks.
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **330 passed / 498 skipped** ✅
+
+**Screenshots:** `docs/screenshots/phase2-A/` (Home, Catalog, About, Contact at 1280, 1366, 1920
+and 2560) and the baselines above.

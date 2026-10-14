@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Main } from '@/components/frame/main'
+import { Section } from '@/components/ui/section'
 import { Elu } from '@/components/mascot/elu'
 import { Button } from '@/components/ui/button'
 
@@ -57,23 +58,27 @@ const MissingPage = () => (
 
 export default function NotFound() {
   return (
-    <Main className="mx-auto w-full max-w-3xl items-center px-4 py-16 text-center sm:px-6">
-      <div className="flex items-end justify-center gap-2">
-        <Elu pose="search" label="Elu searching for the missing page" className="w-24 sm:w-32" />
-        <MissingPage />
-      </div>
-      <p className="mt-8 eyebrow">Error 404</p>
-      <h1>This page is missing from the book</h1>
-      <p className="mt-3 max-w-md">
-        The page you were looking for may have been torn out, moved, or never written. Let&apos;s
-        turn back to a page that exists.
-      </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-4">
-        <Button href="/">Back to the cover</Button>
-        <Button href="/catalog" variant="secondary">
-          Browse the catalog
-        </Button>
-      </div>
+    <Main>
+      <Section className="grid items-center gap-10 py-16 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div className="flex items-end gap-2">
+          <Elu pose="search" label="Elu searching for the missing page" className="w-24 sm:w-32" />
+          <MissingPage />
+        </div>
+        <div>
+          <p className="eyebrow">Error 404</p>
+          <h1>This page is missing from the book</h1>
+          <p className="mt-3 max-w-md">
+            The page you were looking for may have been torn out, moved, or never written.
+            Let&apos;s turn back to a page that exists.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Button href="/">Back to the cover</Button>
+            <Button href="/catalog" variant="secondary">
+              Browse the catalog
+            </Button>
+          </div>
+        </div>
+      </Section>
     </Main>
   )
 }

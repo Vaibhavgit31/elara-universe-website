@@ -15,11 +15,11 @@ export async function open(page: Page, url: string) {
   await expect(page.getByTestId('page')).toHaveCSS('transform', 'none')
 }
 
-/** Waits until a flip pad has measured its pages (it grows beyond two screens) and returns its top. */
+/** Waits until a flip pad has measured its pages (it then sets its own height) and returns its top. */
 export async function padTop(page: Page) {
   await page.waitForFunction(() => {
     const el = document.querySelector('[data-testid="flip-pad"]') as HTMLElement
-    return el.offsetHeight > window.innerHeight * 2
+    return el.style.height !== ''
   })
   return page.evaluate(() => {
     const el = document.querySelector('[data-testid="flip-pad"]') as HTMLElement

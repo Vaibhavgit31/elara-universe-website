@@ -9,7 +9,7 @@ import { isoToday } from '@/lib/events'
 export function Header() {
   return (
     <header className="relative z-40 border-t-[6px] border-sage-100 bg-paper">
-      <div className="mx-auto flex max-w-7xl items-start justify-between px-4 sm:px-6">
+      <div className="container-page flex items-start justify-between">
         <TurnLink href="/" aria-label={`${site.shortName} home`} className="my-3 rounded">
           {/* Full lockup on phones and large screens; the mark alone where ribbons need the room. */}
           <Image

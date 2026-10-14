@@ -1,4 +1,5 @@
 import { Main } from '@/components/frame/main'
+import { Section } from '@/components/ui/section'
 import { QrDoor } from '@/components/illustrations/qr-door'
 import { Elu } from '@/components/mascot/elu'
 import { Button } from '@/components/ui/button'
@@ -8,8 +9,8 @@ import { subjectLabel, type Series } from '@/content/series'
 /** The QR Corner placeholder page, shared by /resources and every /resources/<series>/<class>. */
 export function QrCorner({ series, cls }: { series?: Series; cls?: number }) {
   return (
-    <Main className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
-      <div className="grid items-center gap-10 md:grid-cols-2">
+    <Main>
+      <Section className="grid items-center gap-10 py-12 md:grid-cols-2">
         <div>
           <p className="eyebrow">QR Corner</p>
           {series && cls ? (
@@ -50,7 +51,7 @@ export function QrCorner({ series, cls }: { series?: Series; cls?: number }) {
             className="absolute -bottom-6 -left-4 w-24 sm:w-32"
           />
         </div>
-      </div>
+      </Section>
     </Main>
   )
 }

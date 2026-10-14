@@ -29,8 +29,7 @@ export const useFlipPageActive = () => useContext(FlipPageContext)
 const useFlipProgress = (local: MotionValue<number>, start: number, extra: number, len: number) =>
   useTransform(local, (v) => (len ? clamp01((v - start - extra) / len) : 0))
 
-const contentClass = (bare?: boolean) =>
-  bare ? 'relative' : 'relative mx-auto w-full max-w-6xl px-4 pt-16 pb-14 sm:px-8'
+const contentClass = (bare?: boolean) => (bare ? 'relative' : 'relative container-page pt-16 pb-14')
 
 /** The pad's binding: a board across the top with rings holding every page. */
 const Binding = () => (
@@ -54,7 +53,7 @@ const Binding = () => (
 )
 
 const PageNumber = ({ current, count }: { current: number; count: number }) => (
-  <div className="absolute top-0.5 right-2 z-[60] flex items-center gap-2 md:top-auto md:right-auto md:bottom-4 md:left-5">
+  <div className="absolute top-0.5 right-2 z-[60] flex items-center gap-2 md:top-auto md:right-auto md:bottom-4 md:left-[max(1.25rem,calc((100vw-var(--container-page))/2))]">
     <p
       aria-live="polite"
       className="rounded-full bg-paper px-3 py-0.5 font-hand text-base text-forest shadow-page md:bg-paper/85 md:py-1 md:text-lg md:shadow-none"
@@ -200,6 +199,7 @@ function ScrollPad({ pages }: { pages: ReactElement<FlipPageElementProps>[] }) {
     <div
       ref={wrapperRef}
       data-testid="flip-pad"
+      data-starts={starts.join(',')}
       className="relative min-h-svh"
       style={{ height: layout.stageH ? layout.stageH + range : undefined }}
     >

@@ -15,7 +15,7 @@ const Column = ({ title, children }: { title: string; children: React.ReactNode 
 export function Footer() {
   return (
     <footer className="mt-16 border-t-4 border-double border-brass bg-cream pb-24 md:pb-0">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.1fr_1fr_1fr_1.1fr]">
+      <div className="container-page grid gap-10 py-12 md:grid-cols-[1.1fr_1fr_1fr_1.1fr]">
         <div>
           <Image
             src="/brand/logo-full.svg"
@@ -45,7 +45,7 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a className="link break-all" href={`mailto:${site.email}`}>
+              <a className="link break-words" href={`mailto:${site.email}`}>
                 {site.email}
               </a>
             </li>
@@ -53,7 +53,7 @@ export function Footer() {
         </Column>
       </div>
       <div className="border-t border-sage-100">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 text-small sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="container-page flex flex-col gap-4 py-6 text-small sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
             {NAV.map(({ href, label }) => (
               <TurnLink key={href} href={href} className="link">

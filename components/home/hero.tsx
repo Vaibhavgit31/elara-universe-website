@@ -21,7 +21,7 @@ export function Hero() {
   return (
     <section
       ref={ref}
-      className="relative flex min-h-svh flex-col justify-center overflow-hidden px-4 pt-16 pb-24 sm:px-8"
+      className="relative flex min-h-svh flex-col justify-center overflow-hidden pt-16 pb-24"
       style={{ perspective: '1200px' }}
     >
       <DriftingLeaves />
@@ -29,13 +29,13 @@ export function Hero() {
       <Doodle kind="hindi" className="top-20 right-4 md:right-16" speed={0.1} />
       <Doodle kind="computer" className="bottom-28 left-4 md:left-16" speed={0.05} />
       <Doodle kind="drawing" className="right-8 bottom-24 hidden md:block" speed={0.14} />
-      <div className="relative mx-auto w-full max-w-6xl">
+      <div className="relative container-page">
         <p className="eyebrow">{site.name}</p>
         {/* [PLACEHOLDER] headline suggested in PLAYBOOK.md */}
         <h1 className="mt-3 max-w-3xl font-display text-h1 font-medium">
           <InkText text="Books that grow curious minds." start={open} delay={0.2} />
         </h1>
-        <p className="mt-5 max-w-2xl text-lg">{site.tagline}</p>
+        <p className="mt-5 max-w-prose text-lg">{site.tagline}</p>
         <div className="mt-8 flex flex-wrap gap-4">
           <Button href="/catalog">Explore the catalog</Button>
           <Button href="/contact" variant="secondary">

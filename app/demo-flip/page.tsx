@@ -40,7 +40,7 @@ export default function DemoFlipPage() {
         <FlipPage>
           <p className="eyebrow">Demo · page two</p>
           <h2>A page taller than the screen</h2>
-          <div className="mt-4 max-w-2xl space-y-5">
+          <div className="mt-4 max-w-prose space-y-5">
             {[...paragraphs, ...paragraphs].map((text, i) => (
               <p key={i}>{text}</p>
             ))}

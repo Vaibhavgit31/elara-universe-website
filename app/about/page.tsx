@@ -69,11 +69,11 @@ export default function AboutPage() {
           <h1 className="mb-8 font-display text-h3 font-medium text-forest">About Us</h1>
           <Chapter number={1} title="Our story">
             {/* [PLACEHOLDER]: Vaibhav will send when and why Elara Universe started (3–4 sentences). */}
-            <p className="dropcap max-w-2xl">
+            <p className="dropcap max-w-prose">
               Our story — when and why Elara Universe started, in three or four sentences — will go
               here. [PLACEHOLDER]
             </p>
-            <p className="mt-4 max-w-2xl">
+            <p className="mt-4 max-w-prose">
               {site.name} publishes Hindi, Computer and Drawing textbooks for Classes 1–8, aligned
               to NEP 2020 and NCF 2023, from Noida and Ghaziabad in Uttar Pradesh.
             </p>
@@ -81,7 +81,7 @@ export default function AboutPage() {
         </FlipPage>
         <FlipPage className="bg-mist">
           <Chapter number={2} title="What we believe">
-            <p className="dropcap max-w-2xl">Three ideas sit behind every book we make.</p>
+            <p className="dropcap max-w-prose">Three ideas sit behind every book we make.</p>
             <ul className="mt-10 grid gap-8 sm:grid-cols-3">
               {beliefs.map((b) => (
                 <li key={b.title}>
@@ -95,7 +95,7 @@ export default function AboutPage() {
         </FlipPage>
         <FlipPage>
           <Chapter number={3} title="Meet the founders">
-            <p className="dropcap max-w-2xl">
+            <p className="dropcap max-w-prose">
               Two co-founders started Elara Universe. Their photos and bios are on their way.
             </p>
             <ul className="mt-10 grid gap-12 md:grid-cols-2">
@@ -117,7 +117,7 @@ export default function AboutPage() {
         </FlipPage>
         <FlipPage className="bg-mist">
           <Chapter number={4} title="How a book is made">
-            <p className="dropcap max-w-2xl">
+            <p className="dropcap max-w-prose">
               From the first draft to the QR code on the back cover, every book passes through four
               steps.
             </p>
