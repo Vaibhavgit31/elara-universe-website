@@ -111,6 +111,10 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
   or the system Devanagari font on public pages (≈ 50 KB); (3) drop Lenis smooth scrolling
   (≈ 5 KB, too small to move a score on its own). The Phase 1 options about the intro and the
   flip pad no longer apply: Phase 2's home has neither.
+- (Phase 2, Step K) No preview was deployed: `VERCEL_TOKEN` is not set here. `DEPLOY.md` walks
+  through deploying from your computer with the Vercel CLI (no GitHub), every environment
+  variable, Supabase, the first admin and the domain. Until the keys are added, the features in
+  the final report's "mock mode" table run on stand-ins and say so on screen.
 
 ## Simplified
 
@@ -1784,3 +1788,131 @@ was simplified: the remaining cost is the brand fonts and the framework, and rem
 handwriting or Hindi font would change the brand look, which the build rules say to keep. The
 target stays open with the measured options under "For Vaibhav"; Home (≥ 85), Web Support, Help
 and Login meet their targets, and Accessibility and SEO are 100 on every public page.
+
+## Phase 2 — Step K: delivery and final report
+
+**Delivered**
+
+- **`DEPLOY.md`** rewritten for Phase 2: Vercel CLI from the project folder without GitHub
+  (`vercel login`, `vercel link`, `vercel env add …`, preview with `vercel`, production with
+  `vercel --prod`), a table of every environment variable (what it is for, where it comes from,
+  browser or server), Supabase setup (short version; the full one stays in
+  `SETUP-SUPABASE.md`), the first admin and the teachers, connecting
+  elarauniversepublications.com (`vercel domains add` / `inspect`, the registrar steps, `www`),
+  a launch checklist, updating later and troubleshooting. The commands were checked against the
+  Vercel CLI's own help (`docs/research/nextjs16-vercel.md` §6).
+- **Preview deployment: not made.** `VERCEL_TOKEN` is not set in this environment (and the
+  Vercel CLI is not installed here), so, as agreed, nothing was deployed.
+- **`elara-website-phase2-source.zip`**: every tracked file of the final commit
+  (`git archive`), so no `node_modules`, `.next`, `.env*` secrets (only `.env.example`),
+  `_source-assets/` or screenshots. Checked by unzipping it into an empty folder and running
+  `npm ci` and `npm run build` there: 551 packages installed, `next build` compiled, and
+  `next start` served Home, a book page, Web Support and Login (200) with the "Mock mode" note.
+- **`README.md`**: a Phase 2 section on the teacher side (what each portal page does and which
+  file holds its content).
+- `scripts/screenshots.mjs` takes `SIZES="360,1440"` for the final set.
+
+**Before and after** (`docs/screenshots/phase2-K/`): the Phase 1 final pages
+(`docs/screenshots/phase-14/`) next to the Phase 2 pages, at 1440 and 360 px, cropped to the top
+of each page: `compare-<page>-1440.png` and `compare-<page>-360.png` for Home, Catalog, the
+Hindi 1, TechNova 1 and Art Journey 2 book pages, About, Events, Contact, QR Corner and its
+Hindi 1 page (the "before" images are the last Phase 1 shots: `phase-14`, `phase-07`,
+`phase-11`). Full-page shots of every page at both widths are next to them, including the
+pages that are new in Phase 2: Web Support (public and signed in), Help, Login, Forgot
+password, the teacher's book resources, Test Maker, My tests, a saved paper, Profile, Update
+password, Admin, New teacher, a teacher's admin page, the style guide and the 404 page.
+Looked at: no sideways scroll, nothing cut off; in the phone shots the bottom bar and the
+floating buttons sit at the first screen's foot because a full-page capture pins fixed
+elements there (the Phase 1 shots show the same).
+
+**Requirements**
+
+- ✅ `DEPLOY.md`: Vercel CLI without GitHub, every env var, Supabase setup, first admin and
+  teachers, the domain
+- ✅ Preview deploy only with `VERCEL_TOKEN` — not set, so skipped and said so
+- ✅ `elara-website-phase2-source.zip` without node_modules, .env, `_source-assets`, screenshots
+- ✅ Final report (below)
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ (also from the unzipped
+source) · Playwright: no code changed after the Step J run (**500 passed / 792 skipped by
+project, 0 failed**); Step K changed only documents and screenshots.
+
+---
+
+## Phase 2 — final report
+
+**What changed in Phase 2** (one line per step; each step's report is above):
+
+- **A — Layout:** one `<Container>` (1280 px, `clamp(16px, 4vw, 48px)` sides), full-width
+  section backgrounds, no `100vh`; every page tested at eight laptop sizes, three zoom levels
+  and 360/768 for sideways scroll, viewport escape and equal margins, with screenshot baselines.
+- **B — Menu:** the glass top bar on every page (shrinks after scrolling, "Teacher login" /
+  "My portal"), a glass menu sheet and a bottom bar on phones, page dots, back-to-top and
+  keyboard paging on every flip-page section.
+- **C — Acrylic classroom:** the moving mesh background, `<Glass>` with its fallback, the new
+  colours (all WCAG AA), cursor spotlight, tilt, magnetic buttons, ripples and focus borders
+  (off with reduced motion), chalkboards, notebook cards, sticky notes; `/styleguide`.
+- **D — Home, "A day at Elara School":** the interactive SVG classroom (hotspots, real clock,
+  parallax, phone hotspot list) and the nine rooms, lazy-loaded.
+- **E — Every other page** in the classroom look, content unchanged.
+- **F — Server, database, accounts:** Vercel server build, Supabase (`@supabase/ssr`), five
+  tables with RLS, admin-only accounts, rate-limited login, password reset, the admin page.
+- **G — Web Support:** subject → series → books by class → Learning Resources / Generate Test
+  Paper, request access, doubts, Help with FAQ search, profile.
+- **H — Elu chatbot:** Grok through the Vercel AI SDK, answers only from the site's content,
+  link buttons, "Ask our team", per-IP limit, no chat logs.
+- **I — Test Maker:** chapters, section-by-section AI drafts with checks, editor, A4 paper with
+  answer key and Set A/B, PDF by print, Word by `docx`, save / duplicate / delete, daily limit.
+- **J — Security, accessibility, speed:** security headers, zod on every input, contrast fix,
+  axe on every page and portal step, four measured speed rounds.
+- **K — Delivery:** `DEPLOY.md`, the zip, this report.
+
+**Lighthouse** (mobile, median of three runs, this container; Step J):
+
+| Page | Performance | Accessibility | Best practices | SEO |
+| --- | --- | --- | --- | --- |
+| Home (target ≥ 85) | 85 ✅ | 100 | 100 | 100 |
+| Catalog | 87 | 100 | 100 | 100 |
+| Book page | 87 | 100 | 100 | 100 |
+| About | 87 | 100 | 100 | 100 |
+| Events | 88 | 100 | 100 | 100 |
+| Contact | 88 | 100 | 100 | 100 |
+| QR Corner | 88 | 100 | 100 | 100 |
+| Web Support | 90 ✅ | 100 | 100 | 100 |
+| Help | 92 ✅ | 100 | 100 | 100 |
+| Login | 90 ✅ | 100 | 100 | 66 (`noindex` on purpose) |
+
+Phase 1 ended at 58 (Home), 66 (Catalog), 78 (book page) and 90 (Contact) on the same kind of
+measurement. Details, LCP/TBT/CLS and every run: `docs/lighthouse/phase2-J-round4/summary.md`.
+
+**Tests:** 323 Playwright tests in 23 files (Phase 1 ended with 192 passing runs), run on four
+projects (desktop 1440, tablet 768, phone 360, reduced motion): **500 passed, 792 skipped by
+project** (tests written for one width or project), **0 failed**. Plus `npm run db:test`: the
+Row Level Security checks on PostgreSQL 16 pass.
+
+**Simplified** (the list at the top of this file): only the speed target — Lighthouse ≥ 90 is
+not reached on six pages (87–88) after four rounds; nothing visible was simplified, and the
+options are under "For Vaibhav". Every other Phase 2 requirement is met.
+
+**For Vaibhav:** the list at the top of this file — the Phase 2 entries cover the branch name,
+the Supabase and xAI pages to re-check online, the copy written for this build, the Hindi exam
+wording, the chapter lists, the daily Test Maker limit, the Word font on a Mac, the speed
+options and Safari/Firefox testing.
+
+**Remaining placeholders:** the "Placeholders" list at the top of this file (books without
+covers or facts, sample events, co-founder bios and photos, social links, festival dates,
+learning resources, part of the FAQ answers, chapter lists, the Hindi exam wording, copy
+written for this build, the domain registrar).
+
+**Runs in mock mode** when its keys are missing (accounts, the chatbot and the Test Maker say
+"Mock mode" on screen; the contact letter uses the agreed fallback):
+
+| Feature | Without | What happens |
+| --- | --- | --- |
+| Teacher and admin accounts, access requests, doubts, saved papers, AI counters | Supabase URL + keys | kept in the server's memory (lost on restart) with three demo accounts listed on `/login/`; demo sign-in is off on a Vercel production deployment |
+| Elu chatbot | `XAI_API_KEY` + `XAI_MODEL` | answers from the site's own FAQ and pages, with the same link buttons |
+| Test Maker drafts | `XAI_API_KEY` + `XAI_MODEL` | sample questions in the paper's language, marked "(Sample)" / "(नमूना)" |
+| Contact letter, emails about requests and doubts | `NEXT_PUBLIC_WEB3FORMS_KEY` | after "Send the letter" the page offers the email and WhatsApp buttons instead; requests and doubts are still listed on `/admin/`, no email is sent |
+| Preview deployment | `VERCEL_TOKEN` | not deployed; `DEPLOY.md` has the steps |
+
+**Branch:** everything is pushed to `claude/stoic-clarke-ihq1sb` (see "For Vaibhav").
