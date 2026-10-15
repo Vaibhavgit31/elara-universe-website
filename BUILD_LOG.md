@@ -99,6 +99,18 @@ Things PLAYBOOK.md asked me to ask, tell or show you. Each is answered with the 
 - (Phase 2, Step I) Drag-and-drop in the editor uses Motion's `Reorder` (already part of the
   site) instead of `@dnd-kit/core`, whose last release is 22 months old (the "updated in the last
   12 months" rule). Keyboard users have Move up / Move down.
+- (Phase 2, Step J) Lighthouse mobile in this container (median of three runs): Home 85
+  (target ≥ 85 met), the other nine pages 87–92 against ≥ 90; Accessibility, Best practices
+  and SEO 100 (Login SEO 66 because it is `noindex` on purpose). Lab scores here use a simulated
+  slow phone and the local server's gzip; Vercel serves Brotli from its edge, so please measure
+  the live site with https://pagespeed.web.dev before deciding anything. What is left before the
+  first paint is the framework (React + Next.js ≈ 116 KB gzip of the ≈ 215 KB of JavaScript) and
+  the brand fonts (Nunito, Lora, Caveat, Noto Sans Devanagari). Options, largest effect first,
+  each a visible change you would need to approve: (1) use the system's handwriting/sans fonts
+  instead of Caveat on chalkboards and sticky notes (≈ 48 KB); (2) show Hindi titles in an image
+  or the system Devanagari font on public pages (≈ 50 KB); (3) drop Lenis smooth scrolling
+  (≈ 5 KB, too small to move a score on its own). The Phase 1 options about the intro and the
+  flip pad no longer apply: Phase 2's home has neither.
 
 ## Simplified
 
@@ -110,6 +122,13 @@ Features that still failed after 3 genuine fix attempts and were simplified (bra
   boundaries, which made things worse and were reverted). Nothing visible was simplified: the
   brand animations stay; the target itself is left open with the options listed under
   "For Vaibhav".
+- (Phase 2, Step J) **Lighthouse Performance ≥ 90 on every page but Home** is met on Web
+  Support (90), Help (92) and Login (90); Catalog, the book page, About, Events, Contact and QR
+  Corner are at 87–88 (median of three) after four measured rounds (lighter fonts and
+  `zod/mini`; the rupee sign from local fonts and a lazily drawn footer; lazily laid-out home
+  rooms and postbox letter; one Lora weight). Home meets its ≥ 85. Nothing visible was
+  simplified: what remains is the framework and the brand fonts, so the target is left open with
+  the options under "For Vaibhav".
 
 ## Placeholders
 
@@ -1637,3 +1656,131 @@ tests", because changing the address in place makes Next.js remount the editor.
 (`content/chapters.ts`); the Hindi exam wording on the paper (section titles, header labels and
 the default instruction "सभी प्रश्न अनिवार्य हैं।", `lib/test-maker/paper.ts` and
 `defaults.ts`) is standard wording written for this build and needs a check.
+
+## Phase 2 — Step J: security, accessibility, speed and full regression
+
+**Security**
+
+- **Secrets only in environment variables:** a scan of every tracked file for key-shaped strings
+  (Supabase `sb_secret_`/`sb_publishable_`, JWTs, xAI keys, Web3Forms keys, private keys) finds
+  nothing; `.env.example` is the only env file in git. Every `process.env` the site reads is
+  listed in `.env.example` (added: `MOCK_SESSION_SECRET`, and a note on the host-set
+  `VERCEL_ENV`/`NODE_ENV` and the script-only variables). The secret key and `ADMIN_EMAILS` never
+  reach the browser bundle (checked in Step F).
+- **RLS:** `npm run db:test` — 24 checks on PostgreSQL 16, including "one teacher cannot read
+  another's tests" (Step F). In the app, another teacher's paper is a 404 (`portal.spec.ts`).
+- **Admin routes blocked for teachers:** proxy + `requireAdmin()` on every admin page and
+  action; tests in `auth.spec.ts`; the axe audit runs on the admin pages as the admin.
+- **All inputs validated with zod:** every Server Action (`lib/auth/actions.ts`,
+  `app/admin/actions.ts`, `app/web-support/actions.ts`, `app/web-support/test-maker/actions.ts`)
+  and both routes (`/api/chat`, `/api/test-maker/draft`) parse their input with zod; this step
+  added validation of the `type` parameter on `/auth/confirm`. The contact letter's schema now
+  uses `zod/mini` (same rules, much smaller in the browser).
+- **No XSS:** user text (requests, doubts, chat, papers) is only ever rendered as React text;
+  chatbot link buttons come from a server-side allow-list; the two JSON-LD blocks now escape `<`
+  as the Next.js JSON-LD guide recommends; the school logo must be a `data:image/png|jpeg|webp`
+  URL. Added baseline headers on every response (from the Next.js docs' example):
+  `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (no camera,
+  microphone or location). Routes check the `Origin`; Server Actions have Next's own origin
+  check.
+
+**Accessibility**
+
+- Contrast: `tests/contrast.spec.ts` checks every token pair on glass, paper, cream and mint;
+  error messages used the light drawing colour (2.9:1 on white) — they now use a deeper
+  `drawing-ink` (#A8452B, ≥ 4.5:1 on glass and on the drawing tint), the same way `gold-ink`
+  deepens brass for small labels; two pairs added to the test.
+- Keyboard: the chat opens, focuses its box and closes with Escape back to the bubble; the
+  Test Maker's tabs, chips, Move up / Move down, regenerate and delete are buttons with names;
+  the resources tabs follow the WAI-ARIA tabs pattern; the portal menu is a disclosure button.
+- axe (WCAG 2.1 AA + best practice): 12 public pages, 6 signed-in portal and admin pages, the
+  open chat panel and all three Test Maker steps — no violations.
+- Reduced motion: every Phase 2 animation (book-card flips, chalk writing, Elu, doors, tilt,
+  magnetic buttons) is off or a fade; the whole suite also runs on the reduced-motion project.
+
+**Speed** — Lighthouse 13, mobile emulation (Moto G Power, slow 4G, 4× CPU), production build in
+this container. Single runs here swing by ±10 points, so the runner (`scripts/lighthouse.mjs`)
+now measures each page three times and reports the median run; it also warms the server first so
+a dynamic route's first-request start-up is not counted.
+
+| Page | Before | After (median) | Runs | Accessibility | Best practices | SEO | LCP | TBT | CLS |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Home (target ≥ 85) | 72 | **85** ✅ | 85 / 85 / 83 | 100 | 100 | 100 | 3.9 s | 190 ms | 0.02 |
+| Catalog | 76 | **87** ❌ | 85 / 87 / 87 | 100 | 100 | 100 | 3.9 s | 100 ms | 0 |
+| Book page (Hindi 1) | 75 | **87** ❌ | 87 / 87 / 87 | 100 | 100 | 100 | 3.9 s | 70 ms | 0 |
+| About | 88 | **87** ❌ | 87 / 87 / 88 | 100 | 100 | 100 | 3.7 s | 140 ms | 0.039 |
+| Events | 90 | **88** ❌ | 87 / 88 / 89 | 100 | 100 | 100 | 3.7 s | 160 ms | 0.001 |
+| Contact | 86 | **88** ❌ | 88 / 85 / 90 | 100 | 100 | 100 | 3.6 s | 150 ms | 0 |
+| QR Corner (Hindi 1) | 80 | **88** ❌ | 86 / 88 / 88 | 100 | 100 | 100 | 3.8 s | 70 ms | 0 |
+| Web Support | 89 | **90** ✅ | 90 / 91 / 89 | 100 | 100 | 100 | 3.6 s | 50 ms | 0.05 |
+| Help | 88 | **92** ✅ | 92 / 91 / 92 | 100 | 100 | 100 | 3.2 s | 90 ms | 0 |
+| Login | 90 | **90** ✅ | 90 / 90 / 89 | 100 | 100 | 66 | 3.6 s | 70 ms | 0 |
+
+"Before" is one run at the start of Step J (`docs/lighthouse/phase2-J-before/`); "after" is the
+median of three (`docs/lighthouse/phase2-J-round4/`). About and Events were single-run highs
+before; their three-run medians before the fixes were 86 and 88 (`docs/lighthouse/phase2-J/`).
+
+What was done (four measured rounds; the baseline is `docs/lighthouse/phase2-J-before/`):
+
+1. **Fonts:** Noto Sans Devanagari now comes as one static 400 weight (50 KB instead of a 121 KB
+   variable file; Hindi semibold is drawn by the browser), and the Devanagari stack puts Nunito
+   first, so the Latin characters inside Hindi text no longer pull in Noto's Latin file (25 KB).
+   The contact letter's validation moved to `zod/mini`. Home 72 → 81, Catalog 76 → 85.
+2. **One-character downloads:** the rupee sign comes from a font on the device (`@font-face`
+   with `local()` sources and `unicode-range: U+20B9`) instead of a 20–35 KB Latin-Extended web
+   font file per family; the footer is rendered only when it nears the screen
+   (`content-visibility: auto`), so its handwriting font is no longer fetched before the first
+   paint. Help 88 → 91.
+3. **Home:** the rooms after the hero are laid out only when they near the screen, and the
+   postbox letter (react-hook-form + zod, about 45 KB gzip) loads when its room comes close
+   (`next/dynamic` inside the existing `LazyMount`; the contact page keeps its server-rendered
+   letter). Home-only JavaScript went from about 71 KB to 17 KB gzip.
+4. **One heading weight:** Lora is loaded only in 700 (21 KB instead of 38 KB before the first
+   paint); the third-level headings and three small labels set at 600 now use the 700 face, the
+   nearest weight, so nothing is drawn as fake bold. Home 84 → 85, Login 89 → 90, the rest
+   within ±1.
+
+The options left from Phase 1 were checked: the intro and the flip pad no longer exist on the
+Phase 2 home page, and dropping Lenis would save about 5 KB (≈ 0.03 s of simulated load, too
+little to move a score). What is still loaded before the first paint on every page is the
+framework (React and Next.js, ≈ 116 KB gzip of ≈ 215 KB of JavaScript) and the brand fonts
+(Nunito, Lora, Caveat on chalkboards and notes, Noto Sans Devanagari for Hindi titles).
+
+Accessibility 100, Best practices 100 and SEO 100 on every public page. `/login/` scores SEO 66
+on purpose: it is `noindex` (so are the portal and admin pages).
+
+**Requirements**
+
+- ✅ Secrets only in env vars; `.env.example` lists every variable the site reads
+- ✅ RLS tested (one teacher cannot read another's tests) — `npm run db:test`, 24 checks
+- ✅ Admin routes blocked for teachers (proxy + `requireAdmin()`, tested)
+- ✅ All inputs validated with zod (every action and route; `/auth/confirm` `type` added)
+- ✅ No XSS (React text only, escaped JSON-LD, link allow-list, security headers)
+- ✅ WCAG AA contrast on glass (error colour fixed, contrast test extended)
+- ✅ Keyboard access for chat, Test Maker and admin; reduced motion everywhere (axe + the
+  reduced-motion project)
+- ✅ Accessibility ≥ 95 and SEO ≥ 95 on every public page (100); Login is `noindex` on purpose
+- ✅ Home Performance ≥ 85 (85)
+- ❌ Every other page Performance ≥ 90: met on Web Support, Help and Login; 87–88 on six pages
+  after four rounds — logged under "Simplified" with options under "For Vaibhav"
+- ✅ Every test from Phase 1 and Phase 2 run (below)
+
+**Checks:** `tsc` ✅ · `eslint` ✅ · Prettier ✅ · `next build` ✅ · Playwright **500 passed / 792
+skipped by project**, 0 failed ✅ (every Phase 1 and Phase 2 test on the desktop, tablet, phone
+and reduced-motion projects, 6.9 min) · `npm run db:test` ✅ ("RLS checks passed", PostgreSQL 16).
+
+**Screenshots:** `docs/screenshots/phase2-J/` — Home, Contact and the Hindi 1 book page at
+360/768/1024/1440 and reduced motion. Looked at: the headings in the single Lora weight, the
+postbox letter loading in place on Home (desktop and phone), the footer. Found and fixed: a
+full-page capture does not scroll, so the home rooms and the footer (now `content-visibility:
+auto`) stayed blank below the first screen in the screenshots; `scripts/screenshots.mjs` now
+renders them before capturing. A viewport capture after scrolling to the postbox confirmed that
+visitors see them normally.
+
+**Simplified / open:** Lighthouse Performance ≥ 90 is not reached on six pages (Catalog, book
+page, About, Events, Contact, QR Corner: 87–88 here) after four measured rounds. Nothing visible
+was simplified: the remaining cost is the brand fonts and the framework, and removing the
+handwriting or Hindi font would change the brand look, which the build rules say to keep. The
+target stays open with the measured options under "For Vaibhav"; Home (≥ 85), Web Support, Help
+and Login meet their targets, and Accessibility and SEO are 100 on every public page.

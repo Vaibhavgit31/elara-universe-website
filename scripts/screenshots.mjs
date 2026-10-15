@@ -52,6 +52,9 @@ for (const route of routes) {
       }
       scrollTo(0, 0)
     })
+    // A full-page capture does not scroll, so sections with `content-visibility: auto` (home
+    // rooms, footer) would stay unpainted below the first screen; visitors never see that.
+    await page.addStyleTag({ content: '* { content-visibility: visible !important; }' })
     await page.waitForTimeout(1200)
     const file = `${dir}/${slug}${suffix}-${name}.png`
     await page.screenshot({ path: file, fullPage: true })

@@ -33,12 +33,10 @@ const schemaFor = (compact: boolean) =>
     role: compact
       ? z.optional(z.enum(roles))
       : z.enum(roles, { error: 'Please choose your role.' }),
-    phone: z
-      .string()
-      .check(
-        z.overwrite((v) => v.replace(/[\s-]/g, '')),
-        z.regex(/^(\+91)?[6-9]\d{9}$/, 'Enter a 10-digit Indian mobile number, e.g. 96257 41192.'),
-      ),
+    phone: z.string().check(
+      z.overwrite((v) => v.replace(/[\s-]/g, '')),
+      z.regex(/^(\+91)?[6-9]\d{9}$/, 'Enter a 10-digit Indian mobile number, e.g. 96257 41192.'),
+    ),
     email: z.email('Enter a valid email address.'),
     city: compact ? text() : text().check(z.minLength(2, 'Which city are you in?')),
     subjects: compact
